@@ -21,4 +21,6 @@ typedef struct {
 } og2_frame_t;
 // play_step 0..15 of 0xff; trail_step = vorige stap voor de uitdovende staart (0xff = geen)
 extern void OG2_RenderSteps(og2_frame_t *f, const og2_step_t st[16], u8 play_step, u8 trail_step);
+extern void OG2_StepRange(const og2_step_t st[16], int *lo, int *hi);
+extern void OG2_RenderCell(u8 *out2048, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer);
 #endif

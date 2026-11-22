@@ -1,23 +1,24 @@
 #include "oled_gui2.h"
 #include <glcd_font.h>
 
-static void px(u8 (*d)[OG2_W], int x, int y, int g)
+#define CW 64
+static void px(u8 (*d)[CW], int x, int y, int g)
 {
-  if( x < 0 || y < 0 || x >= OG2_W || y >= OG2_H ) return;
+  if( x < 0 || y < 0 || x >= CW || y >= OG2_H ) return;
   if( g > 15 ) g = 15;
   if( g < 0 ) g = 0;
   d[y][x] = g;
 }
-static void rect(u8 (*d)[OG2_W], int x, int y, int w, int h, int g)
+static void rect(u8 (*d)[CW], int x, int y, int w, int h, int g)
 {
   for(int j=0; j<h; ++j) for(int i=0; i<w; ++i) px(d, x+i, y+j, g);
 }
-static void hline(u8 (*d)[OG2_W], int x, int y, int w, int g, int dotted)
+static void hline(u8 (*d)[CW], int x, int y, int w, int g, int dotted)
 {
   for(int i=0; i<w; ++i) if( !dotted || (i % dotted) == 0 ) px(d, x+i, y, g);
 }
 // glcd-font teken, alleen ingeschakelde pixels (fg) in grijs g; scale 1 of 2
-static int chr(u8 (*d)[OG2_W], const u8 *font, int x, int y, char c, int scale, int g)
+static int chr(u8 (*d)[CW], const u8 *font, int x, int y, char c, int scale, int g)
 {
   int w = font[0], off = font[3];
   const u8 *gl = &font[4] + font[2] + (size_t)off * (u8)c;
@@ -26,7 +27,7 @@ static int chr(u8 (*d)[OG2_W], const u8 *font, int x, int y, char c, int scale, 
   return w*scale;
 }
 static int tw(const u8 *font, const char *s, int scale){ int n=0; while(*s++) ++n; return n*font[0]*scale; }
-static void text(u8 (*d)[OG2_W], const u8 *font, int x, int y, const char *s, int scale, int g)
+static void text(u8 (*d)[CW], const u8 *font, int x, int y, const char *s, int scale, int g)
 { while( *s ) x += chr(d, font, x, y, *s++, scale, g); }
 
 static void note_name(u8 note, char *out)
@@ -42,12 +43,13 @@ static void num3(char *b, int v){ b[0] = v>=100 ? '0'+v/100 : ' '; b[1] = v>=10 
 #define ROLL_TOP 14
 #define ROLL_BOT 47     // y van de laagste noot
 
-static void cell(u8 (*d)[OG2_W], int x0, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer)
+static void cell(u8 (*d)[CW], int divider, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer)
 {
   char b[8];
+  const int x0 = 0;
   int bg = playing ? 3 : (trailing ? 1 : 0);
   if( bg ) rect(d, x0+1, 0, 62, 64, bg);
-  if( x0 > 0 ) for(int y=0; y<64; y+=4) px(d, x0, y, 2);         // scheidingslijn
+  if( divider ) for(int y=0; y<64; y+=4) px(d, x0, y, 2);         // scheidingslijn
 
   // kop: stapnummer + noot
   b[0] = '0'+(num+1)/10; b[1] = '0'+(num+1)%10; b[2] = 0;
@@ -111,16 +113,33 @@ static void cell(u8 (*d)[OG2_W], int x0, int num, const og2_step_t *s, int lo, i
   if( playing ){ rect(d, x0+1, 0, 62, 2, 15); rect(d, x0+1, 62, 62, 2, 15); }
 }
 
+void OG2_StepRange(const og2_step_t st[16], int *lo, int *hi)
+{
+  int l = 127, h = 0;
+  for(int i=0; i<16; ++i) if( st[i].on && st[i].note != 0xff ){ if( st[i].note < l ) l = st[i].note; if( st[i].note > h ) h = st[i].note; }
+  if( l > h ){ l = 36; h = 48; }
+  *lo = l; *hi = h;
+}
+
+// rendert 1 stap-kolom (64x64) naar 2048 bytes: 4 bit per pixel, 32 bytes per rij, eerste pixel = hoge nibble
+void OG2_RenderCell(u8 *out, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer)
+{
+  static u8 tmp[OG2_H][CW];
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
+  cell(tmp, (num & 3) != 0, num, s, lo, hi, playing, trailing, layer ? layer : "VEL");
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; x+=2) out[y*32 + x/2] = (tmp[y][x] << 4) | tmp[y][x+1];
+}
+
+// host-test: 16 cellen naar 4 schermen van 256x64 (1 byte per pixel)
 void OG2_RenderSteps(og2_frame_t *f, const og2_step_t st[16], u8 play_step, u8 trail_step)
 {
-  int lo = 127, hi = 0;
-  for(int i=0; i<16; ++i) if( st[i].on && st[i].note != 0xff ){ if( st[i].note < lo ) lo = st[i].note; if( st[i].note > hi ) hi = st[i].note; }
-  if( lo > hi ){ lo = 36; hi = 48; }
-  for(int d=0; d<OG2_DISPLAYS; ++d){
-    for(int y=0; y<OG2_H; ++y) for(int x=0; x<OG2_W; ++x) f->gray[d][y][x] = 0;
-    for(int k=0; k<4; ++k){
-      int n = d*4 + k;
-      cell(f->gray[d], k*64, n, &st[n], lo, hi, play_step == n, trail_step == n, f->layer_name ? f->layer_name : "VEL");
-    }
+  static u8 c[2048];
+  int lo, hi;
+  OG2_StepRange(st, &lo, &hi);
+  for(int n=0; n<16; ++n){
+    int d = n/4, k = n%4;
+    OG2_RenderCell(c, n, &st[n], lo, hi, play_step == n, trail_step == n, f->layer_name);
+    for(int y=0; y<OG2_H; ++y) for(int x=0; x<64; ++x)
+      f->gray[d][y][k*64+x] = (x & 1) ? (c[y*32+x/2] & 15) : (c[y*32+x/2] >> 4);
   }
 }

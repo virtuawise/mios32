@@ -108,7 +108,8 @@ class Seq:
         self.midi_lock = threading.Lock()
         self.lcd = [[32] * 80 for _ in range(2)]
         self.charset = 0
-        self.oled = [None] * 4           # echte OLED-framebuffers (2048 bytes, 1 bit/pixel) uit de firmware (cmd 0x05)
+        self.oled4 = [bytearray(8192) for _ in range(4)]   # OLED-framebuffers 256x64, 4 bit grijs (128 bytes per rij) uit de firmware (cmd 0x07)
+        self.oled_ver = [0] * 4
         self.sr = [0] * 32
         self.matrix = [0] * 8
         self._cand = [None] * 8
@@ -297,26 +298,24 @@ class Seq:
             elif cmd == 0x03 and len(d) >= 8:                   # charset
                 self.charset = d[7]
                 self.version += 1
-            elif cmd == 0x05 and len(d) >= 9:                   # OLED-framebuffer (eigen uitbreiding firmware)
-                disp, raw, out = d[7], d[8:], []
-                for g in range(0, len(raw), 8):                 # groep: 1 MSB-byte + max 7 databytes
+            elif cmd == 0x07 and len(d) >= 10:                  # OLED-cel (64x64 px, 4 bit, RLE) in een scherm
+                disp, cell, raw, packed = d[7], d[8], d[9:], []
+                for g in range(0, len(raw), 8):                 # 7-bit: 1 MSB-byte + max 7 databytes
                     msb = raw[g]
                     for i, b in enumerate(raw[g + 1:g + 8]):
-                        out.append(b | (0x80 if msb >> i & 1 else 0))
-                if 0 <= disp < 4 and len(out) == 2048:
-                    self.oled[disp] = bytes(out)
-                    self.version += 1
-            elif cmd == 0x06 and len(d) >= 10:                  # OLED-cel (64x64 px = 512 bytes) in een scherm
-                disp, cell, raw, out = d[7], d[8], d[9:], []
-                for g in range(0, len(raw), 8):
-                    msb = raw[g]
-                    for i, b in enumerate(raw[g + 1:g + 8]):
-                        out.append(b | (0x80 if msb >> i & 1 else 0))
-                if 0 <= disp < 4 and 0 <= cell < 4 and len(out) == 512:
-                    fb = bytearray(self.oled[disp] or bytes(2048))
+                        packed.append(b | (0x80 if msb >> i & 1 else 0))
+                px, i = bytearray(), 0                          # PackBits-RLE: <128 = literal c+1, >=128 = herhaal (c-126)
+                while i < len(packed):
+                    c = packed[i]; i += 1
+                    if c < 128:
+                        px += bytes(packed[i:i + c + 1]); i += c + 1
+                    else:
+                        px += bytes([packed[i]]) * (c - 126); i += 1
+                if 0 <= disp < 4 and 0 <= cell < 4 and len(px) == 2048:
+                    fb = self.oled4[disp]
                     for y in range(64):
-                        fb[y * 32 + cell * 8:y * 32 + cell * 8 + 8] = bytes(out[y * 8:y * 8 + 8])
-                    self.oled[disp] = bytes(fb)
+                        fb[y * 128 + cell * 32:y * 128 + cell * 32 + 32] = px[y * 32:y * 32 + 32]
+                    self.oled_ver[disp] += 1
                     self.version += 1
             elif cmd == 0x04 and len(d) >= 8:                   # LED-SR's
                 first = d[7]
@@ -388,7 +387,7 @@ class Seq:
                 "leds": self.leds(),
                 "online": time.time() - self.last_rx < 3,
                 "held": list(self.held),
-                "oled": [base64.b64encode(o).decode() if o else None for o in self.oled],
+                "oled_ver": list(self.oled_ver),
             }
 
 
@@ -423,6 +422,17 @@ def make_handler(seq):
                     html = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "panel_oled.html"),
                                 encoding="utf-8").read()
                     return self._send(200, html, "text/html")
+                if p == "/oled_raw":      # ruw 4-bit framebuffer van 1 scherm (8192 bytes)
+                    dn = int(q.get("d", 0))
+                    with seq.lock:
+                        body = bytes(seq.oled4[dn]) if 0 <= dn < 4 else b""
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/octet-stream")
+                    self.send_header("Content-Length", str(len(body)))
+                    self.send_header("Cache-Control", "no-store")
+                    self.end_headers()
+                    self.wfile.write(body)
+                    return
                 if p == "/events":
                     return self._events()
                 if p == "/api/screen":
