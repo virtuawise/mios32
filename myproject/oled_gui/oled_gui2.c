@@ -474,7 +474,18 @@ static void ecbtext(u8 (*d)[CW], int cx, int y, const char *s, int sc, int g){ i
 static void ecsmall(u8 (*d)[CW], int cx, int y, const char *s, int g){ int w = tw(GLCD_FONT_SMALL, s, 1); text(d, GLCD_FONT_SMALL, cx-w/2, y, s, 1, g); }
 static void ebox(u8 (*d)[CW], int k, int n, int sel){ int x = ebx(k), w = ebw(n); if( sel ) rect(d, x, EBY, w, EBH, 2); frame_box(d, x, EBY, w, EBH, sel ? 15 : 9); if( sel ) frame_box(d, x+1, EBY+1, w-2, EBH-2, 15); }
 static void elabel(u8 (*d)[CW], int k, const char *l, int sel){ text(d, GLCD_FONT_SMALL, ebx(k)+5, EBY+4, l, 1, sel ? 12 : 9); }
-static void evalue(u8 (*d)[CW], int k, int n, const char *v, int g){ int sc = (tw(GLCD_FONT_NORMAL, v, 2) > ebw(n)-8) ? 1 : 2; ecbtext(d, ebx(k)+ebw(n)/2, sc == 2 ? 29 : 33, v, sc, g); }
+static void evalue(u8 (*d)[CW], int k, int n, const char *v, int g)
+{
+  int len = 0; while( v[len] ) ++len;
+  int cx = ebx(k) + ebw(n)/2, inner = ebw(n) - 12;           // keep >= 6 px margin to the frame
+  if( len * 12 <= inner ){ ecbtext(d, cx, 29, v, 2, g); return; }                       // bold 2x
+  if( len * 11 - 1 <= inner ){                                                           // 2x, no bold, tighter spacing
+    int x = cx - (len * 11 - 1) / 2;
+    for(int i=0; i<len; ++i) chr(d, GLCD_FONT_NORMAL, x + i*11, 29, v[i], 2, g);
+    return;
+  }
+  ecbtext(d, cx, 33, v, 1, g);                                                           // 1x for long text
+}
 static void ebar(u8 (*d)[CW], int k, int frac100){ int x = ebx(k)+5, w = ebw(1)-10; for(int i=0; i<w; ++i) px(d, x+i, 52, 3); rect(d, x, 51, frac100*w/100, 3, 13); }
 static void evbox(u8 (*d)[CW], int k, const char *l, const char *v, int frac, int sel, int dim){ ebox(d, k, 1, sel); elabel(d, k, l, sel); evalue(d, k, 1, v, dim ? 5 : 15); if( frac >= 0 ) ebar(d, k, frac); }
 static void epicker(u8 (*d)[CW], int k, int n, const char *l, const char **it, int cnt, int cols, int sel, int sel_box, int active_cnt)
@@ -516,10 +527,10 @@ void OG2_RenderEventCell(u8 *out, int cell, const og2_event_t *e)
     num2str(b, e->chn + 1);
     evbox(d, 5, "CHANNEL", b, (e->chn * 100) / 15, SELK(5), 0);
     ebox(d, 6, 1, SELK(6)); elabel(d, 6, "INSTR.", SELK(6));
-    if( e->instruments > 1 ){ num2str(b, e->instruments); evalue(d, 6, 1, b, 15); } else { ecbtext(d, ebx(6)+ebw(1)/2, 29, "--", 2, 5); ecsmall(d, ebx(6)+ebw(1)/2, 52, "drum only", 4); }
+    if( e->instruments > 1 ){ num2str(b, e->instruments); evalue(d, 6, 1, b, 15); } else { ecbtext(d, ebx(6)+ebw(1)/2, 29, "--", 2, 5); ecsmall(d, ebx(6)+ebw(1)/2, 46, "drum only", 4); }
     ebox(d, 7, 1, 0); elabel(d, 7, "LAYERS", 0);
-    text(d, GLCD_FONT_SMALL, ebx(7)+6, 27, "PAR", 1, 8); num2str(b, e->par_layers); text(d, GLCD_FONT_NORMAL, ebx(7)+ebw(1)-6-tw(GLCD_FONT_NORMAL, b, 2), 24, b, 2, 15);
-    text(d, GLCD_FONT_SMALL, ebx(7)+6, 45, "TRG", 1, 8); num2str(b, e->trg_layers); text(d, GLCD_FONT_NORMAL, ebx(7)+ebw(1)-6-tw(GLCD_FONT_NORMAL, b, 2), 42, b, 2, 15);
+    text(d, GLCD_FONT_SMALL, ebx(7)+6, 27, "PAR", 1, 8); num2str(b, e->par_layers); text(d, GLCD_FONT_NORMAL, ebx(7)+ebw(1)-9-tw(GLCD_FONT_NORMAL, b, 2), 24, b, 2, 15);
+    text(d, GLCD_FONT_SMALL, ebx(7)+6, 45, "TRG", 1, 8); num2str(b, e->trg_layers); text(d, GLCD_FONT_NORMAL, ebx(7)+ebw(1)-9-tw(GLCD_FONT_NORMAL, b, 2), 42, b, 2, 15);
   } break;
   case 2: {
     eheader(d, 2, "PARAMETER LAYERS");

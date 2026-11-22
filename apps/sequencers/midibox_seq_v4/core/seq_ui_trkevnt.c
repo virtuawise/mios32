@@ -1578,6 +1578,7 @@ s32 SEQ_UI_TRKEVNT_OledGet(og2_event_t *e)
     char *tn = SEQ_PAR_TypeStr((seq_par_layer_type_t)shown);
     for(k=0; k<5 && tn && tn[k]; ++k) e->ltype[k] = tn[k];
     e->ltype[k] = 0;
+    while( k > 0 && e->ltype[k-1] == ' ' ) e->ltype[--k] = 0;      // no trailing spaces (they made the text smaller)
     if( shown == SEQ_PAR_Type_CC || shown == SEQ_PAR_Type_Ctrl ) {
       u8 cc = (ui_selected_item == ITEM_LAYER_PAR) ? edit_cc_number : SEQ_CC_Get(track, SEQ_CC_LAY_CONST_B1 + ui_selected_par_layer);
       if( cc >= 0x80 ) strcpy(e->param, "COff"); else sprintf(e->param, "#%03d", cc);
