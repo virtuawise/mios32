@@ -433,6 +433,16 @@ static void slot_icon(u8 (*d)[CW], int x, int y, int kind, int on)
 }
 
 int og2_vel_style = 0;      // 0 verticaal balkje (huidig), 1 segmenten, 2 vulling, 3 boog, 4 balkdikte
+// vakje van 18x13 met een getal (SMALL font); bij accent: omgekeerd (vol, donker getal)
+static void slot_num(u8 (*d)[CW], int x, int y, int value, int has, int accent)
+{
+  char b[4];
+  b[0] = value >= 100 ? '0'+value/100 : ' '; b[1] = value >= 10 ? '0'+(value/10)%10 : ' '; b[2] = '0'+value%10; b[3] = 0;
+  if( !has ){ frame_box(d, x, y, 18, 13, 3); return; }
+  if( accent ){ rect(d, x, y, 18, 13, 15); text(d, GLCD_FONT_SMALL, x+3, y+3, b, 1, 0); }
+  else { frame_box(d, x, y, 18, 13, 9); text(d, GLCD_FONT_SMALL, x+3, y+3, b, 1, 15); }
+}
+
 void OG2_RenderCellBoxed(u8 *out, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer, og2_kind_t kind)
 {
   static u8 tmp[OG2_H][CW];
@@ -459,16 +469,11 @@ void OG2_RenderCellBoxed(u8 *out, int num, const og2_step_t *s, int lo, int hi, 
       if( s->arp ) { int k; for(k=0; k<5 && s->txt[k]; ++k) b[k] = s->txt[k]; b[k] = 0; } else note_name(s->note, b);
       int w = tw(GLCD_FONT_NORMAL, b, 2), cx = bx + bw / 2;
       text(d, GLCD_FONT_NORMAL, cx - w/2 - 1, by+14, b, 2, 15); text(d, GLCD_FONT_NORMAL, cx - w/2, by+14, b, 2, 15);
-      // onderin het vak: links lengte (horizontaal balkje; glide = loopt door), rechts velocity als blokje met getal (0-127)
-      int len = 2 + (s->len > 100 ? 100 : s->len) * 26 / 100;
-      for(int x=0; x<29; ++x) px(d, bx+5+x, by+bh-8, 3);                       // spoor
-      rect(d, bx+5, by+bh-9, len, 3, 13);
-      if( s->sld ) rect(d, bx+5+len, by+bh-9, 29-len, 3, 15);
-      char vb[4]; int v = s->vel;
-      vb[0] = v >= 100 ? '0'+v/100 : ' '; vb[1] = v >= 10 ? '0'+(v/10)%10 : ' '; vb[2] = '0'+v%10; vb[3] = 0;
-      int vx = bx + bw - 26, vy = by + bh - 14;
-      rect(d, vx, vy, 22, 11, 11);                                              // blokje
-      text(d, GLCD_FONT_NORMAL, vx+2, vy+2, vb, 1, 0);                          // getal, donker op het blokje
+      // onderin het vak: lengte als horizontaal balkje (glide loopt door tot de rand)
+      int len = 2 + (s->len > 100 ? 100 : s->len) * 44 / 100;
+      for(int x=0; x<46; ++x) px(d, bx+5+x, by+bh-7, 3);                       // spoor
+      rect(d, bx+5, by+bh-8, len, 3, 13);
+      if( s->sld ) rect(d, bx+5+len, by+bh-8, 46-len, 3, 15);
     } else {
       hline(d, bx+16, by+bh/2+2, 24, 3, 2);
     }
@@ -482,8 +487,8 @@ void OG2_RenderCellBoxed(u8 *out, int num, const og2_step_t *s, int lo, int hi, 
     rect(d, bx+6, by+bh-8, fill, 4, on ? 12 : 6);
   }
   // 3 symboolvakjes: accent / glide / roll-skip-kans
-  slot_icon(d, 2, 50, 0, s->acc);
-  slot_icon(d, 23, 50, 1, s->sld);
+  slot_num(d, 2, 50, s->vel, on && s->note != 0xff, s->acc);      // vakje 1: velocity (omgekeerd bij accent)
+  slot_icon(d, 23, 50, 1, s->sld);                                   // vakje 2: glide
   int k3 = s->roll ? 2 : (s->skip ? 3 : 4);
   slot_icon(d, 44, 50, k3, s->roll || s->skip || (s->prob < 100));
   tile_pack(out, tmp);
