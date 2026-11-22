@@ -1,0 +1,161 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>MIDIbox SEQ – 4x OLED paneel (ontwerp)</title>
+<style>
+:root{--amber:#FFB547;--bg:#16181b;--btn:#1b1d20;--btn2:#202226}
+body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;align-items:center}
+#wrap{position:relative;width:1500px;height:443px;margin:18px;background:linear-gradient(#1f2125,#17191c);border-radius:12px;
+      box-shadow:0 24px 60px #000a,0 0 0 1px #000;transform-origin:top center}
+.abs{position:absolute}
+.btn{position:absolute;width:50px;height:40px;border-radius:8px;background:#2b2e33;border:1px solid #4d5158;box-sizing:border-box;box-shadow:inset 0 -4px 0 #44484e,0 2px 4px #000a;cursor:pointer;touch-action:none}
+.btn.on{background:#34363b;border-color:var(--c,#FFB547);box-shadow:inset 0 -5px 0 var(--c,#FFB547),0 0 16px var(--c,#FFB547)}
+.btn.down{transform:translateY(2px)}.btn.latched{outline:2px solid #ffc400}.btn.na{opacity:.4;cursor:not-allowed}
+.lbl{position:absolute;width:70px;text-align:center;font-size:10px;font-weight:600;letter-spacing:.05em;color:#f0f0f0;white-space:nowrap}
+.side{position:absolute;font-size:9px;color:#aaa}
+.enc{position:absolute;width:34px;height:34px;border-radius:50%;background:#111214;box-shadow:inset 0 0 0 2px #2c2f34,0 3px 8px #000a;cursor:ns-resize}
+.enc i{position:absolute;left:calc(50% - 1.5px);top:3px;width:3px;height:11px;border-radius:2px;background:#d7dade;transform-origin:50% 14px;transform:rotate(var(--a,0deg))}
+.encn{position:absolute;width:34px;text-align:center;font-size:8px;color:#888}
+.oled{position:absolute;width:248px;height:62px;background:#000;border-radius:2px;image-rendering:pixelated}
+.brk{position:absolute;height:5px;border:1px solid #c78a2a;border-top:0;width:248px}
+.hdr{position:absolute;left:30px;top:22px;font-size:10px;letter-spacing:.1em;color:var(--amber)}
+.hdr b{color:#fff}
+.grp{position:absolute;font-size:8px;letter-spacing:.12em;font-weight:700;text-align:center;width:50px}
+.dw{position:absolute;left:781px;top:297px;width:100px;height:100px;border-radius:50%;background:#111214;box-shadow:inset 0 0 0 2px #2c2f34,0 6px 14px #000a;cursor:ns-resize}
+.dw i{position:absolute;left:62%;top:16%;width:18%;height:18%;border-radius:50%;background:#2a2d31;box-shadow:inset 0 0 0 1px #44484e}
+.beat{position:absolute;left:822px;top:223px;width:18px;height:18px;border-radius:50%;background:#3a1c1c}
+.beat.on{background:#ff5a5a;box-shadow:0 0 14px #ff5a5a}
+.top{font-size:11px;color:#888;margin-bottom:6px}.top a{color:#9cf}
+#st.on{color:#7cff8a}#st.off{color:#f66}
+.foot{position:absolute;left:30px;bottom:12px;font-size:12px;letter-spacing:.1em;color:#ddd;font-weight:700}.foot b{color:var(--amber)}
+</style></head><body>
+<div class="top">Ontwerp 4x OLED (256x64) · SEQ: <b id="st" class="off">offline</b> · <a href="#" id="sync">scherm verversen</a> · <a href="/">oud paneel</a>
+ · klik = knop, rechtsklik = vastzetten, encoder: scrollen/slepen</div>
+<div id="wrap"></div>
+<script>
+const W=document.getElementById('wrap');
+const api=p=>fetch(p).catch(()=>{});
+const NA=new Set(['SCRUB','LIVE','RECORD','COPY','PASTE','CLEAR']);
+const el=(c,css,t,p)=>{const e=document.createElement('div');if(c)e.className=c;if(css)e.style.cssText=css;if(t!=null)e.textContent=t;(p||W).appendChild(e);return e;};
+const latched=new Set(), btnEls={};
+/* knop: name (API), x,y = linkerbovenhoek, label, kleur, w,h */
+function button(name,x,y,label,color,o={}){
+  const w=o.w||50,h=o.h||40;
+  const b=el('btn'+(NA.has(name)?' na':''),`left:${x}px;top:${y}px;width:${w}px;height:${h}px;--c:${color||'#FFB547'}`);
+  b.title=name;btnEls[name]=b;
+  if(label!=null)el('lbl',`left:${x+w/2-35}px;top:${y+h+4}px`,label);
+  if(o.side)el('side',`left:${x-12}px;top:${y+h/2-6}px`,o.side);
+  if(o.num)el('side',`left:${x-9}px;top:${y+h/2-6}px`,o.num);
+  if(NA.has(name))return b;
+  let isDown=false;
+  b.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();b.setPointerCapture(e.pointerId);
+    if(latched.has(name)){latched.delete(name);b.classList.remove('latched');api('/api/up?b='+name);return;}
+    isDown=true;b.classList.add('down');api('/api/down?b='+name);});
+  const up=()=>{if(!isDown)return;isDown=false;b.classList.remove('down');api('/api/up?b='+name);};
+  b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);
+  b.addEventListener('contextmenu',e=>{e.preventDefault();
+    if(latched.has(name)){latched.delete(name);b.classList.remove('latched');api('/api/up?b='+name);}
+    else{latched.add(name);b.classList.add('latched');api('/api/down?b='+name);}});
+  return b;
+}
+function encoder(name,x,y,size,cls){
+  const e=el('enc',`left:${x}px;top:${y}px`+(size?`;width:${size}px;height:${size}px`:''));
+  if(cls){e.className=cls;e.style.left=x+'px';e.style.top=y+'px';}
+  e.title=name;e.innerHTML='<i></i>';let ang=0,acc=0,dragY=null,pending=0,timer=null;
+  const send=d=>{ang+=d*15;e.style.setProperty('--a',ang+'deg');pending+=d;
+    if(!timer)timer=setTimeout(()=>{const p=pending;pending=0;timer=null;if(p)api(`/api/enc?e=${name}&d=${p}&wait=0`);},30);};
+  e.addEventListener('wheel',ev=>{ev.preventDefault();acc+=ev.deltaY;const st=ev.shiftKey?15:40;
+    while(Math.abs(acc)>=st){const d=acc<0?1:-1;send(ev.shiftKey?d*4:d);acc-=(acc<0?-st:st);}},{passive:false});
+  e.addEventListener('pointerdown',ev=>{dragY=ev.clientY;e.setPointerCapture(ev.pointerId);});
+  e.addEventListener('pointermove',ev=>{if(dragY===null)return;const dy=dragY-ev.clientY,st=ev.shiftKey?3:8;
+    if(Math.abs(dy)>=st){const n=Math.trunc(dy/st);send(ev.shiftKey?n*4:n);dragY-=n*st;}});
+  e.addEventListener('pointerup',()=>dragY=null);
+  return e;
+}
+/* ---------- linkerblok ---------- */
+el('grp','left:62px;top:44px;color:#c9c9c9','GROUP');el('grp','left:138px;top:44px;color:var(--amber)','TRACK');
+for(let i=0;i<4;i++){
+  button('GROUP'+(i+1),62,62+i*49,null,'#ffffff',{w:50,h:40});button('TRACK'+(i+1),138,62+i*49,null,'#7CFF8A',{w:50,h:40});
+  el('side',`left:50px;top:${74+i*49}px`,i+1);el('side',`left:190px;top:${74+i*49}px`,i+1);
+}
+el('grp','left:62px;top:253px;color:var(--amber)','TRIGGER');el('grp','left:138px;top:253px;color:var(--amber)','PARAM');
+['A','B','C'].forEach((x,i)=>{button('TRG_'+x,62,272+i*49,null,'#B39DDB',{w:50,h:40});button('PAR_'+x,138,272+i*49,null,'#4FC3F7',{w:50,h:40});
+  el('side',`left:50px;top:${284+i*49}px`,x);el('side',`left:190px;top:${284+i*49}px`,x);});
+el('foot','','').innerHTML='MIDIBOX <b>SEQ</b>';
+/* ---------- OLED's + encoders + GP-knoppen ---------- */
+const OX=[242,534,880,1172],OY=52;
+const CX=[];for(let d=0;d<4;d++)for(let k=0;k<4;k++)CX.push(OX[d]+31+k*62);   // encoder-midden per stap
+const GPL=['MIXER','EVENT','MODE','DIRECTION','DIVIDER','LENGTH','TRANSPOSE','GROOVE','TRIGGER','FX','MANUAL','MORPH','BPM','SAVE','MIDI','SYS EX'];
+const GPS=['A','B','C','D','E','F','G','H','1','2','3','4','5','6','7','8'];
+const canv=[];
+for(let d=0;d<4;d++){
+  const c=document.createElement('canvas');c.width=256;c.height=64;c.className='oled';c.style.cssText=`left:${OX[d]}px;top:${OY}px;position:absolute`;W.appendChild(c);canv.push(c);
+  el('brk',`left:${OX[d]}px;top:${OY+75}px`);
+}
+for(let i=0;i<16;i++){
+  const cx=CX[i];
+  encoder('GP'+(i+1),cx-17,153);
+  el('encn',`left:${cx-17}px;top:190px`,i+1);
+  button('GP'+(i+1),cx-25,212,GPL[i],'#FFB547',{side:GPS[i]});
+}
+/* tweede en derde rij */
+const row=(names,y)=>names.forEach(n=>{ if(!n)return;});
+const R2=[[0,'EDIT','EDIT'],[1,'MUTE','MUTE'],[2,'PATTERN','PATTERN'],[3,'SONG','SONG'],
+          [4,'COPY','COPY'],[5,'PASTE','PASTE'],[6,'CLEAR','CLEAR'],
+          [9,'DOWN','▼'],[10,'UP','▲'],[11,'UTILITY','UTILITY'],
+          [12,'TRACK_SEL','F1'],[13,'LIVE','F2'],[14,'RECORD','F3'],[15,'SAVE_ALL','F4']];
+R2.forEach(([i,n,l])=>button(n,CX[i]-25,285,l,'#FFB547'));
+const R3=[[0,'STEP_VIEW','STEP VIEW'],[1,'SOLO','SOLO'],[2,'FAST','FAST'],[3,'ALL','ALL'],
+          [4,'MENU','MENU'],[5,'SELECT','SELECT'],[6,'EXIT','EXIT'],
+          [9,'SCRUB','SCRUB'],[10,'METRONOME','METRONOME'],[11,'REW','◀◀'],
+          [12,'STOP','■'],[13,'PAUSE','❚❚'],[14,'PLAY','▶'],[15,'FWD','▶▶']];
+R3.forEach(([i,n,l])=>button(n,CX[i]-25,358,l,n==='PLAY'?'#7CFF8A':(['STOP','PAUSE','REW','FWD'].includes(n)?'#ffffff':'#FFB547')));
+/* datawheel + beat */
+const dw=encoder('DATAWHEEL',781,297,100,'dw');el('lbl','left:796px;top:402px;width:70px','DATA');
+const beat=el('beat','');el('lbl','left:796px;top:245px','BEAT');
+/* ---------- OLED-inhoud (benadering uit de huidige LCD-tekst) ---------- */
+const stepNote=Array(16).fill('----'),stepOn=Array(16).fill(false),stepCur=Array(16).fill(false);
+function drawOled(d){
+  const c=canv[d],g=c.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,256,64);
+  for(let k=0;k<4;k++){
+    const i=d*4+k,x=k*64,on=stepOn[i];
+    const note=stepNote[i].trim().replace('▒','');
+    if(on){                                   // getriggerde stap: duidelijk gevuld vlak
+      g.fillStyle='#3a2606';g.fillRect(x+1,0,62,64);
+      g.fillStyle='#FFB547';g.fillRect(x+1,0,62,12);               // kopbalk
+      g.fillStyle='#000';g.font='bold 10px monospace';g.textAlign='left';g.fillText(String(i+1).padStart(2,'0'),x+4,10);
+      g.textAlign='right';g.fillText(note||'ON',x+60,10);
+    }else{                                    // stap uit: zwak
+      g.fillStyle='#4a3a18';g.font='9px monospace';g.textAlign='left';g.fillText(String(i+1).padStart(2,'0'),x+4,10);
+      g.textAlign='right';g.fillText('--',x+60,10);
+    }
+    g.strokeStyle='#1d1608';g.beginPath();g.moveTo(x+63.5,0);g.lineTo(x+63.5,64);g.stroke();
+    const cx=x+32,cy=37,r=17;
+    for(let a=0;a<12;a++){const ang=(-225+a*22.5)*Math.PI/180;g.fillStyle=on?(a<9?'#FFD27A':'#7a5a20'):'#2a2008';
+      g.fillRect(Math.round(cx+Math.cos(ang)*r)-1,Math.round(cy+Math.sin(ang)*r)-1,on?3:2,on?3:2);}
+    g.fillStyle=on?'#FFF2D0':'#3a2e10';g.font='bold 15px monospace';g.textAlign='center';
+    g.fillText(on?(note.slice(0,3)||'ON'):'--',cx,cy+5);
+    if(on){g.fillStyle='#FFB547';g.fillRect(x+2,54,18,9);g.fillStyle='#000';g.font='bold 8px monospace';g.textAlign='left';g.fillText('ACC',x+3,62);}    if(stepCur[i]){g.strokeStyle='#ffffff';g.lineWidth=2;g.strokeRect(x+2,1,60,62);g.lineWidth=1;}
+  }
+}
+const ch=c=>c===0x7e?'→':c===0x7f?'←':(c>=32&&c<127?String.fromCharCode(c):'▒');
+function update(s){
+  // stapnoten staan op de tweede LCD-regel: 8 stappen per LCD, 5 tekens per stap
+  for(let i=0;i<16;i++){const lcd=i<8?0:1,off=lcd*40+(i%8)*5;
+    stepNote[i]=s.lcd[1].slice(off,off+4).map(ch).join('');}
+  const lit=[];for(let i=0;i<16;i++){const [g,r]=s.leds['GP'+(i+1)]||[0,0];lit[i]=!!(g||r);}
+  for(let i=0;i<16;i++)stepOn[i]=/[^\s\-]/.test(stepNote[i]);          // noot aanwezig = stap getriggerd
+  const nl=lit.filter(Boolean).length;
+  for(let i=0;i<16;i++)stepCur[i]=(nl===1&&lit[i]);                    // 1 LED = looplicht (afspeelpositie)
+  for(let d=0;d<4;d++)drawOled(d);
+  for(const[n,[g,r]]of Object.entries(s.leds)){
+    if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!!(g||r));continue;}
+    const b=btnEls[n];if(b)b.classList.toggle('on',!!g);}
+  beat.classList.toggle('on',!!(s.leds.BEAT&&s.leds.BEAT[0]));
+}
+/* ---------- schalen + live ---------- */
+function fit(){const s=Math.min(1,(innerWidth-40)/1536);W.style.transform=`scale(${s})`;W.style.marginBottom=(443*s-443+18)+'px';}
+addEventListener('resize',fit);fit();
+document.getElementById('sync').onclick=e=>{e.preventDefault();api('/api/sync');};
+for(let d=0;d<4;d++)drawOled(d);
+const es=new EventSource('/events');
+es.onmessage=ev=>{const s=JSON.parse(ev.data);update(s);const st=document.getElementById('st');st.textContent=s.online?'online':'offline';st.className=s.online?'on':'off';};
+es.onerror=()=>{const st=document.getElementById('st');st.textContent='server weg';st.className='off';};
+</script></body></html>
