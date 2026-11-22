@@ -30,6 +30,7 @@
 #include "seq_label.h"
 #include "seq_cc_labels.h"
 #include "seq_midi_in.h"
+#include "oled_gui2.h"
 
 #include "file.h"
 #include "seq_file.h"
@@ -1416,12 +1417,167 @@ static s32 MIDI_IN_Handler(mios32_midi_port_t port, mios32_midi_package_t p)
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation
 /////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// Nieuwe indeling voor de 4 OLED-schermen (alleen Note/Chord/CC; Drum en dialogen blijven zoals voorheen).
+// Kolommen (0-based) -> oorspronkelijke GP-functie:
+//   0 TRACK->GP1 | 1,2 TYPE (eigen) | 3 STEPS (eigen) | 4 PORT->GP6 | 5 KANAAL->GP7 | 6 INSTR->GP8 | 7 (info)
+//   8,9 LAAG->GP9 | 10 LAAGTYPE->GP10 | 11 PARAM->GP11 | 12,13 PRESETS->GP15 | 14,15 INIT->GP16
+/////////////////////////////////////////////////////////////////////////////
+static u8 evt_sel = 0;
+static const s8 evt_map[16] = { 0, 1, 1, 2, 5, 6, 7, -1, 8, 8, 9, 10, 14, 14, 15, 15 };
+
+static u8 EvtMapActive(void)
+{
+  return (pr_dialog == PR_DIALOG_NONE) && (layer_config[selected_layer_config].event_mode != SEQ_EVENT_MODE_Drum);
+}
+
+static void EvtModeRange(u8 mode, u8 *first, u8 *last)
+{
+  int i;
+  u8 f = 0xff, l = 0;
+  for(i=0; i<(int)(sizeof(layer_config)/sizeof(layer_config_t)); ++i) {
+    if( layer_config[i].event_mode == mode ) {
+      if( f == 0xff ) f = i;
+      l = i;
+    }
+  }
+  if( f == 0xff ) f = 0;
+  *first = f;
+  *last = l;
+}
+
+// TYPE: wisselt tussen Note, Chord en CC (Drum blijft op de oorspronkelijke indeling bereikbaar via de datawheel/laatste kolom niet nodig)
+static s32 EvtTypeInc(s32 incrementer)
+{
+  u8 mode = layer_config[selected_layer_config].event_mode;
+  int new_mode = (int)mode + (incrementer > 0 ? 1 : -1);
+  if( incrementer == 0 || new_mode < 0 || new_mode > SEQ_EVENT_MODE_Drum )
+    return 0;
+  u8 f_old, l_old, f_new, l_new;
+  EvtModeRange(mode, &f_old, &l_old);
+  EvtModeRange(new_mode, &f_new, &l_new);
+  int off = (int)selected_layer_config - (int)f_old;
+  if( off > (int)l_new - (int)f_new ) off = (int)l_new - (int)f_new;
+  selected_layer_config = f_new + off;
+  ui_selected_item = ITEM_EVENT_MODE;
+  return 1;
+}
+
+// STEPS: kiest binnen de modus de combinatie van lagen/stappen
+static s32 EvtSizeInc(s32 incrementer)
+{
+  u8 f, l;
+  EvtModeRange(layer_config[selected_layer_config].event_mode, &f, &l);
+  ui_selected_item = ITEM_EVENT_MODE;
+  if( incrementer == 0 ) return 0;
+  return SEQ_UI_Var8_Inc(&selected_layer_config, f, l, incrementer);
+}
+
+static s32 Encoder_HandlerMap(seq_ui_encoder_t encoder, s32 incrementer)
+{
+  if( (int)encoder > (int)SEQ_UI_ENCODER_GP16 || !EvtMapActive() )
+    return Encoder_Handler(encoder, incrementer);
+  int k = (int)encoder;
+  evt_sel = k;
+  switch( k ) {
+    case 1: case 2: return EvtTypeInc(incrementer);
+    case 3: return EvtSizeInc(incrementer);
+    case 7: return 0;
+  }
+  return Encoder_Handler((seq_ui_encoder_t)evt_map[k], incrementer);
+}
+
+static s32 Button_HandlerMap(seq_ui_button_t button, s32 depressed)
+{
+  if( (int)button > (int)SEQ_UI_BUTTON_GP16 || !EvtMapActive() )
+    return Button_Handler(button, depressed);
+  int k = (int)button;
+  if( !depressed ) evt_sel = k;
+  switch( k ) {
+    case 1: case 2: case 3: case 7: return 0;
+  }
+  return Button_Handler((seq_ui_button_t)evt_map[k], depressed);
+}
+
+static s32 LED_HandlerMap(u16 *gp_leds)
+{
+  s32 r = LED_Handler(gp_leds);
+  if( !EvtMapActive() )
+    return r;
+  u16 o = *gp_leds, n = 0;
+  if( o & 0x0001 ) n |= (1 << 0);
+  if( o & 0x001e ) n |= (1 << 1) | (1 << 2) | (1 << 3);
+  if( o & 0x0020 ) n |= (1 << 4);
+  if( o & 0x0040 ) n |= (1 << 5);
+  if( o & 0x0080 ) n |= (1 << 6);
+  if( o & 0x0100 ) n |= (1 << 8) | (1 << 9);
+  if( o & 0x0200 ) n |= (1 << 10);
+  if( o & 0x1c00 ) n |= (1 << 11);
+  if( o & 0x4000 ) n |= (1 << 12) | (1 << 13);
+  if( o & 0x8000 ) n |= (1 << 14) | (1 << 15);
+  *gp_leds = n;
+  return r;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Gegevens voor de OLED-weergave van deze pagina; < 0 = niet beschikbaar (drum of dialoog open)
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_UI_TRKEVNT_OledGet(og2_event_t *e)
+{
+  if( !EvtMapActive() )
+    return -1;
+
+  u8 track = SEQ_UI_VisibleTrackGet();
+  layer_config_t *lc = (layer_config_t *)&layer_config[selected_layer_config];
+  u8 f, l;
+  int k;
+
+  memset(e, 0, sizeof(*e));
+  sprintf(e->track, "G%dT%d", (track / 4) + 1, (track % 4) + 1);
+  e->mode = lc->event_mode;
+  EvtModeRange(lc->event_mode, &f, &l);
+  e->size_idx = selected_layer_config - f;
+  e->size_n = l - f + 1;
+  e->steps = lc->par_steps;
+  e->par_layers = lc->par_layers;
+  e->trg_layers = lc->trg_layers;
+  e->instruments = lc->instruments;
+  {
+    const char *pn = SEQ_MIDI_PORT_OutNameGet(SEQ_MIDI_PORT_OutIxGet((mios32_midi_port_t)SEQ_CC_Get(track, SEQ_CC_MIDI_PORT)));
+    for(k=0; k<4 && pn && pn[k]; ++k) e->port[k] = pn[k];
+    e->port[k] = 0;
+  }
+  e->chn = SEQ_CC_Get(track, SEQ_CC_MIDI_CHANNEL) & 0x0f;
+  e->layer_sel = ui_selected_par_layer & 0x0f;
+  {
+    u8 assignment = SEQ_PAR_AssignmentGet(track, ui_selected_par_layer);
+    u8 shown = assignment;
+    if( ui_selected_item == ITEM_LAYER_CONTROL ) {
+      shown = edit_layer_type;
+      e->ltype_pending = (edit_layer_type != SEQ_CC_Get(track, SEQ_CC_LAY_CONST_A1 + ui_selected_par_layer)) ? 1 : 0;
+    }
+    char *tn = SEQ_PAR_TypeStr((seq_par_layer_type_t)shown);
+    for(k=0; k<5 && tn && tn[k]; ++k) e->ltype[k] = tn[k];
+    e->ltype[k] = 0;
+    if( shown == SEQ_PAR_Type_CC || shown == SEQ_PAR_Type_Ctrl ) {
+      u8 cc = (ui_selected_item == ITEM_LAYER_PAR) ? edit_cc_number : SEQ_CC_Get(track, SEQ_CC_LAY_CONST_B1 + ui_selected_par_layer);
+      if( cc >= 0x80 ) strcpy(e->param, "COff"); else sprintf(e->param, "#%03d", cc);
+    } else {
+      strcpy(e->param, "---");
+    }
+  }
+  e->init_needed = (selected_layer_config != GetLayerConfig(track)) ? 1 : 0;
+  e->sel = evt_sel;
+  return 0;
+}
+
+
 s32 SEQ_UI_TRKEVNT_Init(u32 mode)
 {
   // install callback routines
-  SEQ_UI_InstallButtonCallback(Button_Handler);
-  SEQ_UI_InstallEncoderCallback(Encoder_Handler);
-  SEQ_UI_InstallLEDCallback(LED_Handler);
+  SEQ_UI_InstallButtonCallback(Button_HandlerMap);
+  SEQ_UI_InstallEncoderCallback(Encoder_HandlerMap);
+  SEQ_UI_InstallLEDCallback(LED_HandlerMap);
   SEQ_UI_InstallLCDCallback(LCD_Handler);
   SEQ_UI_InstallMIDIINCallback(MIDI_IN_Handler);
 

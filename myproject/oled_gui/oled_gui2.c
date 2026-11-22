@@ -465,6 +465,83 @@ void OG2_RenderTextCell(u8 *out, int cell, const og2_text_t *t)
   tile_pack(out, tmp);
 }
 
+// ---- Event-pagina: eigen indeling (raster: blok y 11..60, marge 3, label links-boven, waarde gecentreerd, balkje onderin) ----
+#define EBY 11
+#define EBH 50
+static int ebx(int k){ return k*64+3; }
+static int ebw(int n){ return n*64-6; }
+static void ecbtext(u8 (*d)[CW], int cx, int y, const char *s, int sc, int g){ int w = tw(GLCD_FONT_NORMAL, s, sc); text(d, GLCD_FONT_NORMAL, cx-w/2, y, s, sc, g); text(d, GLCD_FONT_NORMAL, cx-w/2+1, y, s, sc, g); }
+static void ecsmall(u8 (*d)[CW], int cx, int y, const char *s, int g){ int w = tw(GLCD_FONT_SMALL, s, 1); text(d, GLCD_FONT_SMALL, cx-w/2, y, s, 1, g); }
+static void ebox(u8 (*d)[CW], int k, int n, int sel){ int x = ebx(k), w = ebw(n); if( sel ) rect(d, x, EBY, w, EBH, 2); frame_box(d, x, EBY, w, EBH, sel ? 15 : 9); if( sel ) frame_box(d, x+1, EBY+1, w-2, EBH-2, 15); }
+static void elabel(u8 (*d)[CW], int k, const char *l, int sel){ text(d, GLCD_FONT_SMALL, ebx(k)+5, EBY+4, l, 1, sel ? 12 : 9); }
+static void evalue(u8 (*d)[CW], int k, int n, const char *v, int g){ int sc = (tw(GLCD_FONT_NORMAL, v, 2) > ebw(n)-8) ? 1 : 2; ecbtext(d, ebx(k)+ebw(n)/2, sc == 2 ? 29 : 33, v, sc, g); }
+static void ebar(u8 (*d)[CW], int k, int frac100){ int x = ebx(k)+5, w = ebw(1)-10; for(int i=0; i<w; ++i) px(d, x+i, 52, 3); rect(d, x, 51, frac100*w/100, 3, 13); }
+static void evbox(u8 (*d)[CW], int k, const char *l, const char *v, int frac, int sel, int dim){ ebox(d, k, 1, sel); elabel(d, k, l, sel); evalue(d, k, 1, v, dim ? 5 : 15); if( frac >= 0 ) ebar(d, k, frac); }
+static void epicker(u8 (*d)[CW], int k, int n, const char *l, const char **it, int cnt, int cols, int sel, int sel_box, int active_cnt)
+{
+  ebox(d, k, n, sel_box); elabel(d, k, l, sel_box);
+  int rows = (cnt + cols - 1) / cols, ix = ebx(k)+5, iw = ebw(n)-10, iy = EBY+17, ih = EBH-22, gap = 2;
+  int cw = (iw - (cols-1)*gap) / cols, ch = (ih - (rows-1)*gap) / rows;
+  for(int i=0; i<cnt; ++i){
+    int cx = ix + (i % cols)*(cw+gap), cy = iy + (i / cols)*(ch+gap), s = (i == sel), act = i < active_cnt;
+    if( s ) rect(d, cx, cy, cw, ch, 13); else frame_box(d, cx, cy, cw, ch, act ? 6 : 3);
+    ecsmall(d, cx + cw/2, cy + ch/2 - 3, it[i], s ? 0 : (act ? 10 : 4));
+  }
+}
+static void eheader(u8 (*d)[CW], int scr, const char *t){ text(d, GLCD_FONT_SMALL, scr*256+5, 1, t, 1, 9); for(int x = scr*256+5+tw(GLCD_FONT_SMALL, t, 1)+6; x < scr*256+251; x += 2) px(d, x, 4, 3); }
+
+static void num2str(char *o, int v){ char t[6]; int n = 0; if( v == 0 ) t[n++] = '0'; while( v > 0 && n < 5 ){ t[n++] = '0' + v%10; v /= 10; } int k = 0; while( n > 0 ) o[k++] = t[--n]; o[k] = 0; }
+
+void OG2_RenderEventCell(u8 *out, int cell, const og2_event_t *e)
+{
+  static u8 tmp[OG2_H][CW];
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
+  u8 (*d)[CW] = tmp;
+  int scr = cell / 4;
+  ox_shift = cell * 64;
+  char b[8];
+  #define SELK(k) (e->sel == (k))
+  switch( scr ){
+  case 0: {
+    eheader(d, 0, "EVENT - TRACK");
+    evbox(d, 0, "TRACK", e->track, -1, SELK(0), 0);
+    static const char *ty[4] = {"NOTE","CHORD","CC","DRUM"};
+    epicker(d, 1, 2, "TYPE", ty, 4, 2, e->mode, SELK(1) || SELK(2), 4);
+    num2str(b, e->steps);
+    evbox(d, 3, "STEPS", b, e->size_n > 1 ? (e->size_idx * 100) / (e->size_n - 1) : 0, SELK(3), 0);
+  } break;
+  case 1: {
+    eheader(d, 1, "UITGANG");
+    evbox(d, 4, "PORT", e->port, -1, SELK(4), 0);
+    num2str(b, e->chn + 1);
+    evbox(d, 5, "KANAAL", b, (e->chn * 100) / 15, SELK(5), 0);
+    ebox(d, 6, 1, SELK(6)); elabel(d, 6, "INSTR.", SELK(6));
+    if( e->instruments > 1 ){ num2str(b, e->instruments); evalue(d, 6, 1, b, 15); } else { ecbtext(d, ebx(6)+ebw(1)/2, 29, "--", 2, 5); ecsmall(d, ebx(6)+ebw(1)/2, 52, "alleen drum", 4); }
+    ebox(d, 7, 1, 0); elabel(d, 7, "LAGEN", 0);
+    text(d, GLCD_FONT_SMALL, ebx(7)+6, 27, "PAR", 1, 8); num2str(b, e->par_layers); text(d, GLCD_FONT_NORMAL, ebx(7)+ebw(1)-6-tw(GLCD_FONT_NORMAL, b, 2), 24, b, 2, 15);
+    text(d, GLCD_FONT_SMALL, ebx(7)+6, 45, "TRG", 1, 8); num2str(b, e->trg_layers); text(d, GLCD_FONT_NORMAL, ebx(7)+ebw(1)-6-tw(GLCD_FONT_NORMAL, b, 2), 42, b, 2, 15);
+  } break;
+  case 2: {
+    eheader(d, 2, "PARAMETERLAGEN");
+    static const char *ly[16] = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P"};
+    epicker(d, 8, 2, "LAAG", ly, 16, 8, e->layer_sel, SELK(8) || SELK(9), e->par_layers);
+    evbox(d, 10, "TYPE", e->ltype, -1, SELK(10) || e->ltype_pending, 0);
+    ebox(d, 11, 1, SELK(11)); elabel(d, 11, "PARAM", SELK(11)); ecbtext(d, ebx(11)+ebw(1)/2, 33, e->param, 1, e->param[0] == '#' ? 15 : 5);
+  } break;
+  default: {
+    eheader(d, 3, "ACTIES");
+    ebox(d, 12, 2, SELK(12) || SELK(13)); elabel(d, 12, "PRESETS", SELK(12) || SELK(13));
+    { int cx = ebx(12)+ebw(2)/2, w = tw(GLCD_FONT_NORMAL, "KIES", 1) + 14; frame_box(d, cx-w/2, 32, w, 15, 9); ecbtext(d, cx, 36, "KIES", 1, 15); }
+    int hot = e->init_needed || SELK(14) || SELK(15);
+    ebox(d, 14, 2, hot); elabel(d, 14, "INIT", hot);
+    { int cx = ebx(14)+ebw(2)/2; ecbtext(d, cx, 29, e->init_needed ? "HOUD 2 SEC!" : "HOUD 2 SEC", 1, e->init_needed ? 15 : 8); }
+    { int x = ebx(14)+5, w = ebw(2)-10; for(int i=0; i<w; ++i) px(d, x+i, 52, 3); }
+  } break;
+  }
+  ox_shift = 0;
+  tile_pack(out, tmp);
+}
+
 // ---- dashboard ----
 static void numtxt(char *o, int v, int width)       // rechts uitgelijnd getal
 {

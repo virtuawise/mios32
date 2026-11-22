@@ -45,6 +45,24 @@ typedef struct {
   char port[6];      // mixer: poortnaam ("USB1") voor het kleine vakje
   u8 chn;            // mixer: MIDI-kanaal 0-15 voor het kleine vakje
 } og2_tile_t;
+// ---- Event-pagina (menu -> event), eigen indeling over de 4 schermen
+typedef struct {
+  char track[6];        // "G1T1"
+  u8 mode;              // 0 Note, 1 Chord, 2 CC, 3 Drum
+  u8 size_idx, size_n;  // positie binnen de lagen-configuraties van deze modus (0-based), aantal
+  u16 steps;            // aantal stappen per parameterlaag
+  u8 par_layers, trg_layers, instruments;
+  char port[6];
+  u8 chn;               // 0-15
+  u8 layer_sel;         // gekozen parameterlaag 0-15
+  char ltype[6];        // type van de gekozen laag (of het nog niet bevestigde nieuwe type)
+  u8 ltype_pending;     // 1 = nieuw type nog niet bevestigd (knop indrukken)
+  char param[6];        // CC-nummer ("#074") of "---"
+  u8 init_needed;       // 1 = configuratie gewijzigd: INIT nodig
+  u8 sel;               // laatst aangeraakte kolom 0-15 (nieuwe indeling)
+} og2_event_t;
+extern void OG2_RenderEventCell(u8 *out2048, int cell, const og2_event_t *e);
+
 // ---- dashboard (globale pagina's: BPM, PATTERN, SONG, SAVE): 4 schermen als samengesteld beeld
 typedef struct {
   u16 bpm10;          // BPM x 10

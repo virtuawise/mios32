@@ -42,6 +42,8 @@ static og2_tile_t tiles[16];
 static og2_dash_t dash;
 static og2_text_t texts[16];
 static og2_tgroup_t groups[16];
+static og2_event_t evt;
+extern s32 SEQ_UI_TRKEVNT_OledGet(og2_event_t *e);
 static char cur_layer_name[8] = "VEL";
 static u32 sent_hash[OLED_NUM_CELLS];
 static u8 sent_valid[OLED_NUM_CELLS];
@@ -369,13 +371,14 @@ s32 SEQ_OLED_Handler(void)
     int c;
     cur_mode = (ui_page == SEQ_UI_PAGE_MUTE) ? 1 : ((ui_page == SEQ_UI_PAGE_MIXER) ? 2 :
 	       ((ui_page == SEQ_UI_PAGE_BPM || ui_page == SEQ_UI_PAGE_PATTERN || ui_page == SEQ_UI_PAGE_SONG || ui_page == SEQ_UI_PAGE_SAVE) ? 3 :
-		((ui_page == SEQ_UI_PAGE_EDIT) ? 0 : ((ui_page == SEQ_UI_PAGE_TRKEVNT) ? 4 : 5))));    // overige pagina's (Mode, Direction, Divider, ...): LCD-tekst groot
+		((ui_page == SEQ_UI_PAGE_EDIT) ? 0 : ((ui_page == SEQ_UI_PAGE_TRKEVNT) ? ((SEQ_UI_TRKEVNT_OledGet(&evt) >= 0) ? 6 : 4) : 5))));    // overige pagina's (Mode, Direction, Divider, ...): LCD-tekst groot
     if( cur_mode == 0 )
       collect_steps();
     else if( cur_mode == 3 )
       collect_dash();
     else if( cur_mode == 4 || cur_mode == 5 )
       collect_text();
+    // mode 6: Event-pagina in eigen indeling (evt is al gevuld bij het kiezen van de modus)
     else
       collect_tiles(cur_mode);
     if( resend_ctr >= OLED_RESEND_MS ) {
@@ -388,6 +391,8 @@ s32 SEQ_OLED_Handler(void)
       h = fnv(h, &cur_mode, 1);
       if( cur_mode == 0 )
 	h = fnv(h, (const u8 *)&steps[c], sizeof(og2_step_t));
+      else if( cur_mode == 6 )
+	h = fnv(h, (const u8 *)&evt, sizeof(og2_event_t));
       else if( cur_mode == 4 )
 	h = fnv(h, (const u8 *)&groups[c], sizeof(og2_tgroup_t));
       else if( cur_mode == 5 )
@@ -420,7 +425,9 @@ s32 SEQ_OLED_Handler(void)
       u8 c = next_cell;
       next_cell = (next_cell + 1) % OLED_NUM_CELLS;
       if( dirty[c] ) {
-	if( cur_mode == 4 )
+	if( cur_mode == 6 )
+	  OG2_RenderEventCell(cell_buf, c, &evt);
+	else if( cur_mode == 4 )
 	  OG2_RenderTextGroupCell(cell_buf, c, &groups[c]);
 	else if( cur_mode == 5 )
 	  OG2_RenderPlainCell(cell_buf, c, &texts[c]);
