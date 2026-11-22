@@ -14,7 +14,7 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
 .enc{position:absolute;width:34px;height:34px;border-radius:50%;background:#111214;box-shadow:inset 0 0 0 2px #2c2f34,0 3px 8px #000a;cursor:ns-resize}
 .enc i{position:absolute;left:calc(50% - 1.5px);top:3px;width:3px;height:11px;border-radius:2px;background:#d7dade;transform-origin:50% 14px;transform:rotate(var(--a,0deg))}
 .encn{position:absolute;width:34px;text-align:center;font-size:8px;color:#888}
-.oled{position:absolute;width:248px;height:62px;background:#000;border-radius:2px;image-rendering:pixelated}
+.oled{position:absolute;width:248px;height:62px;background:#000;border-radius:2px}   /* canvas is 4x internally and scaled down smoothly: pixelated downscaling dropped pixel rows (flat text) */
 .brk{position:absolute;height:5px;border:1px solid #c78a2a;border-top:0;width:248px}
 .hdr{position:absolute;left:30px;top:22px;font-size:10px;letter-spacing:.1em;color:var(--amber)}
 .hdr b{color:#fff}
@@ -85,9 +85,10 @@ const OX=[242,534,880,1172],OY=52;
 const CX=[];for(let d=0;d<4;d++)for(let k=0;k<4;k++)CX.push(OX[d]+31+k*62);   // encoder-midden per stap
 const GPL=['MIXER','EVENT','MODE','DIRECTION','DIVIDER','LENGTH','TRANSPOSE','GROOVE','TRIGGER','FX','MANUAL','MORPH','BPM','SAVE','MIDI','SYS EX'];
 const GPS=['A','B','C','D','E','F','G','H','1','2','3','4','5','6','7','8'];
-const canv=[];
+const canv=[], OS=4;   // OLED canvas oversampling
+const tmpC=document.createElement('canvas');tmpC.width=256;tmpC.height=64;
 for(let d=0;d<4;d++){
-  const c=document.createElement('canvas');c.width=256;c.height=64;c.className='oled';c.style.cssText=`left:${OX[d]}px;top:${OY}px;position:absolute`;W.appendChild(c);canv.push(c);
+  const c=document.createElement('canvas');c.width=256*OS;c.height=64*OS;c.getContext('2d').setTransform(OS,0,0,OS,0,0);c.className='oled';c.style.cssText=`left:${OX[d]}px;top:${OY}px;position:absolute`;W.appendChild(c);canv.push(c);
   el('brk',`left:${OX[d]}px;top:${OY+75}px`);
 }
 for(let i=0;i<16;i++){
@@ -140,11 +141,11 @@ const ch=c=>c===0x7e?'→':c===0x7f?'←':(c>=32&&c<127?String.fromCharCode(c):'
 const oledVer=[0,0,0,0], oledReal=[false,false,false,false];
 async function drawReal(d){   // 4-bit grijs framebuffer uit de firmware: 256x64, 128 bytes per rij, hoge nibble = linkse pixel
   const buf=new Uint8Array(await (await fetch('/oled_raw?d='+d)).arrayBuffer());
-  const c=canv[d],g=c.getContext('2d'),im=g.createImageData(256,64);
+  const c=canv[d],g=c.getContext('2d'),t=tmpC.getContext('2d'),im=t.createImageData(256,64);
   for(let y=0;y<64;y++)for(let x=0;x<256;x++){
     const b=buf[y*128+(x>>1)],v=(x&1)?(b&15):(b>>4),o=(y*256+x)*4,k=v/15;
     im.data[o]=Math.round(255*k);im.data[o+1]=Math.round(181*k);im.data[o+2]=Math.round(71*k);im.data[o+3]=255;}
-  g.putImageData(im,0,0);
+  t.putImageData(im,0,0);g.imageSmoothingEnabled=false;g.drawImage(tmpC,0,0,256,64);
 }
 let lastBeatSeq=null, beatTimer=null;
 function update(s){
