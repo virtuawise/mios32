@@ -20,6 +20,8 @@
 #include "seq_midi_sysex.h"
 #include "seq_mixer.h"
 #include "seq_cc.h"
+#include "seq_pattern.h"
+#include "seq_file.h"
 
 #include "oled_gui2.h"
 
@@ -32,8 +34,9 @@ static og2_step_t steps[16];
 static u8 play_step = 0xff, trail_step = 0xff;
 static int range_lo, range_hi;
 static og2_kind_t cur_kind = OG2_K_NOTE;
-static u8 cur_mode = 0;                 // 0 = stapweergave, 1 = track-overzicht (MUTE-pagina), 2 = mixer (MIXER-pagina)
+static u8 cur_mode = 0;                 // 0 = stapweergave, 1 = track-overzicht (MUTE), 2 = mixer (MIXER), 3 = dashboard (BPM/PATTERN/SONG/SAVE)
 static og2_tile_t tiles[16];
+static og2_dash_t dash;
 static char cur_layer_name[8] = "VEL";
 static u32 sent_hash[OLED_NUM_CELLS];
 static u8 sent_valid[OLED_NUM_CELLS];
@@ -211,6 +214,37 @@ static void collect_tiles(u8 mode)
   }
 }
 
+// dashboard: BPM, maat/tel, patronen per groep, sessienaam
+static void collect_dash(void)
+{
+  int g, k;
+  u32 tick = SEQ_BPM_TickGet();
+  u32 ppqn = SEQ_BPM_PPQN_Get();
+  if( ppqn < 4 ) ppqn = 96;
+  memset(&dash, 0, sizeof(dash));
+  dash.bpm10 = (u16)(SEQ_BPM_Get() * 10.0f + 0.5f);
+  dash.running = SEQ_BPM_IsRunning() ? 1 : 0;
+  dash.master = SEQ_BPM_IsMaster() ? 1 : 0;
+  dash.bar = (tick / (ppqn * 4)) + 1;
+  dash.beat = (tick / ppqn) % 4;
+  dash.sixt = (tick / (ppqn / 4)) % 16;
+  for(k=0; k<12 && seq_file_session_name[k]; ++k)
+    dash.session[k] = seq_file_session_name[k];
+  for(g=0; g<4; ++g) {
+    char *nm = SEQ_PATTERN_NameGet(g);
+    dash.pat_group[g] = seq_pattern[g].group;
+    dash.pat_num[g] = seq_pattern[g].num;
+    dash.pat_req[g] = seq_pattern[g].REQ ? 1 : 0;
+    if( nm )
+      for(k=0; k<9 && nm[k]; ++k)
+	dash.pat_name[g][k] = nm[k];
+  }
+  dash.sel_track = SEQ_UI_VisibleTrackGet();
+  for(k=0; k<16; ++k)
+    if( (seq_core_trk_muted >> k) & 1 )
+      ++dash.muted_cnt;
+}
+
 // run-length (PackBits): 0..127 = kopieer c+1 bytes; 128..255 = herhaal volgende byte (c-126) keer
 static int rle_encode(const u8 *in, int n, u8 *out)
 {
@@ -246,9 +280,12 @@ s32 SEQ_OLED_Handler(void)
 
   if( (ctr % OLED_PERIOD_MS) == 0 ) {
     int c;
-    cur_mode = (ui_page == SEQ_UI_PAGE_MUTE) ? 1 : ((ui_page == SEQ_UI_PAGE_MIXER) ? 2 : 0);
+    cur_mode = (ui_page == SEQ_UI_PAGE_MUTE) ? 1 : ((ui_page == SEQ_UI_PAGE_MIXER) ? 2 :
+	       ((ui_page == SEQ_UI_PAGE_BPM || ui_page == SEQ_UI_PAGE_PATTERN || ui_page == SEQ_UI_PAGE_SONG || ui_page == SEQ_UI_PAGE_SAVE) ? 3 : 0));
     if( cur_mode == 0 )
       collect_steps();
+    else if( cur_mode == 3 )
+      collect_dash();
     else
       collect_tiles(cur_mode);
     if( resend_ctr >= OLED_RESEND_MS ) {
@@ -261,6 +298,15 @@ s32 SEQ_OLED_Handler(void)
       h = fnv(h, &cur_mode, 1);
       if( cur_mode == 0 )
 	h = fnv(h, (const u8 *)&steps[c], sizeof(og2_step_t));
+      else if( cur_mode == 3 ) {
+	// alleen de velden die dit scherm (c/4) tekent: voorkomt dat alle cellen bij elke zestiende opnieuw gestuurd worden
+	switch( c / 4 ) {
+	  case 0: h = fnv(h, (const u8 *)&dash.bpm10, 2); h = fnv(h, &dash.running, 2); h = fnv(h, &dash.beat, 1); break;
+	  case 1: h = fnv(h, (const u8 *)&dash.bar, 2); h = fnv(h, &dash.beat, 1); h = fnv(h, &dash.sixt, 1); h = fnv(h, &dash.running, 1); break;
+	  case 2: h = fnv(h, dash.pat_group, 12); h = fnv(h, (const u8 *)dash.pat_name, sizeof(dash.pat_name)); break;
+	  default: h = fnv(h, (const u8 *)dash.session, sizeof(dash.session)); h = fnv(h, &dash.sel_track, 2); h = fnv(h, &dash.running, 1); break;
+	}
+      }
       else
 	h = fnv(h, (const u8 *)&tiles[c], sizeof(og2_tile_t));
       h = fnv(h, (const u8 *)&range_lo, sizeof(int));
@@ -280,7 +326,9 @@ s32 SEQ_OLED_Handler(void)
       u8 c = next_cell;
       next_cell = (next_cell + 1) % OLED_NUM_CELLS;
       if( dirty[c] ) {
-	if( cur_mode == 1 )
+	if( cur_mode == 3 )
+	  OG2_RenderDashCell(cell_buf, c, &dash);
+	else if( cur_mode == 1 )
 	  OG2_RenderTrackTile(cell_buf, c, &tiles[c]);
 	else if( cur_mode == 2 )
 	  OG2_RenderMixerTile(cell_buf, c, &tiles[c]);

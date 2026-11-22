@@ -2,8 +2,10 @@
 #include <glcd_font.h>
 
 #define CW 64
+static int ox_shift = 0;      // dashboard: tekent een heel scherm (256 breed) en toont daarvan 1 cel van 64 px
 static void px(u8 (*d)[CW], int x, int y, int g)
 {
+  x -= ox_shift;
   if( x < 0 || y < 0 || x >= CW || y >= OG2_H ) return;
   if( g > 15 ) g = 15;
   if( g < 0 ) g = 0;
@@ -291,6 +293,84 @@ void OG2_RenderMixerTile(u8 *out, int num, const og2_tile_t *t)
     b[0] = c; b[1] = p >= 10 ? '0'+p/10 : ' '; b[2] = p ? '0'+p%10 : ' '; b[3] = 0; text(d, GLCD_FONT_NORMAL, 4, 53, b, 1, 9); }
   { char c[8]; c[0]='P'; c[1]='g'; c[2] = ' '; c[3] = t->v3 >= 100 ? '0'+t->v3/100 : ' '; c[4] = t->v3 >= 10 ? '0'+(t->v3/10)%10 : ' '; c[5] = '0'+t->v3%10; c[6]=0;
     text(d, GLCD_FONT_SMALL, 61 - tw(GLCD_FONT_SMALL, c, 1), 53, c, 1, 6); }
+  tile_pack(out, tmp);
+}
+
+
+// ---- dashboard ----
+static void numtxt(char *o, int v, int width)       // rechts uitgelijnd getal
+{
+  char t[8]; int n = 0;
+  if( v == 0 ) t[n++] = '0';
+  while( v > 0 && n < 7 ){ t[n++] = '0' + v%10; v /= 10; }
+  int pad = width - n; int k = 0;
+  while( pad-- > 0 ) o[k++] = ' ';
+  while( n > 0 ) o[k++] = t[--n];
+  o[k] = 0;
+}
+static void bold(u8 (*d)[CW], int x, int y, const char *s, int sc, int g)
+{ text(d, GLCD_FONT_NORMAL, x, y, s, sc, g); text(d, GLCD_FONT_NORMAL, x+1, y, s, sc, g); }
+
+static void dash_screen(u8 (*d)[CW], int scr, const og2_dash_t *dh)
+{
+  char b[16];
+  switch( scr ){
+  case 0: {   // BPM + beat + status
+    text(d, GLCD_FONT_SMALL, 8, 4, "BPM", 1, 8);
+    numtxt(b, dh->bpm10 / 10, 3); b[3] = '.'; b[4] = '0' + dh->bpm10 % 10; b[5] = 0;
+    bold(d, 8, 14, b, 3, 15);
+    for(int i=0; i<4; ++i){
+      int on = dh->running && dh->beat == i;
+      rect(d, 140 + i*28, 8, 22, 22, on ? 15 : 2);
+      if( !on ) for(int k=0; k<22; ++k){ px(d, 140+i*28+k, 8, 6); px(d, 140+i*28+k, 29, 6); px(d, 140+i*28, 8+k, 6); px(d, 140+i*28+21, 8+k, 6); }
+    }
+    bold(d, 140, 40, dh->running ? "PLAY" : "STOP", 2, dh->running ? 15 : 8);
+    text(d, GLCD_FONT_NORMAL, 8, 50, dh->master ? "MASTER" : "SLAVE", 1, 7);
+  } break;
+  case 1: {   // maat/tel + 16 stappen
+    text(d, GLCD_FONT_SMALL, 8, 4, "BAR", 1, 8);
+    numtxt(b, dh->bar, 3); bold(d, 8, 14, b, 3, 15);
+    text(d, GLCD_FONT_SMALL, 100, 4, "BEAT", 1, 8);
+    b[0] = '1' + dh->beat; b[1] = 0; bold(d, 100, 14, b, 3, 15);
+    for(int i=0; i<16; ++i){
+      int x = 8 + i*15, on = dh->running && dh->sixt == i;
+      rect(d, x, 46, 13, 10, on ? 15 : ((i & 3) == 0 ? 5 : 3));
+    }
+  } break;
+  case 2: {   // patronen per groep
+    for(int g=0; g<4; ++g){
+      int x = g*64 + 5;
+      b[0] = 'G'; b[1] = '1'+g; b[2] = 0;
+      text(d, GLCD_FONT_SMALL, x, 4, b, 1, 8);
+      b[0] = 'A' + dh->pat_group[g]; b[1] = '1' + dh->pat_num[g]; b[2] = 0;
+      bold(d, x, 14, b, 3, dh->pat_req[g] ? 9 : 15);
+      if( dh->pat_req[g] ) bold(d, x+40, 14, ">", 3, 15);
+      char n8[10]; int k; for(k=0; k<9 && dh->pat_name[g][k]; ++k) n8[k] = dh->pat_name[g][k]; n8[k] = 0;
+      text(d, GLCD_FONT_NORMAL, x, 46, n8, 1, 8);
+    }
+  } break;
+  default: {  // sessie + geselecteerde track
+    text(d, GLCD_FONT_SMALL, 8, 4, "SESSION", 1, 8);
+    bold(d, 8, 14, dh->session, 2, 15);
+    b[0] = 'G'; b[1] = '1' + dh->sel_track/4; b[2] = 'T'; b[3] = '1' + dh->sel_track%4; b[4] = 0;
+    text(d, GLCD_FONT_SMALL, 8, 42, "TRACK", 1, 8);
+    bold(d, 8, 50, b, 1, 15);
+    text(d, GLCD_FONT_SMALL, 100, 42, "MUTED", 1, 8);
+    numtxt(b, dh->muted_cnt, 2); bold(d, 100, 50, b, 1, 15);
+    bold(d, 170, 40, dh->running ? "PLAY" : "STOP", 2, dh->running ? 15 : 8);
+  } break;
+  }
+}
+
+void OG2_RenderDashCell(u8 *out, int cell, const og2_dash_t *dh)
+{
+  static u8 tmp[OG2_H][CW];
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
+  int scr = cell / 4, col = cell % 4;
+  ox_shift = col * 64;
+  dash_screen(tmp, scr, dh);
+  ox_shift = 0;
+  if( col > 0 ) for(int y=0; y<64; y+=4) tmp[y][0] = 2;
   tile_pack(out, tmp);
 }
 

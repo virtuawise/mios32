@@ -37,6 +37,20 @@ typedef struct {
   u16 gates;         // 16 bits: gate per stap in het venster
   u8 v1, v2, v3;     // mixer: volume, pan, programma (0..127)
 } og2_tile_t;
+// ---- dashboard (globale pagina's: BPM, PATTERN, SONG, SAVE): 4 schermen als samengesteld beeld
+typedef struct {
+  u16 bpm10;          // BPM x 10
+  u8 running, master;
+  u16 bar;            // 1-gebaseerd
+  u8 beat;            // 0..3
+  u8 sixt;            // 0..15 (zestiende binnen de maat)
+  char session[14];
+  u8 pat_group[4], pat_num[4], pat_req[4];   // patroon A..H / 1..8, aanvraag voor wissel
+  char pat_name[4][10];
+  u8 sel_track;       // 0..15
+  u8 muted_cnt;
+} og2_dash_t;
+extern void OG2_RenderDashCell(u8 *out2048, int cell, const og2_dash_t *d);
 extern void OG2_RenderTrackTile(u8 *out2048, int num, const og2_tile_t *t);
 extern void OG2_RenderMixerTile(u8 *out2048, int num, const og2_tile_t *t);
 

@@ -13,6 +13,17 @@ static void dump(const char *name, void (*fn)(u8*,int,const og2_tile_t*), og2_ti
 }
 int main(int argc, char **argv)
 {
+  if( argc>1 && !strcmp(argv[1],"dash") ){
+    og2_dash_t dh; memset(&dh,0,sizeof(dh)); dh.bpm10=1320; dh.running=1; dh.master=1; dh.bar=12; dh.beat=2; dh.sixt=9; strcpy(dh.session,"GEN1");
+    for(int g=0;g<4;++g){ dh.pat_group[g]=g; dh.pat_num[g]=g==2?3:0; dh.pat_req[g]=(g==3); strcpy(dh.pat_name[g], g==0?"GEN1 lanes":(g==1?"GEN1 pad":"Init")); }
+    dh.sel_track=1; dh.muted_cnt=2;
+    static og2_frame_t f; static u8 c[2048];
+    for(int n=0;n<16;++n){ OG2_RenderDashCell(c, n, &dh);
+      for(int y=0;y<OG2_H;++y) for(int x=0;x<64;++x) f.gray[n/4][y][(n%4)*64+x] = (x&1)?(c[y*32+x/2]&15):(c[y*32+x/2]>>4); }
+    FILE *o = fopen("dash.pgm","wb"); fprintf(o,"P5\n%d %d\n15\n", OG2_W*OG2_DISPLAYS, OG2_H);
+    for(int y=0;y<OG2_H;++y) for(int d=0;d<OG2_DISPLAYS;++d) for(int x=0;x<OG2_W;++x) fputc(f.gray[d][y][x], o);
+    fclose(o); return 0;
+  }
   if( argc>1 && !strcmp(argv[1],"tiles") ){
     og2_tile_t tl[16]; memset(tl,0,sizeof(tl));
     for(int i=0;i<16;++i){ sprintf(tl[i].label,"G%dT%d",i/4+1,i%4+1); tl[i].len = (i%4==0)?16:(i%4==1?15:(i%4==2?32:13)); tl[i].pos = (i%5==0)?0xff:(i*3)%tl[i].len; tl[i].win = tl[i].pos==0xff?0:tl[i].pos/16; tl[i].gates = (i*2731+977)&0xffff; tl[i].v1 = 40+i*5; tl[i].v2 = 20+i*6; tl[i].v3 = i*7; }
