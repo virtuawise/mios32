@@ -136,6 +136,13 @@ function drawOled(d){
   }
 }
 const ch=c=>c===0x7e?'→':c===0x7f?'←':(c>=32&&c<127?String.fromCharCode(c):'▒');
+function drawReal(d,b64){   // echt framebuffer uit de firmware: 256x64, 1 bit, rij na rij, bit0 = links
+  const bin=atob(b64),c=canv[d],g=c.getContext('2d'),im=g.createImageData(256,64);
+  for(let y=0;y<64;y++)for(let x=0;x<256;x++){
+    const on=(bin.charCodeAt(y*32+(x>>3))>>(x&7))&1,o=(y*256+x)*4;
+    im.data[o]=on?255:8;im.data[o+1]=on?181:6;im.data[o+2]=on?71:3;im.data[o+3]=255;}
+  g.putImageData(im,0,0);
+}
 function update(s){
   // stapnoten staan op de tweede LCD-regel: 8 stappen per LCD, 5 tekens per stap
   for(let i=0;i<16;i++){const lcd=i<8?0:1,off=lcd*40+(i%8)*5;
@@ -144,7 +151,7 @@ function update(s){
   for(let i=0;i<16;i++)stepOn[i]=/[^\s\-]/.test(stepNote[i]);          // noot aanwezig = stap getriggerd
   const nl=lit.filter(Boolean).length;
   for(let i=0;i<16;i++)stepCur[i]=(nl===1&&lit[i]);                    // 1 LED = looplicht (afspeelpositie)
-  for(let d=0;d<4;d++)drawOled(d);
+  for(let d=0;d<4;d++){ if(s.oled&&s.oled[d])drawReal(d,s.oled[d]); else drawOled(d); }
   for(const[n,[g,r]]of Object.entries(s.leds)){
     if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!!(g||r));continue;}
     const b=btnEls[n];if(b)b.classList.toggle('on',!!g);}

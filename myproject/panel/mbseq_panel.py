@@ -29,6 +29,7 @@ API (voor scripts / Claude):
   GET /api/buttons                -> lijst van bruikbare knopnamen
 """
 import argparse
+import base64
 import json
 import os
 import sys
@@ -107,6 +108,7 @@ class Seq:
         self.midi_lock = threading.Lock()
         self.lcd = [[32] * 80 for _ in range(2)]
         self.charset = 0
+        self.oled = [None] * 4           # echte OLED-framebuffers (2048 bytes, 1 bit/pixel) uit de firmware (cmd 0x05)
         self.sr = [0] * 32
         self.matrix = [0] * 8
         self._cand = [None] * 8
@@ -295,6 +297,15 @@ class Seq:
             elif cmd == 0x03 and len(d) >= 8:                   # charset
                 self.charset = d[7]
                 self.version += 1
+            elif cmd == 0x05 and len(d) >= 9:                   # OLED-framebuffer (eigen uitbreiding firmware)
+                disp, raw, out = d[7], d[8:], []
+                for g in range(0, len(raw), 8):                 # groep: 1 MSB-byte + max 7 databytes
+                    msb = raw[g]
+                    for i, b in enumerate(raw[g + 1:g + 8]):
+                        out.append(b | (0x80 if msb >> i & 1 else 0))
+                if 0 <= disp < 4 and len(out) == 2048:
+                    self.oled[disp] = bytes(out)
+                    self.version += 1
             elif cmd == 0x04 and len(d) >= 8:                   # LED-SR's
                 first = d[7]
                 for k, v in enumerate(d[8:]):
@@ -365,6 +376,7 @@ class Seq:
                 "leds": self.leds(),
                 "online": time.time() - self.last_rx < 3,
                 "held": list(self.held),
+                "oled": [base64.b64encode(o).decode() if o else None for o in self.oled],
             }
 
 

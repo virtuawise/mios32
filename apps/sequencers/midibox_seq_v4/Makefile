@@ -110,6 +110,8 @@ THUMB_SOURCE    = core/app.c \
 		core/seq_song.c \
 		core/seq_label.c \
 		core/seq_lcd.c \
+		core/seq_oled.c \
+		$(MIOS32_PATH)/myproject/oled_gui/oled_gui.c \
 		core/seq_lcd_logo.c \
 		core/seq_ui_fx_loop.c \
 		core/seq_terminal.c \
@@ -155,6 +157,9 @@ include $(MIOS32_PATH)/programming_models/traditional/programming_model.mk
 include $(MIOS32_PATH)/modules/app_lcd/$(LCD)/app_lcd.mk
 
 # BLM
+# oled_gui (myproject): tekenlaag voor 4 OLED's + fonts
+C_INCLUDE += -I $(MIOS32_PATH)/myproject/oled_gui
+
 include $(MIOS32_PATH)/modules/blm/blm.mk
 
 # BLM_SCALAR_MASTER

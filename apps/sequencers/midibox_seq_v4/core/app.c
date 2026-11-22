@@ -37,6 +37,7 @@
 
 #include "app.h"
 #include "seq_lcd.h"
+#include "seq_oled.h"
 #include "seq_lcd_logo.h"
 
 #include "seq_hwcfg.h"
@@ -116,6 +117,7 @@ void APP_Init(void)
 #ifndef MBSEQV4L
   // initialize CLCDs
   SEQ_LCD_Init(0);
+  SEQ_OLED_Init(0);
 #endif
 
   // init BLMs
@@ -554,6 +556,9 @@ void SEQ_TASK_Period1mS_LowPrio(void)
 #if MEASURE_IDLE_CTR == 0
   // call LCD Handler
   SEQ_UI_LCD_Handler();
+
+  // 4x OLED-beeld naar de client (remote server)
+  SEQ_OLED_Handler();
 
   // update LEDs
   SEQ_UI_LED_Handler();
