@@ -12,3 +12,11 @@ With four graphic screens we can show it as pictures instead of text. Rules: eve
 7. **Own layouts for every page** (in progress): see `UI_ANALYSIS.md`; the Event page is the first one with its own encoder mapping.
 
 Decisions taken with the user: boxes in "Elektron style"; velocity as a number in a small box below the main box; the vertical bar / fill styles were rejected (fill is reserved for mute); the third small box content is still open; all UI text in English.
+
+## UI rules for the boxed pages (Event, Timing, Mode, and every new page)
+1. Header per screen: small title top-left with a dotted line.
+2. Every box: label top-left in the normal 6x8 font (never the 4x5 small font).
+3. Every value: **1x bold, upper case, written out in full, always at the same height** (`VALY`). No 2x values, no per-box size switching.
+4. **No bars under values.** The only bar is the INIT hold progress.
+5. On / active choice = filled box; last touched = double frame; not applicable = dimmed.
+6. Lists (layers A-P, presets, timebase, direction) = chips in one box; one column per option = separate boxes.

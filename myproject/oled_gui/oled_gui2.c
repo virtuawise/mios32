@@ -477,20 +477,17 @@ static void ecbtext(u8 (*d)[CW], int cx, int y, const char *s, int sc, int g){ i
 static void ecsmall(u8 (*d)[CW], int cx, int y, const char *s, int g){ int w = tw(LFONT, s, 1); text(d, LFONT, cx-w/2, y-1, s, 1, g); }
 static void ebox(u8 (*d)[CW], int k, int n, int sel){ int x = ebx(k), w = ebw(n); if( sel ) rect(d, x, EBY, w, EBH, 2); frame_box(d, x, EBY, w, EBH, sel ? 15 : 9); if( sel ) frame_box(d, x+1, EBY+1, w-2, EBH-2, 15); }
 static void elabel(u8 (*d)[CW], int k, const char *l, int sel){ text(d, LFONT, ebx(k)+5, EBY+4, l, 1, sel ? 12 : 9); }
+// UI rules (boxed pages): label top-left in LFONT; value always 1x bold upper case at VALY; no bars under values;
+// on / active = filled box; last touched = double frame; lists = chips
+#define VALY 34
 static void evalue(u8 (*d)[CW], int k, int n, const char *v, int g)
 {
-  int len = 0; while( v[len] ) ++len;
-  int cx = ebx(k) + ebw(n)/2, inner = ebw(n) - 12;           // keep >= 6 px margin to the frame
-  if( len * 12 <= inner ){ ecbtext(d, cx, 29, v, 2, g); return; }                       // bold 2x
-  if( len * 11 - 1 <= inner ){                                                           // 2x, no bold, tighter spacing
-    int x = cx - (len * 11 - 1) / 2;
-    for(int i=0; i<len; ++i) chr(d, GLCD_FONT_NORMAL, x + i*11, 29, v[i], 2, g);
-    return;
-  }
-  ecbtext(d, cx, 33, v, 1, g);                                                           // 1x for long text
+  char u[12]; int i = 0;
+  for(; v[i] && i < 11; ++i) u[i] = (v[i] >= 'a' && v[i] <= 'z' && !(v[i] == 'x' && v[i+1] >= '0' && v[i+1] <= '9')) ? v[i] - 32 : v[i];   // keep 'x1' (replay)
+  u[i] = 0;
+  ecbtext(d, ebx(k) + ebw(n)/2, VALY, u, 1, g);
 }
-static void ebar(u8 (*d)[CW], int k, int frac100){ int x = ebx(k)+5, w = ebw(1)-10; for(int i=0; i<w; ++i) px(d, x+i, 52, 3); rect(d, x, 51, frac100*w/100, 3, 13); }
-static void evbox(u8 (*d)[CW], int k, const char *l, const char *v, int frac, int sel, int dim){ ebox(d, k, 1, sel); elabel(d, k, l, sel); evalue(d, k, 1, v, dim ? 5 : 15); if( frac >= 0 ) ebar(d, k, frac); }
+static void evbox(u8 (*d)[CW], int k, const char *l, const char *v, int frac, int sel, int dim){ ebox(d, k, 1, sel); elabel(d, k, l, sel); evalue(d, k, 1, v, dim ? 5 : 15); (void)frac; }
 static void epicker(u8 (*d)[CW], int k, int n, const char *l, const char **it, int cnt, int cols, int sel, int sel_box, int active_cnt)
 {
   ebox(d, k, n, sel_box); elabel(d, k, l, sel_box);
@@ -530,10 +527,10 @@ void OG2_RenderEventCell(u8 *out, int cell, const og2_event_t *e)
     num2str(b, e->chn + 1);
     evbox(d, 5, "CHANNEL", b, (e->chn * 100) / 15, SELK(5), 0);
     ebox(d, 6, 1, SELK(6)); elabel(d, 6, "INSTR.", SELK(6));
-    if( e->instruments > 1 ){ num2str(b, e->instruments); evalue(d, 6, 1, b, 15); } else { ecbtext(d, ebx(6)+ebw(1)/2, 29, "--", 2, 5); ecsmall(d, ebx(6)+ebw(1)/2, 46, "(DRUM)", 4); }
+    if( e->instruments > 1 ){ num2str(b, e->instruments); evalue(d, 6, 1, b, 15); } else { evalue(d, 6, 1, "--", 5); ecsmall(d, ebx(6)+ebw(1)/2, 48, "(DRUM)", 4); }
     ebox(d, 7, 1, 0); elabel(d, 7, "LAYERS", 0);
-    text(d, LFONT, ebx(7)+6, 27, "PAR", 1, 8); num2str(b, e->par_layers); text(d, GLCD_FONT_NORMAL, ebx(7)+ebw(1)-9-tw(GLCD_FONT_NORMAL, b, 2), 24, b, 2, 15);
-    text(d, LFONT, ebx(7)+6, 45, "TRG", 1, 8); num2str(b, e->trg_layers); text(d, GLCD_FONT_NORMAL, ebx(7)+ebw(1)-9-tw(GLCD_FONT_NORMAL, b, 2), 42, b, 2, 15);
+    text(d, LFONT, ebx(7)+5, 29, "PAR", 1, 8); num2str(b, e->par_layers); ecbtext(d, ebx(7)+ebw(1)-8-tw(GLCD_FONT_NORMAL, b, 1)/2, 29, b, 1, 15);
+    text(d, LFONT, ebx(7)+5, 42, "TRG", 1, 8); num2str(b, e->trg_layers); ecbtext(d, ebx(7)+ebw(1)-8-tw(GLCD_FONT_NORMAL, b, 1)/2, 42, b, 1, 15);
   } break;
   case 2: if( e->mode == 3 ) {
     eheader(d, 2, "DRUM");
@@ -548,7 +545,7 @@ void OG2_RenderEventCell(u8 *out, int cell, const og2_event_t *e)
     static const char *ly[16] = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P"};
     epicker(d, 8, 2, "LAYER", ly, 16, 8, e->layer_sel, SELK(8) || SELK(9), e->par_layers);
     evbox(d, 10, "TYPE", e->ltype, -1, SELK(10) || e->ltype_pending, 0);
-    ebox(d, 11, 1, SELK(11)); elabel(d, 11, "PARAM", SELK(11)); ecbtext(d, ebx(11)+ebw(1)/2, 33, e->param, 1, e->param[0] == '#' ? 15 : 5);
+    ebox(d, 11, 1, SELK(11)); elabel(d, 11, "PARAM", SELK(11)); evalue(d, 11, 1, e->param, e->param[0] == '#' ? 15 : 5);
   } break;
   default: if( e->mode == 3 ) {
     eheader(d, 3, "ACTIONS");
@@ -564,10 +561,10 @@ void OG2_RenderEventCell(u8 *out, int cell, const og2_event_t *e)
   } else {
     eheader(d, 3, "ACTIONS");
     ebox(d, 12, 2, SELK(12) || SELK(13)); elabel(d, 12, "PRESETS", SELK(12) || SELK(13));
-    { int cx = ebx(12)+ebw(2)/2, w = tw(GLCD_FONT_NORMAL, "SELECT", 1) + 14; frame_box(d, cx-w/2, 32, w, 15, 9); ecbtext(d, cx, 36, "SELECT", 1, 15); }
+    { int cx = ebx(12)+ebw(2)/2, w = tw(GLCD_FONT_NORMAL, "SELECT", 1) + 14; frame_box(d, cx-w/2, VALY-4, w, 15, 9); ecbtext(d, cx, VALY, "SELECT", 1, 15); }
     int hot = e->init_needed || SELK(14) || SELK(15);
     ebox(d, 14, 2, hot); elabel(d, 14, "INIT", hot);
-    { int cx = ebx(14)+ebw(2)/2; ecbtext(d, cx, 29, e->init_needed ? "HOLD 2 SEC!" : "HOLD 2 SEC", 1, e->init_needed ? 15 : 8); }
+    { int cx = ebx(14)+ebw(2)/2; ecbtext(d, cx, VALY, e->init_needed ? "HOLD 2 SEC!" : "HOLD 2 SEC", 1, e->init_needed ? 15 : 8); }
     { int x = ebx(14)+5, w = ebw(2)-10; for(int i=0; i<w; ++i) px(d, x+i, 52, 3); if( e->init_pct ) rect(d, x, 50, (w * e->init_pct) / 100, 5, 15); }
   } break;
   }
@@ -582,9 +579,7 @@ static void etoggle(u8 (*d)[CW], int k, const char *l, int on, int sel, int dim)
   ebox(d, k, 1, sel);
   if( on && !sel ) rect(d, ebx(k)+1, EBY+1, ebw(1)-2, EBH-2, 3);
   elabel(d, k, l, sel || on);
-  ecbtext(d, ebx(k)+ebw(1)/2, 31, on ? "ON" : "OFF", 1, dim ? 4 : (on ? 15 : 7));
-  int x = ebx(k)+5, w = ebw(1)-10;
-  rect(d, x, 51, w, 3, (on && !dim) ? 13 : 3);
+  ecbtext(d, ebx(k)+ebw(1)/2, VALY, on ? "ON" : "OFF", 1, dim ? 4 : (on ? 15 : 7));
 }
 // small text right-aligned in the label row of a box spanning n columns
 static void elabel_right(u8 (*d)[CW], int k, int n, const char *s, int g){ text(d, LFONT, ebx(k)+ebw(n)-5-tw(LFONT, s, 1), EBY+4, s, 1, g); }
@@ -662,12 +657,13 @@ static const char *const mode_help[16][4] = {
   {"SUSTAIN","Notes are held until the","next note is played.",""},
   {"","","",""},{"","","",""},{"","","",""},{"","","",""}
 };
-// one chip per column inside a box that spans columns k..k+n-1
-static void mchip(u8 (*d)[CW], int k, const char *t, int on, int dim)
+// one box per mode column: the active mode is filled with a full bar (like an ON switch)
+static void mmode(u8 (*d)[CW], int k, const char *t, int on, int sel)
 {
-  int x = k*64 + 9, w = 46, y = 28, h = 20;
-  if( on ) rect(d, x, y, w, h, 13); else frame_box(d, x, y, w, h, dim ? 3 : 6);
-  ecsmall(d, x + w/2, y + h/2 - 3, t, on ? 0 : (dim ? 4 : 10));
+  ebox(d, k, 1, sel);
+  if( on && !sel ) rect(d, ebx(k)+1, EBY+1, ebw(1)-2, EBH-2, 3);
+  elabel(d, k, "MODE", sel || on);
+  evalue(d, k, 1, t, on ? 15 : 6);
 }
 
 void OG2_RenderModeCell(u8 *out, int cell, const og2_mode_t *m)
@@ -684,12 +680,8 @@ void OG2_RenderModeCell(u8 *out, int cell, const og2_mode_t *m)
     char h[24] = "MODE ";
     strcat(h, m->track);
     eheader(d, 0, h);
-    int sb = SELM(0) || SELM(1) || SELM(2) || SELM(3);
-    ebox(d, 0, 4, sb); elabel(d, 0, "MODE", sb);
-    static const char *full[4] = {"OFF","NORMAL","TRANSPOSE","ARPEGGIATOR"};
-    static const char *shrt[4] = {"OFF","NORMAL","TRANSP","ARP"};
-    elabel_right(d, 0, 4, full[m->mode & 3], 12);
-    for(int i=0; i<4; ++i) mchip(d, i, shrt[i], m->mode == i, 0);
+    static const char *shrt[4] = {"OFF","NORMAL","TRANSP.","ARPEGGIO"};
+    for(int i=0; i<4; ++i) mmode(d, i, shrt[i], m->mode == i, SELM(i));
   } break;
   case 1: {
     eheader(d, 1, "BUS / NOTE STACK");

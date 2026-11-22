@@ -454,6 +454,7 @@ s32 SEQ_UI_TRKMODE_Init(u32 mode)
   SEQ_UI_InstallButtonCallback(Button_HandlerMap);
   SEQ_UI_InstallEncoderCallback(Encoder_HandlerMap);
   SEQ_UI_InstallLEDCallback(LED_HandlerMap);
+  mode_sel = SEQ_CC_Get(SEQ_UI_VisibleTrackGet(), SEQ_CC_MODE) & 3;   // selection starts on the active mode
   SEQ_UI_InstallLCDCallback(LCD_Handler);
 
   return 0; // no error
