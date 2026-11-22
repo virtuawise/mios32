@@ -31,6 +31,7 @@
 #define OLED_RESEND_MS    3000     // alles opnieuw sturen (client kan later binnenkomen)
 #define OLED_SEND_TICK_MS    4     // hooguit 1 cel per 4 ms versturen
 #define OLED_NUM_CELLS      16
+#define OLED_SHOW_PLAYHEAD   0     // 1 = afspeelstap (rand om het vak) op de OLED's; 0 = alleen de GP-knoppen lopen mee (gebruikerswens)
 
 static og2_step_t steps[16];
 static u8 play_step = 0xff, trail_step = 0xff;
@@ -197,6 +198,9 @@ static void collect_steps(void)
     if( (cur / 16) == ui_selected_step_view )
       new_play = cur % 16;
   }
+#if !OLED_SHOW_PLAYHEAD
+  new_play = 0xff;           // geen afspeelstap op de schermen
+#endif
   if( new_play != play_step ) {
     trail_step = (play_step != 0xff) ? play_step : 0xff;
     play_step = new_play;

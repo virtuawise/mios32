@@ -160,7 +160,7 @@ function update(s){
     else if(!oledReal[d]) drawOled(d);
   }
   for(const[n,[g,r]]of Object.entries(s.leds)){
-    if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!inEdit&&!!(g||r));continue;}   // GP-knoppen lopen alleen mee in submenu's (in het stapscherm staat de afspeelstap op de OLED's)
+    if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!!(g||r));continue;}   // GP-knoppen lopen mee met de sequencer in alle pagina's (de OLED's tonen geen afspeelstap meer)
     const b=btnEls[n];if(b)b.classList.toggle('on',!!g);}
   beat.classList.toggle('on',!!(s.leds.BEAT&&s.leds.BEAT[0]));
 }
