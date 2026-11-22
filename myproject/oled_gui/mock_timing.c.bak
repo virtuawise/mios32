@@ -1,0 +1,50 @@
+// Voorbeeld (Mac): pagina TIMING op de 4 schermen met blokjes. Alleen tekenen, geen firmware.
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <glcd_font.h>
+#include "oled_gui2.h"
+#define W 1024
+#define H 64
+static unsigned char F[H][W];
+static void px(int x,int y,int g){ if(x<0||y<0||x>=W||y>=H) return; if(g>15) g=15; F[y][x]=g; }
+static void rect(int x,int y,int w,int h,int g){ for(int j=0;j<h;++j) for(int i=0;i<w;++i) px(x+i,y+j,g); }
+static void frame(int x,int y,int w,int h,int g){ for(int i=0;i<w;++i){px(x+i,y,g);px(x+i,y+h-1,g);} for(int j=0;j<h;++j){px(x,y+j,g);px(x+w-1,y+j,g);} }
+static int tw(const unsigned char*f,const char*s,int sc){ int n=0; while(*s++) ++n; return n*f[0]*sc; }
+static void chr(const unsigned char*f,int x,int y,char c,int sc,int g){ int w=f[0],off=f[3]; const unsigned char*gl=&f[4]+f[2]+(size_t)off*(unsigned char)c; for(int cx=0;cx<w;++cx) for(int cy=0;cy<8;++cy) if((gl[cx]>>cy)&1) rect(x+cx*sc,y+cy*sc,sc,sc,g); }
+static void text(const unsigned char*f,int x,int y,const char*s,int sc,int g){ while(*s){ chr(f,x,y,*s,sc,g); x+=f[0]*sc; ++s; } }
+static void btext(int x,int y,const char*s,int sc,int g){ text(GLCD_FONT_NORMAL,x,y,s,sc,g); text(GLCD_FONT_NORMAL,x+1,y,s,sc,g); }
+
+// kolom k (0-15), breedte n kolommen; y 11..61
+static void box(int k,int n,int sel){ int x=k*64+3, w=n*64-6; if(sel) rect(x,11,w,50,2); frame(x,11,w,50,sel?15:9); if(sel) frame(x+1,12,w-2,48,15); }
+static void label(int k,int n,const char*l,int sel){ (void)n; text(GLCD_FONT_SMALL,k*64+7,15,l,1,sel?12:9); }
+static void value(int k,int n,const char*v,int sel){ int sc=(tw(GLCD_FONT_NORMAL,v,2)>n*64-12)?1:2, w=tw(GLCD_FONT_NORMAL,v,sc); int cx=k*64+n*32; btext(cx-w/2, sc==2?28:32, v, sc, 15); (void)sel; }
+static void bar(int k,int frac100){ int x=k*64+8; for(int i=0;i<48;++i) px(x+i,54,3); rect(x,53,frac100*48/100,3,13); }
+static void vbox(int k,const char*l,const char*v,int frac,int sel){ box(k,1,sel); label(k,1,l,sel); value(k,1,v,sel); if(frac>=0) bar(k,frac); }
+static void tbox(int k,const char*l,int on){ box(k,1,0); if(on) rect(k*64+3+1,12,62-2,48,6); label(k,1,l,on); btext(k*64+32-(on?9:12),30,on?"ON":"OFF",1,on?15:6); rect(k*64+8,50,48,4,on?15:3); }
+static void picker(int k,int n,const char*l,const char**it,int cnt,int cols,int sel){
+  box(k,n,0); label(k,n,l,0);
+  int rows=(cnt+cols-1)/cols, cw=(n*64-14)/cols, ch=rows==1?22:17;
+  for(int i=0;i<cnt;++i){ int cx=k*64+7+(i%cols)*cw, cy=28+(i/cols)*(ch+1)+ (rows==1?4:0);
+    int s=(i==sel); if(s) rect(cx,cy,cw-2,ch,13); else frame(cx,cy,cw-2,ch,5);
+    int w=tw(GLCD_FONT_SMALL,it[i],1); text(GLCD_FONT_SMALL,cx+(cw-2)/2-w/2,cy+ch/2-3,it[i],1,s?0:10); } }
+static void header(int scr,const char*t){ rect(scr*256,0,256,9,0); text(GLCD_FONT_SMALL,scr*256+4,1,t,1,9); for(int x=scr*256+4+tw(GLCD_FONT_SMALL,t,1)+6;x<scr*256+252;x+=2) px(x,4,3); }
+int main(void){
+  // scherm 1: LENGTE
+  header(0,"TIMING - LENGTE");
+  vbox(0,"LENGTH","16",6,0); vbox(1,"LOOP","1",0,1);
+  static const char*lp[]={"4","8","16","24","32","64","128","256"}; picker(2,2,"PRESETS",lp,8,4,2);
+  // scherm 2: KLOK
+  header(1,"KLOK");
+  static const char*tb[]={"1","2","4","8","8T","16","16T","32"}; picker(4,2,"TIMEBASE",tb,8,4,5);
+  tbox(6,"SYNC MAAT",1); tbox(7,"MANUAL",0);
+  // scherm 3: RICHTING
+  header(2,"RICHTING");
+  static const char*dr[]={"FWD","BCK","P-P","PEN","RND","STP","R+S"}; picker(8,2,"DIRECTION",dr,7,4,2);
+  vbox(10,"FWD","1",10,0); vbox(11,"BACK","0",0,0);
+  // scherm 4: HERHALING
+  header(3,"HERHALING");
+  vbox(12,"REPLAY","x1",10,0); vbox(13,"REPEAT","0",0,0);
+  box(14,1,0); label(14,1,"SKIP / ITV",0); btext(14*64+14,26,"0",2,15); text(GLCD_FONT_SMALL,14*64+30,31,"skip",1,8); btext(14*64+14,43,"4",2,15); text(GLCD_FONT_SMALL,14*64+30,48,"itv",1,8);
+  tbox(15,"SYNC M",0);
+  FILE*o=fopen("mock_timing.pgm","wb"); fprintf(o,"P5\n%d %d\n15\n",W,H); for(int y=0;y<H;++y) fwrite(F[y],1,W,o); fclose(o); return 0; }
