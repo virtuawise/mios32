@@ -83,7 +83,12 @@ static void collect_steps(void)
       s32 l = e.len;
       if( l < 0 && step < 256 ) l = SEQ_PAR_LengthGet(track, step, instrument, 0x0000);
       if( l < 0 ) l = 48;
-      s->len = (l * 100) / 96;
+      if( l >= 96 ) {            // lengte 'Gld.' = glide (legato naar de volgende noot)
+	s->len = 100;
+	s->sld = 1;
+      } else {
+	s->len = (l * 100) / 96;
+      }
       s->value = s->vel;       // actieve laag: velocity (later: laag van het paneel)
     }
   }
