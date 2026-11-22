@@ -42,12 +42,17 @@ int main(int argc, char **argv)
     for(int y=0;y<OG2_H;++y) for(int d=0;d<OG2_DISPLAYS;++d) for(int x=0;x<OG2_W;++x) fputc(f.gray[d][y][x], o);
     fclose(o); return 0;
   }
-  if( argc>1 && !strcmp(argv[1],"text") ){
-    const char *L1 = "Trk. Type Steps/ParL/TrgL Port Chn. Trk.Layer  controls                         ";
-    const char *L2 = "G1T1 Note   128   8    8  USB2   1  Inst  A    Note                PRESETS  INIT";
-    og2_text_t tx[16]; for(int c=0;c<16;++c){ memcpy(tx[c].l1, L1+c*5, 5); tx[c].l1[5]=0; memcpy(tx[c].l2, L2+c*5, 5); tx[c].l2[5]=0; }
+  if( argc>1 && !strncmp(argv[1],"text",4) ){
+    static const char *R0[3] = {"Trk. Type Steps/ParL/TrgL Port Chn. Trk.Layer  controls                         ",
+      " Forward  >PingPong< Rand.Dir  Rand.D+S Fwd. Back Replay  Repeat Skip Itv. SyncM                    ",
+      "Trk. Clock Divider  SyncToMeasure Manual       Quick Selection: Timebase                          "};
+    static const char *R1[3] = {"G1T1 Note   128   8    8  USB2   1  Inst  A    Note                PRESETS  INIT",
+      "G1T1  Backward  Pendulum  Rand.Step       1     0    x1       0    0    4   no                       ",
+      "G1T1  16 (normal)         no        no     1    2    4    8    8T   16   16T  32                    "};
+    int pg = argv[1][4] ? argv[1][4]-'0' : 0;
+    og2_tgroup_t tg[16]; OG2_TextGroups((const u8*)R0[pg], (const u8*)R1[pg], tg);
     static og2_frame_t f; static u8 cb[2048];
-    for(int n=0;n<16;++n){ OG2_RenderTextCell(cb, n, &tx[n]);
+    for(int n=0;n<16;++n){ OG2_RenderTextGroupCell(cb, n, &tg[n]);
       for(int y=0;y<OG2_H;++y) for(int x=0;x<64;++x) f.gray[n/4][y][(n%4)*64+x] = (x&1)?(cb[y*32+x/2]&15):(cb[y*32+x/2]>>4); }
     FILE *o = fopen("text.pgm","wb"); fprintf(o,"P5\n%d %d\n15\n", OG2_W*OG2_DISPLAYS, OG2_H);
     for(int y=0;y<OG2_H;++y) for(int d=0;d<OG2_DISPLAYS;++d) for(int x=0;x<OG2_W;++x) fputc(f.gray[d][y][x], o);

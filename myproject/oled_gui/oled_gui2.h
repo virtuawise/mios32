@@ -59,8 +59,18 @@ typedef struct {
   u8 muted_cnt;
 } og2_dash_t;
 // ---- tekst-weergave (alle overige pagina's): de LCD-tekst van de SEQ, 5 tekens per GP-kolom, 2x vergroot
-typedef struct { char l1[6]; char l2[6]; } og2_text_t;
-extern void OG2_RenderTextCell(u8 *out2048, int cell, const og2_text_t *t);
+typedef struct { char l1[6]; char l2[6]; } og2_text_t;       // (oud, per cel)
+extern void OG2_RenderPlainCell(u8 *out2048, int cell, const og2_text_t *t);   // platte tekst, 2x, 5 tekens per GP-kolom
+// gegroepeerde tekstweergave: woorden die over de 5-tekengrens van een GP-kolom lopen worden 1 groot vak
+typedef struct {
+  char label[28];     // regel 1 van het LCD (klein)
+  char value[28];     // regel 2 van het LCD (groot)
+  u8 start;           // eerste cel (GP-kolom) van de groep, 0-15
+  u8 n;               // aantal cellen in de groep (0 = lege cel)
+  u8 sel;             // 1 = op het LCD gekozen (tussen > en <)
+} og2_tgroup_t;
+extern void OG2_TextGroups(const u8 *row0, const u8 *row1, og2_tgroup_t g[16]);   // row0/row1: 80 LCD-tekens
+extern void OG2_RenderTextGroupCell(u8 *out2048, int cell, const og2_tgroup_t *g);
 extern void OG2_RenderDashCell(u8 *out2048, int cell, const og2_dash_t *d);
 extern void OG2_RenderTrackTile(u8 *out2048, int num, const og2_tile_t *t);
 extern void OG2_RenderMixerTile(u8 *out2048, int num, const og2_tile_t *t);

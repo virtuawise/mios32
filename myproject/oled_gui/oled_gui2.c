@@ -335,6 +335,99 @@ static void textcell_line(u8 (*d)[CW], int y, const char *s)
   }
 }
 
+// ---- platte tekst (pagina's zonder eigen ontwerp): 5 tekens per GP-kolom, 2x vergroot ----
+static void plain_line(u8 (*d)[CW], int y, const char *s)
+{
+  for(int i=0; i<5; ++i){
+    unsigned char c = (unsigned char)s[i];
+    int x = 2 + i*12;
+    if( c == ' ' || c == 0 ) continue;
+    if( c < 32 ){ for(int yy=0; yy<12; ++yy) for(int xx=0; xx<8; ++xx) if( ((xx+yy)&1) == 0 ) px(d, x+xx+1, y+2+yy, 9); continue; }
+    if( c == 0x7e ) c = '>';
+    if( c == 0x7f ) c = '<';
+    if( c > 0x7e ) c = '?';
+    chr(d, GLCD_FONT_NORMAL, x, y, c, 2, 15);
+    chr(d, GLCD_FONT_NORMAL, x+1, y, c, 2, 15);
+  }
+}
+
+void OG2_RenderPlainCell(u8 *out, int cell, const og2_text_t *t)
+{
+  static u8 tmp[OG2_H][CW];
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
+  u8 (*d)[CW] = tmp;
+  if( (cell & 3) != 0 ) for(int y=0; y<64; y+=4) px(d, 0, y, 2);
+  plain_line(d, 6, t->l1);
+  hline(d, 4, 31, 56, 2, 3);
+  plain_line(d, 38, t->l2);
+  tile_pack(out, tmp);
+}
+
+// ---- gegroepeerde hokjes-weergave van de LCD-tekst ----
+static char tg_char(u8 c){ return (c < 32 || c > 126) ? '#' : (char)c; }
+
+static void tg_text(char *o, const u8 *row, int c0, int n, int *sel)
+{
+  int a = c0*5, b = (c0+n)*5, i, j = 0;
+  while( b > a && (row[b-1] == ' ' || row[b-1] == '<' || row[b-1] == '>') ){ if( row[b-1] == '<' ) *sel = 1; --b; }
+  while( a < b && (row[a] == ' ' || row[a] == '>' || row[a] == '<') ){ if( row[a] == '>' ) *sel = 1; ++a; }
+  for(i=a; i<b && j<27; ++i) o[j++] = tg_char(row[i]);
+  o[j] = 0;
+}
+
+void OG2_TextGroups(const u8 *row0, const u8 *row1, og2_tgroup_t g[16])
+{
+  int occ[16];
+  for(int c=0; c<16; ++c){ occ[c] = 0; for(int i=0; i<5; ++i) if( (row0[c*5+i] != ' ') || (row1[c*5+i] != ' ') ) occ[c] = 1; }
+  for(int c=0; c<16; ++c){ g[c].n = 0; g[c].start = c; g[c].sel = 0; g[c].label[0] = 0; g[c].value[0] = 0; }
+  int c = 0;
+  while( c < 16 ){
+    if( !occ[c] ){ ++c; continue; }
+    int c1 = c;
+    // een woord dat over de grens naar de volgende cel loopt (in regel 1 of 2) voegt de cellen samen
+    while( c1 + 1 < 16 && occ[c1+1] &&
+           ((row0[c1*5+4] != ' ' && row0[(c1+1)*5] != ' ') || (row1[c1*5+4] != ' ' && row1[(c1+1)*5] != ' ')) ) ++c1;
+    if( c1 - c + 1 > 3 ) c1 = c;          // zeer lange ketens (twee rijen die door elkaar lopen, bv. Direction): niet samenvoegen
+    int n = c1 - c + 1, sel = 0;
+    char lab[28], val[28];
+    tg_text(lab, row0, c, n, &sel);
+    tg_text(val, row1, c, n, &sel);
+    for(int k=c; k<=c1; ++k){
+      g[k].start = c; g[k].n = n; g[k].sel = sel;
+      for(int q=0; q<28; ++q){ g[k].label[q] = lab[q]; g[k].value[q] = val[q]; }
+    }
+    c = c1 + 1;
+  }
+}
+
+void OG2_RenderTextGroupCell(u8 *out, int cell, const og2_tgroup_t *g)
+{
+  static u8 tmp[OG2_H][CW];
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
+  u8 (*d)[CW] = tmp;
+  if( g->n == 0 ){ for(int x=0; x<56; x+=4) px(d, 4+x, 31, 2); tile_pack(out, tmp); return; }
+  ox_shift = (cell - g->start) * 64;
+  const int bx = 4, by = 3, bw = g->n * 64 - 8, bh = 56;
+  int na = 0, nb = 0; while( g->label[na] ) ++na; while( g->value[nb] ) ++nb;
+  if( g->sel ) rect(d, bx, by, bw, bh, 2);
+  frame_box(d, bx, by, bw, bh, g->sel ? 15 : 9);
+  if( g->sel ) frame_box(d, bx+1, by+1, bw-2, bh-2, 15);
+  int cx = bx + bw/2;
+  if( na > 0 && nb > 0 ){                                  // label klein linksboven, waarde groot
+    text(d, GLCD_FONT_SMALL, bx+4, by+4, g->label, 1, g->sel ? 12 : 9);
+    int sc = (tw(GLCD_FONT_NORMAL, g->value, 2) > bw - 8) ? 1 : 2, w = tw(GLCD_FONT_NORMAL, g->value, sc);
+    int ty = sc == 2 ? by+24 : by+28;
+    text(d, GLCD_FONT_NORMAL, cx - w/2 - 1, ty, g->value, sc, 15); text(d, GLCD_FONT_NORMAL, cx - w/2, ty, g->value, sc, 15);
+  } else if( na > 0 || nb > 0 ){                            // 1 regel: die is de inhoud
+    const char *m = na > 0 ? g->label : g->value;
+    int sc = (tw(GLCD_FONT_NORMAL, m, 2) > bw - 8) ? 1 : 2, w = tw(GLCD_FONT_NORMAL, m, sc);
+    int ty = by + bh/2 - (sc == 2 ? 8 : 4);
+    text(d, GLCD_FONT_NORMAL, cx - w/2 - 1, ty, m, sc, 15); text(d, GLCD_FONT_NORMAL, cx - w/2, ty, m, sc, 15);
+  }
+  ox_shift = 0;
+  tile_pack(out, tmp);
+}
+
 // 'hokjes'-weergave van de LCD-tekst: elk onderdeel (5 tekens per GP-kolom) krijgt een vak; regel 1 = label klein, regel 2 = waarde groot.
 // Gekozen onderdelen op het LCD staan tussen '>' en '<' -> felle dubbele rand.
 static int trim_copy(char *o, const char *s, int *sel)
