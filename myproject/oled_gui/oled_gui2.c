@@ -452,12 +452,17 @@ void OG2_RenderCellBoxed(u8 *out, int num, const og2_step_t *s, int lo, int hi, 
   if( kind == OG2_K_NOTE ){
     if( on && s->note != 0xff ){
       if( s->arp ) { int k; for(k=0; k<5 && s->txt[k]; ++k) b[k] = s->txt[k]; b[k] = 0; } else note_name(s->note, b);
-      int w = tw(GLCD_FONT_NORMAL, b, 2);
-      text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2 - 1, by+14, b, 2, 15); text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2, by+14, b, 2, 15);
-      // lengte-balkje (helderheid = velocity) onderin het vak; glide = balk loopt door tot de rand
+      int w = tw(GLCD_FONT_NORMAL, b, 2), cx = bx + (bw - 11) / 2;        // gecentreerd links van het velocity-balkje
+      text(d, GLCD_FONT_NORMAL, cx - w/2 - 1, by+14, b, 2, 15); text(d, GLCD_FONT_NORMAL, cx - w/2, by+14, b, 2, 15);
+      // lengte: horizontaal balkje onderin; glide = balk loopt door tot de rand van het vak
       int len = 2 + (s->len > 100 ? 100 : s->len) * 44 / 100;
-      rect(d, bx+6, by+bh-8, len, 3, 5 + (s->vel*10)/127);
-      if( s->sld ) rect(d, bx+6+len, by+bh-8, 44-len+2, 3, 12);
+      for(int x=0; x<46; ++x) px(d, bx+6+x, by+bh-6, 3);                       // spoor
+      rect(d, bx+6, by+bh-7, len, 3, 13);
+      if( s->sld ) rect(d, bx+6+len, by+bh-7, 46-len+3, 3, 15);
+      // velocity: dun verticaal balkje rechts (van onder naar boven)
+      int vh = (s->vel * 22) / 127;
+      for(int y=0; y<24; ++y) px(d, bx+bw-8, by+bh-10-y, 3);                   // spoor
+      rect(d, bx+bw-9, by+bh-10-vh, 3, vh + 1, 14);
     } else {
       hline(d, bx+16, by+bh/2+2, 24, 3, 2);
     }
