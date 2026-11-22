@@ -833,3 +833,28 @@ s32 SEQ_MIDI_SYSEX_REMOTE_Server_SendMenuButton(u8 button)
   MUTEX_MIDIOUT_GIVE;
   return status;
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Sends a beat pulse to the client (one per quarter note); <beat> = 0..3 (position in the bar)
+// Format: F0 <hdr> <id> 09 09 <beat> F7
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_MIDI_SYSEX_REMOTE_Server_SendBeat(u8 beat)
+{
+  u8 sysex_buffer[16];
+  u8 *p = &sysex_buffer[0];
+  int i;
+
+  for(i=0; i<sizeof(seq_midi_sysex_header); ++i)
+    *p++ = seq_midi_sysex_header[i];
+  *p++ = seq_midi_sysex_remote_id;
+  *p++ = 0x09;
+  *p++ = 0x09;
+  *p++ = beat & 0x03;
+  *p++ = 0xf7;
+
+  MUTEX_MIDIOUT_TAKE;
+  s32 status = MIOS32_MIDI_SendSysEx(seq_midi_sysex_remote_port, sysex_buffer, (u32)p - (u32)&sysex_buffer[0]);
+  MUTEX_MIDIOUT_GIVE;
+  return status;
+}

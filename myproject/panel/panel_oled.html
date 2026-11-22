@@ -146,6 +146,7 @@ async function drawReal(d){   // 4-bit grijs framebuffer uit de firmware: 256x64
     im.data[o]=Math.round(255*k);im.data[o+1]=Math.round(181*k);im.data[o+2]=Math.round(71*k);im.data[o+3]=255;}
   g.putImageData(im,0,0);
 }
+let lastBeatSeq=null, beatTimer=null;
 function update(s){
   const row0=s.lcd[0].map(c=>c>=32&&c<127?String.fromCharCode(c):' ').join('');
   const inEdit=/^G\dT\d .*P[A-P]:/.test(row0);
@@ -165,7 +166,7 @@ function update(s){
   for(const[n,[g,r]]of Object.entries(s.leds)){
     if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!ownLayout&&!!(g||r));continue;}   // GP-knoppen lopen mee met de sequencer in alle pagina's (de OLED's tonen geen afspeelstap meer)
     const b=btnEls[n];if(b)b.classList.toggle('on',!!g);}
-  beat.classList.toggle('on',!!(s.leds.BEAT&&s.leds.BEAT[0]));
+  if(s.beat_seq!==undefined&&s.beat_seq!==lastBeatSeq){ if(lastBeatSeq!==null){ beat.classList.add('on'); beat.style.opacity=(s.beat_n===0)?'1':'0.7'; clearTimeout(beatTimer); beatTimer=setTimeout(()=>beat.classList.remove('on'),90); } lastBeatSeq=s.beat_seq; }
 }
 /* ---------- schalen + live ---------- */
 function fit(){const s=Math.min(1,(innerWidth-40)/1536);W.style.transform=`scale(${s})`;W.style.marginBottom=(443*s-443+18)+'px';}

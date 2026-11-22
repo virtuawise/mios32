@@ -52,6 +52,7 @@ static u32 cur_hash[OLED_NUM_CELLS];
 static u32 ctr = 0, resend_ctr = 0;
 static u8 next_cell = 0;
 static u8 last_menu_button = 0xff;
+static u32 last_beat_no = 0xffffffff;
 static u8 cell_buf[2048];
 static u8 rle_buf[2112];
 
@@ -449,6 +450,19 @@ s32 SEQ_OLED_Handler(void)
       cur_hash[c] = h;
       dirty[c] = !sent_valid[c] || sent_hash[c] != h;
     }
+  }
+
+  // beat pulse (one per quarter note, from the sequencer clock) for the BEAT LED of the client
+  if( SEQ_BPM_IsRunning() ) {
+    u32 ppqn = SEQ_BPM_PPQN_Get();
+    if( ppqn < 4 ) ppqn = 96;
+    u32 beat_no = SEQ_BPM_TickGet() / ppqn;
+    if( beat_no != last_beat_no ) {
+      if( SEQ_MIDI_SYSEX_REMOTE_Server_SendBeat(beat_no & 3) >= 0 )
+	last_beat_no = beat_no;
+    }
+  } else {
+    last_beat_no = 0xffffffff;
   }
 
   // tell the client which menu button belongs to the current page (on change and with every full resend)

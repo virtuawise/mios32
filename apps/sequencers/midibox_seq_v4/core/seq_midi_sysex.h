@@ -54,6 +54,7 @@ extern s32 SEQ_MIDI_SYSEX_REMOTE_Server_SendCharset(u8 charset);
 extern s32 SEQ_MIDI_SYSEX_REMOTE_Server_SendLED(u8 first_sr, u8 *led_sr, u8 num_sr);
 extern s32 SEQ_MIDI_SYSEX_REMOTE_Server_SendOLEDCell(u8 display, u8 cell, const u8 *data, u16 len);
 extern s32 SEQ_MIDI_SYSEX_REMOTE_Server_SendMenuButton(u8 button);
+extern s32 SEQ_MIDI_SYSEX_REMOTE_Server_SendBeat(u8 beat);
 
 
 /////////////////////////////////////////////////////////////////////////////

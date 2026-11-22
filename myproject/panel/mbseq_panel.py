@@ -110,6 +110,8 @@ class Seq:
         self.charset = 0
         self.oled4 = [bytearray(8192) for _ in range(4)]   # OLED-framebuffers 256x64, 4 bit grijs (128 bytes per rij) uit de firmware (cmd 0x07)
         self.oled_ver = [0] * 4
+        self.beat_seq = 0                  # incremented for every beat pulse from the firmware (cmd 0x09)
+        self.beat_n = 0
         self.menu_btn = 0x7f               # GP button (0-15) of the current UI page, 0x7f = none (cmd 0x08)
         self.sr = [0] * 32
         self.matrix = [0] * 8
@@ -318,6 +320,10 @@ class Seq:
                         fb[y * 128 + cell * 32:y * 128 + cell * 32 + 32] = px[y * 32:y * 32 + 32]
                     self.oled_ver[disp] += 1
                     self.version += 1
+            elif cmd == 0x09 and len(d) >= 8:                   # beat pulse (quarter note)
+                self.beat_n = d[7] & 3
+                self.beat_seq += 1
+                self.version += 1
             elif cmd == 0x08 and len(d) >= 8:                   # menu button of the current page
                 self.menu_btn = d[7]
                 self.version += 1
@@ -393,6 +399,7 @@ class Seq:
                 "held": list(self.held),
                 "oled_ver": list(self.oled_ver),
                 "menu_btn": self.menu_btn,
+                "beat_seq": self.beat_seq, "beat_n": self.beat_n,
             }
 
 
