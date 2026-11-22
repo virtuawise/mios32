@@ -406,6 +406,77 @@ void OG2_RenderDashCell(u8 *out, int cell, const og2_dash_t *dh)
   tile_pack(out, tmp);
 }
 
+// ---- voorstel: vierkante hokjes met 3 symboolvakjes ----
+static void frame_box(u8 (*d)[CW], int x, int y, int w, int h, int g)
+{
+  for(int i=0; i<w; ++i){ px(d, x+i, y, g); px(d, x+i, y+h-1, g); }
+  for(int j=0; j<h; ++j){ px(d, x, y+j, g); px(d, x+w-1, y+j, g); }
+}
+// symbool in een vakje van 18x13 (x,y = linkerbovenhoek)
+static void slot_icon(u8 (*d)[CW], int x, int y, int kind, int on)
+{
+  int fg = on ? 0 : 3;                      // actief: donker symbool op felle vulling
+  if( on ) rect(d, x, y, 18, 13, 13); else frame_box(d, x, y, 18, 13, 3);
+  switch( kind ){
+  case 0:   // accent: uitroepteken
+    rect(d, x+8, y+2, 2, 6, fg ? fg : 0); rect(d, x+8, y+9, 2, 2, fg ? fg : 0); break;
+  case 1:   // glide: schuine pijl omhoog
+    for(int i=0; i<10; ++i){ px(d, x+4+i, y+9-i*6/10, fg); px(d, x+4+i, y+10-i*6/10, fg); }
+    rect(d, x+12, y+2, 3, 2, fg); rect(d, x+13, y+2, 2, 4, fg); break;
+  case 2:   // roll: drie streepjes die groeien
+    rect(d, x+4, y+7, 2, 4, fg); rect(d, x+8, y+5, 2, 6, fg); rect(d, x+12, y+3, 2, 8, fg); break;
+  case 3:   // skip: kruis
+    for(int i=0; i<7; ++i){ px(d, x+5+i, y+3+i, fg); px(d, x+5+i, y+9-i, fg); } break;
+  default:  // kans: korrelpatroon
+    for(int yy=0; yy<7; ++yy) for(int xx=0; xx<10; ++xx) if( ((xx+yy)&1) == 0 ) px(d, x+4+xx, y+3+yy, fg);
+  }
+}
+
+void OG2_RenderCellBoxed(u8 *out, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer, og2_kind_t kind)
+{
+  static u8 tmp[OG2_H][CW];
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
+  u8 (*d)[CW] = tmp;
+  char b[8];
+  int on = s->on;
+  const int bx = 4, by = 3, bw = 56, bh = 43;          // hoofdvak
+  // hoofdvak: vulling bij een getriggerde stap, rand voor afspeelpositie
+  if( on ) rect(d, bx, by, bw, bh, playing ? 6 : 2);
+  frame_box(d, bx, by, bw, bh, playing ? 15 : (on ? 9 : 3));
+  if( playing ) frame_box(d, bx+1, by+1, bw-2, bh-2, 15);
+  if( trailing && !playing ) frame_box(d, bx+1, by+1, bw-2, bh-2, 5);
+  // stapnummer klein linksboven in het vak
+  b[0] = '0'+(num+1)/10; b[1] = '0'+(num+1)%10; b[2] = 0;
+  text(d, GLCD_FONT_SMALL, bx+3, by+3, b, 1, on ? 9 : 4);
+  if( kind == OG2_K_NOTE ){
+    if( on && s->note != 0xff ){
+      note_name(s->note, b);
+      int w = tw(GLCD_FONT_NORMAL, b, 2);
+      text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2 - 1, by+14, b, 2, 15); text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2, by+14, b, 2, 15);
+      // lengte-balkje (helderheid = velocity) onderin het vak; glide = balk loopt door tot de rand
+      int len = 2 + (s->len > 100 ? 100 : s->len) * 44 / 100;
+      rect(d, bx+6, by+bh-8, len, 3, 5 + (s->vel*10)/127);
+      if( s->sld ) rect(d, bx+6+len, by+bh-8, 44-len+2, 3, 12);
+    } else {
+      hline(d, bx+16, by+bh/2+2, 24, 3, 2);
+    }
+  } else {
+    int w = tw(GLCD_FONT_NORMAL, s->txt, 2);
+    int g = on ? 15 : 7;
+    text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2 - 1, by+14, s->txt, 2, g); text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2, by+14, s->txt, 2, g);
+    // kleine visualisatie: balk met de laagwaarde
+    int fill = (s->lval * 44) / 127; if( kind == OG2_K_LEN ) fill = (s->lval > 95 ? 44 : (s->lval * 44) / 95);
+    for(int x=0; x<44; ++x) px(d, bx+6+x, by+bh-6, 3);
+    rect(d, bx+6, by+bh-8, fill, 4, on ? 12 : 6);
+  }
+  // 3 symboolvakjes: accent / glide / roll-skip-kans
+  slot_icon(d, 2, 50, 0, s->acc);
+  slot_icon(d, 23, 50, 1, s->sld);
+  int k3 = s->roll ? 2 : (s->skip ? 3 : 4);
+  slot_icon(d, 44, 50, k3, s->roll || s->skip || (s->prob < 100));
+  tile_pack(out, tmp);
+}
+
 void OG2_StepRange(const og2_step_t st[16], int *lo, int *hi)
 {
   int l = 127, h = 0;

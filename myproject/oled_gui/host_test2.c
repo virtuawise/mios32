@@ -13,6 +13,22 @@ static void dump(const char *name, void (*fn)(u8*,int,const og2_tile_t*), og2_ti
 }
 int main(int argc, char **argv)
 {
+  if( argc>1 && !strncmp(argv[1],"boxed",5) ){
+    og2_step_t s[16] = {0};
+    static const u8 notes[16] = {36,36,39,41, 0xff,34,36,48, 36,38,43,38, 36,0xff,34,46};
+    static const u8 vel[16]   = {110,60,127,90, 0,100,70,127, 90,50,120,80, 110,0,100,127};
+    static const u8 len[16]   = {80,40,100,20, 0,60,30,100, 50,90,100,25, 70,0,45,100};
+    static const u8 prob[16]  = {100,100,100,50, 100,100,30,100, 100,100,100,100, 100,100,60,100};
+    for(int i=0;i<16;++i){ s[i].note=notes[i]; s[i].vel=vel[i]; s[i].len=len[i]; s[i].prob=prob[i]; s[i].on=notes[i]!=0xff; s[i].value=vel[i]; s[i].lval=len[i]*96/100; sprintf(s[i].txt,"%d%%",len[i]); }
+    s[0].acc=1; s[2].acc=1; s[2].sld=1; s[1].sld=1; s[7].roll=1; s[10].acc=1; s[12].acc=1; s[14].skip=1; s[3].roll=1; s[2].len=100;
+    og2_kind_t kind = (argc>1 && !strcmp(argv[1],"boxedlen")) ? OG2_K_LEN : OG2_K_NOTE;
+    static og2_frame_t f; static u8 cb[2048]; int lo, hi; OG2_StepRange(s,&lo,&hi);
+    for(int n=0;n<16;++n){ OG2_RenderCellBoxed(cb, n, &s[n], lo, hi, n==5, n==4, "LEN", kind);
+      for(int y=0;y<OG2_H;++y) for(int x=0;x<64;++x) f.gray[n/4][y][(n%4)*64+x] = (x&1)?(cb[y*32+x/2]&15):(cb[y*32+x/2]>>4); }
+    FILE *o = fopen(kind==OG2_K_LEN?"boxedlen.pgm":"boxed.pgm","wb"); fprintf(o,"P5\n%d %d\n15\n", OG2_W*OG2_DISPLAYS, OG2_H);
+    for(int y=0;y<OG2_H;++y) for(int d=0;d<OG2_DISPLAYS;++d) for(int x=0;x<OG2_W;++x) fputc(f.gray[d][y][x], o);
+    fclose(o); return 0;
+  }
   if( argc>1 && !strcmp(argv[1],"text") ){
     const char *L1 = " Forward  >PingPong< Rand.Dir  Rand.D+S Fwd. Back Replay  Repeat Skip Itv. SyncM          ";
     const char *L2 = "G1T1  Backward  Pendulum  Rand.Step       1     0    x1       0    0    4   no            ";
