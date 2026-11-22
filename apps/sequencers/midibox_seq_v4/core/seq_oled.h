@@ -7,6 +7,7 @@
 #define _SEQ_OLED_H
 
 extern s32 SEQ_OLED_Init(u32 mode);
+extern u8  SEQ_OLED_MenuButtonGet(void);   // GP button (0-15) of the current menu page, 0x7f = none
 extern s32 SEQ_OLED_Handler(void);   // aanroepen elke ms (laagste prioriteit); doet zelf rate-limiting
 
 #endif /* _SEQ_OLED_H */

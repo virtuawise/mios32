@@ -24,6 +24,7 @@
 
 #include "tasks.h"
 #include "seq_ui.h"
+#include "seq_oled.h"
 #include "seq_lcd.h"
 #include "seq_lcd_logo.h"
 #include "seq_hwcfg.h"
@@ -3419,6 +3420,13 @@ s32 SEQ_UI_LED_Handler(void)
 
     if( ui_led_callback != NULL )
       ui_led_callback(&new_ui_gp_leds);
+
+    // 4 x OLED: on menu pages the GP LEDs only show the menu button of the page (the screens show selection and on/off)
+    {
+      u8 mb = SEQ_OLED_MenuButtonGet();
+      if( mb < 16 )
+	new_ui_gp_leds = 1 << mb;
+    }
 
     ui_gp_leds = new_ui_gp_leds;
   }

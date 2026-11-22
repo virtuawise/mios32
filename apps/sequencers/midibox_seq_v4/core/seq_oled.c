@@ -364,7 +364,7 @@ static int rle_encode(const u8 *in, int n, u8 *out)
 }
 
 // menu button (GP1..GP16 = 0..15) that belongs to the current UI page, 0x7f = none
-static u8 menu_button_for_page(void)
+u8 SEQ_OLED_MenuButtonGet(void)
 {
   switch( ui_page ) {
     case SEQ_UI_PAGE_MIXER:        return 0;
@@ -479,7 +479,7 @@ s32 SEQ_OLED_Handler(void)
 
   // tell the client which menu button belongs to the current page (on change and with every full resend)
   if( (ctr % OLED_PERIOD_MS) == 7 ) {
-    u8 mb = menu_button_for_page();
+    u8 mb = SEQ_OLED_MenuButtonGet();
     if( mb != last_menu_button || resend_ctr >= OLED_RESEND_MS - 100 ) {
       if( SEQ_MIDI_SYSEX_REMOTE_Server_SendMenuButton(mb) >= 0 )
 	last_menu_button = mb;
