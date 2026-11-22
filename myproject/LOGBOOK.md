@@ -10,4 +10,6 @@ Goal: SEQ V4+ with 4 x SSD1322 (256x64) instead of two 2x40 LCDs; develop and te
 - Step cell redesigned as a "box" (Elektron style): big value, length bar, three small boxes below (velocity number / glide / roll-skip-probability); mute = dimming + hatching + M badge.
 - Text pages (Mode, Direction, Divider, ...) show the LCD text enlarged; the Event page has merged boxes.
 - **Event page (menu -> Event) has its own layout and its own encoder/button/LED mapping** (`seq_ui_trkevnt.c`: `Encoder_HandlerMap`, table `evt_map`), with an INIT hold progress bar.
-- Next: Timing page, Groove/Transpose, Generate, FX, Live/Manual, Global pages (see `oled_gui/UI_ANALYSIS.md`); drum variant of the Event page; real SSD1322 driver hookup.
+- Event page drum variant (layers A/B, drum, note, velocity N/A); BEAT LED and menu-button LED on the panel.
+- **Timing page**: the Divider, Length and Direction pages share one layout and mapping (`seq_ui_timing.c`): LENGTH, LOOP, length PRESETS | TIMEBASE presets, DIVIDER (raw, button = triplet), SYNC BAR, MANUAL | DIRECTION, FORWARD, JUMP BACK | REPLAY, REPEAT, SKIP, INTERVAL. Datawheel and Up/Down change the last touched column.
+- Next: Groove/Transpose, Generate, FX, Live/Manual, Global pages (see `oled_gui/UI_ANALYSIS.md`); real SSD1322 driver hookup.

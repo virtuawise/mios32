@@ -58,6 +58,20 @@ int main(int argc, char **argv)
     for(int y=0;y<OG2_H;++y) for(int d=0;d<OG2_DISPLAYS;++d) for(int x=0;x<OG2_W;++x) fputc(f.gray[d][y][x], o);
     fclose(o); return 0;
   }
+  if( argc>1 && !strncmp(argv[1],"timing",6) ){
+    og2_timing_t t; memset(&t,0,sizeof(t)); strcpy(t.track,"G1T2"); t.length=16; t.loop=1; t.num_steps=64;
+    static const u16 pr[8]={4,8,16,24,32,64,128,256}; for(int i=0;i<8;++i) t.presets[i]=pr[i]; t.len_preset=2;
+    t.divider=16; t.tb_preset=5; t.sync=1; t.dir=2; t.fwd=1; t.back=0; t.replay=1; t.repeat=0; t.skip=2; t.itv=4;
+    t.sel = argv[1][6] ? atoi(argv[1]+6) : 0;
+    if( t.sel==7 ){ t.manual=1; }
+    if( t.sel==5 ){ t.divider=12; t.tb_preset=0xff; t.triplet=1; }
+    static og2_frame_t f; static u8 c[2048];
+    for(int n=0;n<16;++n){ OG2_RenderTimingCell(c, n, &t);
+      for(int y=0;y<OG2_H;++y) for(int x=0;x<64;++x) f.gray[n/4][y][(n%4)*64+x] = (x&1)?(c[y*32+x/2]&15):(c[y*32+x/2]>>4); }
+    FILE *o = fopen("timing.pgm","wb"); fprintf(o,"P5\n%d %d\n15\n", OG2_W*OG2_DISPLAYS, OG2_H);
+    for(int y=0;y<OG2_H;++y) for(int d=0;d<OG2_DISPLAYS;++d) for(int x=0;x<OG2_W;++x) fputc(f.gray[d][y][x], o);
+    fclose(o); return 0;
+  }
   if( argc>1 && !strcmp(argv[1],"dash") ){
     og2_dash_t dh; memset(&dh,0,sizeof(dh)); dh.bpm10=1320; dh.running=1; dh.master=1; dh.bar=12; dh.beat=2; dh.sixt=9; strcpy(dh.session,"GEN1");
     for(int g=0;g<4;++g){ dh.pat_group[g]=g; dh.pat_num[g]=g==2?3:0; dh.pat_req[g]=(g==3); strcpy(dh.pat_name[g], g==0?"GEN1 lanes":(g==1?"GEN1 pad":"Init")); }

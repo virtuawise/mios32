@@ -24,7 +24,7 @@ value (label small, value large, bar) · choice list (current option large) · s
 
 ## Proposed pages (16 columns each)
 1. TRACK (Event+Mode+Inst) – **Event page done**.
-2. TIMING (Divider + Length + Direction + Repeat) – mock-up in `mock_timing.c`.
+2. TIMING (Divider + Length + Direction + Repeat) – **done** (`seq_ui_timing.c`, shown on the Divider, Length and Direction pages).
 3. GROOVE & TRANSPOSE · 4. GENERATE (random, euclid, morph) · 5. FX · 6. LIVE / MANUAL · 7. GLOBAL (BPM, options, MIDI, SysEx, CV, Ethernet, disk, info).
 
 ## What it means for the firmware

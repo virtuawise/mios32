@@ -19,6 +19,7 @@
 #include "seq_lcd.h"
 #include "seq_ui.h"
 #include "seq_cc.h"
+#include "seq_ui_timing.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -361,6 +362,9 @@ s32 SEQ_UI_TRKDIR_Init(u32 mode)
   SEQ_UI_InstallEncoderCallback(Encoder_Handler);
   SEQ_UI_InstallLEDCallback(LED_Handler);
   SEQ_UI_InstallLCDCallback(LCD_Handler);
+
+  // 4 x OLED: shared Timing layout and mapping (LCD text stays as it is)
+  SEQ_UI_TIMING_Install(Button_Handler);
 
   return 0; // no error
 }

@@ -33,6 +33,7 @@ THUMB_SOURCE    = core/app.c \
 		core/seq_ui_trkmode.c \
 		core/seq_ui_trkdir.c \
 		core/seq_ui_trkdiv.c \
+		core/seq_ui_timing.c \
 		core/seq_ui_trklen.c \
 		core/seq_ui_trktran.c \
 		core/seq_ui_trkgrv.c \

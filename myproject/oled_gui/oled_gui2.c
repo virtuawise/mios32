@@ -1,5 +1,6 @@
 #include "oled_gui2.h"
 #include <glcd_font.h>
+#include <string.h>
 
 #define CW 64
 static int ox_shift = 0;      // dashboard: tekent een heel scherm (256 breed) en toont daarvan 1 cel van 64 px
@@ -568,6 +569,77 @@ void OG2_RenderEventCell(u8 *out, int cell, const og2_event_t *e)
     { int x = ebx(14)+5, w = ebw(2)-10; for(int i=0; i<w; ++i) px(d, x+i, 52, 3); if( e->init_pct ) rect(d, x, 50, (w * e->init_pct) / 100, 5, 15); }
   } break;
   }
+  ox_shift = 0;
+  tile_pack(out, tmp);
+}
+
+// ---- Timing page: same grid as the Event page ----
+// on/off box: filled background when on, ON/OFF in the middle, full bar when on
+static void etoggle(u8 (*d)[CW], int k, const char *l, int on, int sel, int dim)
+{
+  ebox(d, k, 1, sel);
+  if( on && !sel ) rect(d, ebx(k)+1, EBY+1, ebw(1)-2, EBH-2, 3);
+  elabel(d, k, l, sel || on);
+  ecbtext(d, ebx(k)+ebw(1)/2, 31, on ? "ON" : "OFF", 1, dim ? 4 : (on ? 15 : 7));
+  int x = ebx(k)+5, w = ebw(1)-10;
+  rect(d, x, 51, w, 3, (on && !dim) ? 13 : 3);
+}
+// small text right-aligned in the label row of a box spanning n columns
+static void elabel_right(u8 (*d)[CW], int k, int n, const char *s, int g){ text(d, GLCD_FONT_SMALL, ebx(k)+ebw(n)-5-tw(GLCD_FONT_SMALL, s, 1), EBY+4, s, 1, g); }
+
+void OG2_RenderTimingCell(u8 *out, int cell, const og2_timing_t *t)
+{
+  static u8 tmp[OG2_H][CW];
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
+  u8 (*d)[CW] = tmp;
+  int scr = cell / 4;
+  ox_shift = cell * 64;
+  char b[12];
+  #define SELT(k) (t->sel == (k))
+  switch( scr ){
+  case 0: {
+    char h[24] = "TIMING ";
+    int n = 7; for(int i=0; t->track[i] && n < 12; ++i) h[n++] = t->track[i];
+    h[n] = 0; strcat(h, " - LENGTH");
+    eheader(d, 0, h);
+    int over = t->length > t->num_steps;
+    if( over ) strcpy(b, "!!!"); else num2str(b, t->length);
+    evbox(d, 0, "LENGTH", b, t->num_steps ? ((over ? t->num_steps : t->length) * 100) / t->num_steps : 0, SELT(0), 0);
+    num2str(b, t->loop);
+    evbox(d, 1, "LOOP", b, t->length > 1 ? ((t->loop - 1) * 100) / (t->length - 1) : 0, SELT(1), t->loop > t->length);
+    static char ps[8][5]; const char *pp[8]; int act = 0;
+    for(int i=0; i<8; ++i){ num2str(ps[i], t->presets[i]); pp[i] = ps[i]; if( t->presets[i] <= t->num_steps ) act = i + 1; }
+    epicker(d, 2, 2, "PRESETS", pp, 8, 4, t->len_preset == 0xff ? -1 : t->len_preset, SELT(2) || SELT(3), act);
+    num2str(b, t->num_steps); { char m[12] = "OF "; strcat(m, b); elabel_right(d, 2, 2, m, 6); }
+  } break;
+  case 1: {
+    eheader(d, 1, "CLOCK");
+    static const char *tb[8] = {"1","2","4","8","8T","16","16T","32"};
+    int sb = SELT(4) || SELT(5);
+    epicker(d, 4, 2, "TIMEBASE", tb, 8, 4, (t->manual || t->tb_preset == 0xff) ? -1 : t->tb_preset, sb, t->manual ? 0 : 8);
+    if( t->manual ) strcpy(b, "MANUAL"); else { b[0] = '/'; num2str(b+1, t->divider); if( t->triplet ) strcat(b, " T"); }
+    elabel_right(d, 4, 2, b, (t->manual || t->tb_preset != 0xff) ? 6 : 15);     // bright when the divider is not one of the presets
+    etoggle(d, 6, "SYNC BAR", t->sync, SELT(6), t->manual);
+    etoggle(d, 7, "MANUAL", t->manual, SELT(7), 0);
+  } break;
+  case 2: {
+    eheader(d, 2, "DIRECTION");
+    static const char *dr[7] = {"FWD","BCK","P-P","PEN","RND","STP","R+S"};
+    static const char *dn[7] = {"FORWARD","BACKWARD","PINGPONG","PENDULUM","RAND.DIR","RAND.STP","RAND.D+S"};
+    epicker(d, 8, 2, "DIRECTION", dr, 7, 4, t->dir < 7 ? t->dir : -1, SELT(8) || SELT(9), 7);
+    if( t->dir < 7 ) elabel_right(d, 8, 2, dn[t->dir], 12);
+    num2str(b, t->fwd);  evbox(d, 10, "FORWARD", b, ((t->fwd - 1) * 100) / 7, SELT(10), 0);
+    num2str(b, t->back); evbox(d, 11, "JUMP BACK", b, (t->back * 100) / 7, SELT(11), 0);
+  } break;
+  default: {
+    eheader(d, 3, "REPEAT / SKIP");
+    b[0] = 'x'; num2str(b+1, t->replay); evbox(d, 12, "REPLAY", b, ((t->replay - 1) * 100) / 7, SELT(12), 0);
+    num2str(b, t->repeat); evbox(d, 13, "REPEAT", b, (t->repeat * 100) / 16, SELT(13), t->repeat == 0);
+    num2str(b, t->skip);   evbox(d, 14, "SKIP", b, (t->skip * 100) / 16, SELT(14), t->skip == 0);
+    num2str(b, t->itv);    evbox(d, 15, "INTERVAL", b, ((t->itv - 1) * 100) / 63, SELT(15), t->repeat == 0 && t->skip == 0);
+  } break;
+  }
+  #undef SELT
   ox_shift = 0;
   tile_pack(out, tmp);
 }

@@ -69,6 +69,25 @@ typedef struct {
 } og2_event_t;
 extern void OG2_RenderEventCell(u8 *out2048, int cell, const og2_event_t *e);
 
+// ---- Timing page (menu -> Divider / Length / Direction): length, clock, direction and repeat on one layout
+typedef struct {
+  char track[6];        // "G1T1"
+  u16 length, loop;     // 1-based
+  u16 num_steps;        // steps the track is prepared for
+  u16 presets[8];       // quick selection lengths (1-based)
+  u8 len_preset;        // index of the matching preset, 0xff = none
+  u16 divider;          // clock divider (1-256)
+  u8 triplet, sync, manual;
+  u8 tb_preset;         // index of the matching timebase preset (1,2,4,8,8T,16,16T,32), 0xff = none
+  u8 dir;               // 0..6 Forward/Backward/PingPong/Pendulum/Rand.Dir/Rand.Step/Rand.D+S
+  u8 fwd, back;         // steps forward (1-8), jump back (0-7)
+  u8 replay;            // 1-8
+  u8 repeat, skip;      // 0-16
+  u8 itv;               // repeat/skip interval 1-64
+  u8 sel;               // last touched column 0-15
+} og2_timing_t;
+extern void OG2_RenderTimingCell(u8 *out2048, int cell, const og2_timing_t *t);
+
 // ---- dashboard (globale pagina's: BPM, PATTERN, SONG, SAVE): 4 schermen als samengesteld beeld
 typedef struct {
   u16 bpm10;          // BPM x 10
