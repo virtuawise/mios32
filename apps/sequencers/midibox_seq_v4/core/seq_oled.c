@@ -56,6 +56,7 @@ extern s32 SEQ_UI_SYSEX_OledGet(og2_page_t *p);
 extern s32 SEQ_UI_MUTE_OledGet(og2_page_t *p);
 extern s32 SEQ_UI_PATTERN_OledGet(og2_page_t *p);
 extern s32 SEQ_UI_SONG_OledGet(og2_page_t *p);
+extern s32 SEQ_UI_UTIL_OledGet(og2_page_t *p);
 
 /////////////////////////////////////////////////////////////////////////////
 // Column pages from a table: for pages whose LCD values sit in the 5-character GP columns (FX pages).
@@ -279,6 +280,7 @@ static s32 page_fill(void)
     case SEQ_UI_PAGE_MUTE:     return SEQ_UI_MUTE_OledGet(&pg);
     case SEQ_UI_PAGE_PATTERN:  return SEQ_UI_PATTERN_OledGet(&pg);
     case SEQ_UI_PAGE_SONG:     return SEQ_UI_SONG_OledGet(&pg);
+    case SEQ_UI_PAGE_UTIL:     return SEQ_UI_UTIL_OledGet(&pg);
     default:                   return lcd_page_fill();
   }
 }

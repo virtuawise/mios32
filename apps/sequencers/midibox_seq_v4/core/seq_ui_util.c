@@ -19,6 +19,9 @@
 #include <string.h>
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 
 #include "seq_core.h"
 #include "seq_layer.h"
@@ -542,6 +545,38 @@ static s32 LCD_Handler(u8 high_prio)
   return 0; // no error
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): column page. GP2-8 utility functions, GP9-14 open a page, GP15/16 mute / unmute all tracks.
+// While copy/paste/move/scroll is held the LCD shows the step view: the OLEDs then show the LCD text view.
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_UI_UTIL_OledGet(og2_page_t *p)
+{
+  static const char *fn[7] = {"COPY","PASTE","CLEAR","MOVE","SCROLL","RANDOM","UNDO"};
+  static const char *pg[6] = {"SAVE","JAM","CV","OPTIONS","P. MUTE","DISK"};
+  u8 track = SEQ_UI_VisibleTrackGet();
+  og2_col_t *c;
+  int k;
+  switch( in_menu_msg ) {
+    case MSG_COPY: case MSG_PASTE: case MSG_MOVE: case MSG_SCROLL: return -1;
+  }
+  OG2_PageInit(p);
+  sprintf(p->head[0], "UTILITY G%dT%d", (track/4)+1, (track%4)+1);
+  if( (in_menu_msg & 0x80) || ((in_menu_msg & 0x7f) && ui_hold_msg_ctr) ) {
+    int i, o = 0;
+    const char *m = in_menu_msg_str[(in_menu_msg & 0x7f)-1];
+    for(i=0; m[i]; ++i) if( m[i] != '>' && m[i] != '<' ) p->head[1][o++] = m[i];
+    p->head[1][o] = 0;
+  }
+  strcpy(p->head[2], "OPEN PAGE");
+  strcpy(p->head[3], "");
+  c = OG2_PageCol(p, 0, OG2_C_VALUE, 1, "TRACK"); sprintf(c->value, "G%dT%d", (track/4)+1, (track%4)+1);
+  for(k=0; k<7; ++k) { c = OG2_PageCol(p, 1+k, OG2_C_ACTION, 1, "UTILITY"); strcpy(c->value, fn[k]); }
+  for(k=0; k<6; ++k) { c = OG2_PageCol(p, 8+k, OG2_C_ACTION, 1, "PAGE"); strcpy(c->value, pg[k]); }
+  c = OG2_PageCol(p, 14, OG2_C_ACTION, 1, "TRACKS"); strcpy(c->value, "MUTE");
+  c = OG2_PageCol(p, 15, OG2_C_ACTION, 1, "TRACKS"); strcpy(c->value, "UNMUTE");
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation
