@@ -491,6 +491,16 @@ void OG2_RenderCellBoxed(u8 *out, int num, const og2_step_t *s, int lo, int hi, 
   slot_icon(d, 23, 50, 1, s->sld);                                   // vakje 2: glide
   int k3 = s->roll ? 2 : (s->skip ? 3 : 4);
   slot_icon(d, 44, 50, k3, s->roll || s->skip || (s->prob < 100));
+  if( s->muted ){                                                          // gemute: alles dimmen, arcering, M-badge
+    for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x){
+      int v = tmp[y][x];
+      v = (v * 5) / 10;                                                    // ~50% helderheid
+      if( ((x + y) & 3) == 0 && y < 48 ) v = (v < 4) ? 4 : v;              // diagonale arcering (alleen in het hoofdvak)
+      tmp[y][x] = v;
+    }
+    rect(d, bx+bw-12, by+2, 10, 10, 15);                                   // M-badge rechtsboven in het vak
+    text(d, GLCD_FONT_NORMAL, bx+bw-10, by+2, "M", 1, 0);
+  }
   tile_pack(out, tmp);
 }
 

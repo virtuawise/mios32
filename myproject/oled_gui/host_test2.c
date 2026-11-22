@@ -34,10 +34,11 @@ int main(int argc, char **argv)
     for(int i=0;i<16;++i){ s[i].note=notes[i]; s[i].vel=vel[i]; s[i].len=len[i]; s[i].prob=prob[i]; s[i].on=notes[i]!=0xff; s[i].value=vel[i]; s[i].lval=len[i]*96/100; sprintf(s[i].txt,"%d%%",len[i]); }
     s[0].acc=1; s[2].acc=1; s[2].sld=1; s[1].sld=1; s[7].roll=1; s[10].acc=1; s[12].acc=1; s[14].skip=1; s[3].roll=1; s[2].len=100;
     og2_kind_t kind = (argc>1 && !strcmp(argv[1],"boxedlen")) ? OG2_K_LEN : OG2_K_NOTE;
+    if( argc>1 && !strcmp(argv[1],"boxedmute") ) for(int i=0;i<16;++i) s[i].muted = 1;
     static og2_frame_t f; static u8 cb[2048]; int lo, hi; OG2_StepRange(s,&lo,&hi);
     for(int n=0;n<16;++n){ OG2_RenderCellBoxed(cb, n, &s[n], lo, hi, n==5, n==4, "LEN", kind);
       for(int y=0;y<OG2_H;++y) for(int x=0;x<64;++x) f.gray[n/4][y][(n%4)*64+x] = (x&1)?(cb[y*32+x/2]&15):(cb[y*32+x/2]>>4); }
-    FILE *o = fopen(kind==OG2_K_LEN?"boxedlen.pgm":"boxed.pgm","wb"); fprintf(o,"P5\n%d %d\n15\n", OG2_W*OG2_DISPLAYS, OG2_H);
+    FILE *o = fopen(kind==OG2_K_LEN?"boxedlen.pgm":(!strcmp(argv[1],"boxedmute")?"boxedmute.pgm":"boxed.pgm"),"wb"); fprintf(o,"P5\n%d %d\n15\n", OG2_W*OG2_DISPLAYS, OG2_H);
     for(int y=0;y<OG2_H;++y) for(int d=0;d<OG2_DISPLAYS;++d) for(int x=0;x<OG2_W;++x) fputc(f.gray[d][y][x], o);
     fclose(o); return 0;
   }

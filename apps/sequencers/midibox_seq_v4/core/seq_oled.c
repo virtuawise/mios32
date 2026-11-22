@@ -158,6 +158,13 @@ static void collect_steps(void)
     }
   }
 
+  // mute: track gemute of de gekozen parameterlaag gemute -> arcering + M in alle vakken
+  {
+    u8 muted = (((seq_core_trk_muted >> track) & 1) || ((seq_core_trk[track].layer_muted >> (layer & 0x0f)) & 1)) ? 1 : 0;
+    for(i=0; i<16; ++i)
+      steps[i].muted = muted;
+  }
+
   // glide: loopt van een stap met Gld. naar de volgende getriggerde stap op de pagina, ook door lege stappen heen
   for(i=0; i<16; ++i) {
     steps[i].glide_to = 0xff;
