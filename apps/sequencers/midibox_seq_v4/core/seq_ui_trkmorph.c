@@ -19,6 +19,9 @@
 #include <string.h>
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 #include "seq_cc.h"
 #include "seq_morph.h"
 #include "seq_midi_port.h"
@@ -286,6 +289,40 @@ static s32 LCD_Handler(u8 high_prio)
   return 0; // no error
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): column page, columns follow the GP layout of this page
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_UI_TRKMORPH_OledGet(og2_page_t *p)
+{
+  u8 track = SEQ_UI_VisibleTrackGet();
+  og2_col_t *c;
+  OG2_PageInit(p);
+  sprintf(p->head[0], "MORPH G%dT%d", (track/4)+1, (track%4)+1);
+  strcpy(p->head[2], "MORPH VALUE");
+  c = OG2_PageCol(p, 0, OG2_C_VALUE, 1, "TRACK"); sprintf(c->value, "G%dT%d", (track/4)+1, (track%4)+1);
+  c = OG2_PageCol(p, 1, OG2_C_TOGGLE, 1, "MODE"); c->on = SEQ_CC_Get(track, SEQ_CC_MORPH_MODE) ? 1 : 0;
+  {
+    int b = SEQ_CC_Get(track, SEQ_CC_MORPH_DST) + 1, e = b + SEQ_CC_Get(track, SEQ_CC_LENGTH);
+    if( e > 256 ) e = 256;
+    c = OG2_PageCol(p, 2, OG2_C_VALUE, 2, "DST. RANGE"); sprintf(c->value, "%d..%d", b, e);
+  }
+  c = OG2_PageCol(p, 5, OG2_C_ACTION, 1, "STORE"); strcpy(c->value, "STORE");
+  c = OG2_PageCol(p, 7, OG2_C_VALUE, 1, "VALUE"); sprintf(c->value, "%d", SEQ_MORPH_ValueGet());
+  c = OG2_PageCol(p, 8, OG2_C_METER, 8, "MORPH");
+  c->meter = (SEQ_MORPH_ValueGet() * 100) / 127;
+  if( !seq_midi_in_ext_ctrl_channel || seq_midi_in_ext_ctrl_asg[SEQ_MIDI_IN_EXT_CTRL_MORPH] >= 0x80 )
+    strcpy(c->value, "EXT. CTRL OFF (MIDI PAGE)");
+  else
+    sprintf(c->value, "EXT. CTRL CHN %d CC %d", seq_midi_in_ext_ctrl_channel, seq_midi_in_ext_ctrl_asg[SEQ_MIDI_IN_EXT_CTRL_MORPH]);
+  switch( ui_selected_item ) {
+  case ITEM_GXTY: p->sel = 0x0001; break;
+  case ITEM_MORPH_MODE: p->sel = 0x0002; break;
+  case ITEM_MORPH_DST: p->sel = 0x000c; break;
+  case ITEM_MORPH_VALUE: p->sel = 0xff80; break;
+  }
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

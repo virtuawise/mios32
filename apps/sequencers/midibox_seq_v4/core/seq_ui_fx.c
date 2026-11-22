@@ -18,6 +18,9 @@
 #include <mios32.h>
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 
 #include "seq_core.h"
 
@@ -138,6 +141,25 @@ static s32 LCD_Handler(u8 high_prio)
   return 0; // no error
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): column page, the GP button under a box opens that FX page
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_UI_FX_OledGet(og2_page_t *p)
+{
+  static const char *nm[16] = {"ECHO","HUMANIZE","ROBOTIZE","LIMIT","LFO","DUPL.",0,0,"LOOP","SCALE",0,0,0,0,0,0};
+  og2_col_t *c;
+  int k;
+  OG2_PageInit(p);
+  strcpy(p->head[0], "LOCAL FX (PER TRACK)");
+  strcpy(p->head[2], "GLOBAL FX");
+  for(k=0; k<16; ++k) {
+    if( !nm[k] ) continue;
+    c = OG2_PageCol(p, k, OG2_C_ACTION, 1, "FX");
+    strcpy(c->value, nm[k]);
+  }
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

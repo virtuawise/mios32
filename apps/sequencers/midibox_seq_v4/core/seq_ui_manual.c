@@ -18,6 +18,9 @@
 #include <mios32.h>
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 
 #include "seq_core.h"
 #include "seq_trg.h"
@@ -168,6 +171,25 @@ static s32 LCD_Handler(u8 high_prio)
   return 0; // no error
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): column page, one box per step (GP1-16 trigger the step)
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_UI_MANUAL_OledGet(og2_page_t *p)
+{
+  og2_col_t *c;
+  int k;
+  OG2_PageInit(p);
+  strcpy(p->head[0], "MANUAL TRIGGER");
+  strcpy(p->head[3], "SELECT: SYNC TO BAR");
+  for(k=0; k<16; ++k) {
+    u8 step = 16*ui_selected_step_view + k;
+    c = OG2_PageCol(p, k, OG2_C_CHOICE, 1, "STEP");
+    sprintf(c->value, "%d", step + 1);
+    c->on = (ui_hold_msg_ctr && step == ui_selected_step) ? 1 : 0;
+  }
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

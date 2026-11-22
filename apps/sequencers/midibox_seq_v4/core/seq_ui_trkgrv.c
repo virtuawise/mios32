@@ -21,6 +21,9 @@
 
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 #include "seq_cc.h"
 #include "seq_groove.h"
 #include "seq_file.h"
@@ -490,6 +493,53 @@ static s32 EXIT_Handler(void)
   return status;
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): column page, columns follow the GP layout of this page
+/////////////////////////////////////////////////////////////////////////////
+static void GrvFmt(char *o, int v){ if( v <= -128 ) strcpy(o, "VNEG"); else if( v >= 127 ) strcpy(o, "VPOS"); else sprintf(o, "%d", v); }
+s32 SEQ_UI_TRKGRV_OledGet(og2_page_t *p)
+{
+  u8 track = SEQ_UI_VisibleTrackGet();
+  u8 org = SEQ_CC_Get(track, SEQ_CC_GROOVE_STYLE), grv = org & 0x3f;
+  u8 tmpl = (grv >= SEQ_GROOVE_NUM_PRESETS);
+  seq_groove_entry_t *g = tmpl ? (seq_groove_entry_t *)&seq_groove_templates[grv-SEQ_GROOVE_NUM_PRESETS] : (seq_groove_entry_t *)&seq_groove_presets[grv];
+  og2_col_t *c;
+  int i, n;
+  OG2_PageInit(p);
+  sprintf(p->head[0], "GROOVE G%dT%d", (track/4)+1, (track%4)+1);
+  strcpy(p->head[2], tmpl ? "TEMPLATE STEP" : "TEMPLATE STEP (PRESET)");
+  c = OG2_PageCol(p, 0, OG2_C_VALUE, 1, "TRACK"); sprintf(c->value, "G%dT%d", (track/4)+1, (track%4)+1);
+  c = OG2_PageCol(p, 1, OG2_C_VALUE, 3, "STYLE");
+  { char *nm = SEQ_GROOVE_NameGet(grv); for(i=0; nm && nm[i] && i<20; ++i) c->value[i] = nm[i]; c->value[i] = 0; while( i > 0 && c->value[i-1] == ' ' ) c->value[--i] = 0; }
+  c = OG2_PageCol(p, 4, OG2_C_VALUE, 2, "INTENSITY"); sprintf(c->value, "%d", SEQ_CC_Get(track, SEQ_CC_GROOVE_VALUE));
+  c = OG2_PageCol(p, 6, OG2_C_TOGGLE, 1, "GLOBAL"); c->on = (seq_groove_ui_local_selection & (1 << track)) ? 0 : 1;
+  c = OG2_PageCol(p, 7, OG2_C_VALUE, 1, "SYNC"); strcpy(c->value, (org & 0x40) ? "REF STEP" : "TRACK");
+  c = OG2_PageCol(p, 8, OG2_C_VALUE, 1, "STEP"); sprintf(c->value, "%d", edit_step+1);
+  c = OG2_PageCol(p, 9, OG2_C_VALUE, 1, "DELAY"); GrvFmt(c->value, g->add_step_delay[edit_step]); c->dim = !tmpl;
+  c = OG2_PageCol(p, 10, OG2_C_VALUE, 1, "LENGTH"); GrvFmt(c->value, g->add_step_length[edit_step]); c->dim = !tmpl;
+  c = OG2_PageCol(p, 11, OG2_C_VALUE, 1, "VELOCITY"); GrvFmt(c->value, g->add_step_velocity[edit_step]); c->dim = !tmpl;
+  c = OG2_PageCol(p, 12, OG2_C_VALUE, 1, "STEPS"); sprintf(c->value, "%d", g->num_steps); c->dim = !tmpl;
+  c = OG2_PageCol(p, 13, OG2_C_GRAPH, 2, "DELAY CURVE");
+  n = g->num_steps; if( n < 1 ) n = 1; if( n > 16 ) n = 16;
+  p->graph_n = n;
+  for(i=0; i<n; ++i) p->graph[i] = (s8)(((int)g->add_step_delay[i] * 100) / 128);
+  p->graph_mark = edit_step < n ? edit_step : -1;
+  c = OG2_PageCol(p, 15, OG2_C_ACTION, 1, "CLEAR"); strcpy(c->value, "CLEAR"); c->dim = !tmpl;
+  switch( ui_selected_item ) {
+  case ITEM_GXTY: p->sel = 0x0001; break;
+  case ITEM_GROOVE_STYLE: p->sel = 0x000e; break;
+  case ITEM_GROOVE_VALUE: p->sel = 0x0030; break;
+  case ITEM_GROOVE_GLOBAL: p->sel = 0x0040; break;
+  case ITEM_GROOVE_SYNC: p->sel = 0x0080; break;
+  case ITEM_GROOVE_STEP: p->sel = 0x0100; break;
+  case ITEM_GROOVE_DELAY: p->sel = 0x0200; break;
+  case ITEM_GROOVE_LENGTH: p->sel = 0x0400; break;
+  case ITEM_GROOVE_VELOCITY: p->sel = 0x0800; break;
+  case ITEM_GROOVE_NUM_STEPS: p->sel = 0x1000; break;
+  }
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

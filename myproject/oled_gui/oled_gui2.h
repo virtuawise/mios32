@@ -102,6 +102,42 @@ typedef struct {
 } og2_mode_t;
 extern void OG2_RenderModeCell(u8 *out2048, int cell, const og2_mode_t *m);
 
+// ---- generic column page: every menu page describes its 16 GP columns, the renderer applies the UI rules (DESIGN.md)
+typedef enum {
+  OG2_C_NONE = 0,   // nothing in this column
+  OG2_C_VALUE,      // label + value
+  OG2_C_TOGGLE,     // label + ON/OFF (on = filled)
+  OG2_C_CHOICE,     // one option of a choice: label + value, on = active (filled)
+  OG2_C_ACTION,     // label + framed button text (value), e.g. STORE, CLEAR
+  OG2_C_TEXT,       // label + up to 3 lines of page.text, separated by '|'
+  OG2_C_GRAPH,      // label + bar graph of page.graph[] (signed, centre line), value = text right in the label row
+  OG2_C_METER,      // label + value + horizontal meter (meter = 0..100)
+  OG2_C_KEYS,       // label + one-octave keyboard: keys = bit mask of lit keys (bit 0 = C), value = text right in the label row
+  OG2_C_SPAN        // continuation of the box that starts in a column to the left
+} og2_ckind_t;
+typedef struct {
+  u8 kind;          // og2_ckind_t
+  u8 span;          // number of columns of the box (1-16), only in the first column
+  u8 on;            // TOGGLE/CHOICE: active
+  u8 dim;           // not applicable
+  u8 meter;         // METER: 0..100
+  u16 keys;         // KEYS: lit keys
+  char label[14];
+  char value[28];
+} og2_col_t;
+typedef struct {
+  char head[4][24];   // header per screen ("" = only the dotted line)
+  og2_col_t c[16];
+  u16 sel;            // columns of the selected item (double frame)
+  s8 graph[16];       // GRAPH data, -100..100
+  u8 graph_n;         // number of graph bars
+  s8 graph_mark;      // highlighted bar, -1 = none
+  char text[112];      // TEXT box content (one TEXT box per page), lines separated by '|'
+} og2_page_t;
+extern void OG2_RenderPageCell(u8 *out2048, int cell, const og2_page_t *p);
+extern void OG2_PageInit(og2_page_t *p);                                          // clears the page
+extern og2_col_t *OG2_PageCol(og2_page_t *p, int k, u8 kind, int span, const char *label);   // sets up column k (and SPAN columns)
+
 // ---- dashboard (globale pagina's: BPM, PATTERN, SONG, SAVE): 4 schermen als samengesteld beeld
 typedef struct {
   u16 bpm10;          // BPM x 10

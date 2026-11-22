@@ -150,6 +150,7 @@ typedef struct {
 static s32 (*ui_button_callback)(seq_ui_button_t button, s32 depressed);
 static s32 (*ui_encoder_callback)(seq_ui_encoder_t encoder, s32 incrementer);
 static s32 (*ui_led_callback)(u16 *gp_leds);
+u16 seq_ui_page_gp_leds;   // GP LED pattern of the page itself (before the menu button override), for the OLED view
 static s32 (*ui_lcd_callback)(u8 high_prio);
 static s32 (*ui_exit_callback)(void);
 static s32 (*ui_midi_in_callback)(mios32_midi_port_t port, mios32_midi_package_t p);
@@ -3421,6 +3422,9 @@ s32 SEQ_UI_LED_Handler(void)
     if( ui_led_callback != NULL )
       ui_led_callback(&new_ui_gp_leds);
 
+    // 4 x OLED: keep the page's own LED pattern (= selected item) for the OLED view; not while the cursor blinks it away
+    if( !ui_cursor_flash || new_ui_gp_leds )
+      seq_ui_page_gp_leds = new_ui_gp_leds;
     // 4 x OLED: on menu pages the GP LEDs only show the menu button of the page (the screens show selection and on/off)
     {
       u8 mb = SEQ_OLED_MenuButtonGet();

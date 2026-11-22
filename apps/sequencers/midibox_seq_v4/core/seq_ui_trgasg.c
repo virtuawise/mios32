@@ -18,6 +18,9 @@
 #include <mios32.h>
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 #include "seq_cc.h"
 
 
@@ -263,6 +266,36 @@ static s32 LCD_Handler(u8 high_prio)
   return 0; // no error
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): column page, columns follow the GP layout of this page
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_UI_TRGASG_OledGet(og2_page_t *p)
+{
+  static const char *lbl[9] = {"GATE","ACCENT","ROLL","GLIDE","SKIP","RND GATE","RND VAL.","NO FX","ROLLGATE"};
+  static const u8 cc[9] = {SEQ_CC_ASG_GATE, SEQ_CC_ASG_ACCENT, SEQ_CC_ASG_ROLL, SEQ_CC_ASG_GLIDE, SEQ_CC_ASG_SKIP,
+			   SEQ_CC_ASG_RANDOM_GATE, SEQ_CC_ASG_RANDOM_VALUE, SEQ_CC_ASG_NO_FX, SEQ_CC_ASG_ROLL_GATE};
+  u8 track = SEQ_UI_VisibleTrackGet();
+  u8 num = SEQ_TRG_NumLayersGet(track);
+  og2_col_t *c;
+  int i;
+  OG2_PageInit(p);
+  sprintf(p->head[0], "TRIGGER ASSIGN G%dT%d", (track/4)+1, (track%4)+1);
+  c = OG2_PageCol(p, 0, OG2_C_VALUE, 1, "TRACK"); sprintf(c->value, "G%dT%d", (track/4)+1, (track%4)+1);
+  for(i=0; i<9; ++i) {
+    u8 v = SEQ_CC_Get(track, cc[i]);
+    c = OG2_PageCol(p, 1+i, OG2_C_VALUE, 1, lbl[i]);
+    if( v == 0 ) { strcpy(c->value, "OFF"); c->dim = 1; }
+    else if( v > num ) { strcpy(c->value, "---"); c->dim = 1; }
+    else sprintf(c->value, "LAYER %c", 'A' + v - 1);
+  }
+  strcpy(p->head[2], "");
+  strcpy(p->head[3], "INFO");
+  c = OG2_PageCol(p, 10, OG2_C_TEXT, 6, "LAYERS");
+  sprintf(p->text, "Each function follows one|trigger layer of the track.|This track has %d layers (A-%c).", num, 'A' + (num ? num : 1) - 1);
+  if( ui_selected_item <= ITEM_ROLL_GATE ) p->sel = 1 << ui_selected_item;
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

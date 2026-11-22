@@ -406,25 +406,21 @@ void OG2_RenderTextGroupCell(u8 *out, int cell, const og2_tgroup_t *g)
   static u8 tmp[OG2_H][CW];
   for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
   u8 (*d)[CW] = tmp;
-  if( g->n == 0 ){ for(int x=0; x<56; x+=4) px(d, 4+x, 31, 2); tile_pack(out, tmp); return; }
+  if( g->n == 0 ){ tile_pack(out, tmp); return; }     // empty column: nothing
   ox_shift = (cell - g->start) * 64;
-  const int bx = 4, by = 3, bw = g->n * 64 - 8, bh = 56;
-  int na = 0, nb = 0; while( g->label[na] ) ++na; while( g->value[nb] ) ++nb;
+  // same grid and rules as the column pages (DESIGN.md): box y 11..60, label top-left, value 1x bold upper case at y 34
+  const int bx = 3, by = 11, bw = g->n * 64 - 6, bh = 50;
+  char lu[28], vu[28]; int na = 0, nb = 0;
+  for(; g->label[na] && na < 27; ++na) lu[na] = g->label[na];
+  lu[na] = 0;
+  for(; g->value[nb] && nb < 27; ++nb) vu[nb] = (g->value[nb] >= 'a' && g->value[nb] <= 'z') ? g->value[nb] - 32 : g->value[nb];
+  vu[nb] = 0;
   if( g->sel ) rect(d, bx, by, bw, bh, 2);
   frame_box(d, bx, by, bw, bh, g->sel ? 15 : 9);
   if( g->sel ) frame_box(d, bx+1, by+1, bw-2, bh-2, 15);
   int cx = bx + bw/2;
-  if( na > 0 && nb > 0 ){                                  // label klein linksboven, waarde groot
-    text(d, GLCD_FONT_NORMAL, bx+4, by+4, g->label, 1, g->sel ? 12 : 9);
-    int sc = (tw(GLCD_FONT_NORMAL, g->value, 2) > bw - 8) ? 1 : 2, w = tw(GLCD_FONT_NORMAL, g->value, sc);
-    int ty = sc == 2 ? by+24 : by+28;
-    text(d, GLCD_FONT_NORMAL, cx - w/2 - 1, ty, g->value, sc, 15); text(d, GLCD_FONT_NORMAL, cx - w/2, ty, g->value, sc, 15);
-  } else if( na > 0 || nb > 0 ){                            // 1 regel: die is de inhoud
-    const char *m = na > 0 ? g->label : g->value;
-    int sc = (tw(GLCD_FONT_NORMAL, m, 2) > bw - 8) ? 1 : 2, w = tw(GLCD_FONT_NORMAL, m, sc);
-    int ty = by + bh/2 - (sc == 2 ? 8 : 4);
-    text(d, GLCD_FONT_NORMAL, cx - w/2 - 1, ty, m, sc, 15); text(d, GLCD_FONT_NORMAL, cx - w/2, ty, m, sc, 15);
-  }
+  if( na > 0 ) text(d, GLCD_FONT_NORMAL, bx+5, by+4, lu, 1, g->sel ? 12 : 9);
+  if( nb > 0 ){ int w = tw(GLCD_FONT_NORMAL, vu, 1); text(d, GLCD_FONT_NORMAL, cx - w/2, 34, vu, 1, 15); text(d, GLCD_FONT_NORMAL, cx - w/2 + 1, 34, vu, 1, 15); }
   ox_shift = 0;
   tile_pack(out, tmp);
 }
@@ -764,6 +760,93 @@ void OG2_RenderModeCell(u8 *out, int cell, const og2_mode_t *m)
   } break;
   }
   #undef SELM
+  ox_shift = 0;
+  tile_pack(out, tmp);
+}
+
+// ---- generic column page (all menu pages without a hand-made layout) ----
+void OG2_PageInit(og2_page_t *p){ memset(p, 0, sizeof(*p)); p->graph_mark = -1; }
+og2_col_t *OG2_PageCol(og2_page_t *p, int k, u8 kind, int span, const char *label)
+{
+  if( k < 0 || k > 15 ) k = 0;
+  if( span < 1 ) span = 1;
+  if( k + span > 16 ) span = 16 - k;
+  og2_col_t *c = &p->c[k];
+  memset(c, 0, sizeof(*c));
+  c->kind = kind; c->span = span;
+  if( label ){ int i = 0; for(; label[i] && i < 13; ++i) c->label[i] = label[i]; c->label[i] = 0; }
+  for(int i=1; i<span; ++i){ memset(&p->c[k+i], 0, sizeof(og2_col_t)); p->c[k+i].kind = OG2_C_SPAN; }
+  return c;
+}
+static void pg_box(u8 (*d)[CW], const og2_page_t *p, int j)
+{
+  const og2_col_t *c = &p->c[j];
+  int n = c->span ? c->span : 1, sel = ((p->sel >> j) & ((1 << n) - 1)) != 0;
+  int fill = (c->kind == OG2_C_TOGGLE || c->kind == OG2_C_CHOICE) && c->on && !c->dim;
+  ebox(d, j, n, sel);
+  if( fill && !sel ) rect(d, ebx(j)+1, EBY+1, ebw(n)-2, EBH-2, 3);
+  elabel(d, j, c->label, sel || fill);
+  int cx = ebx(j) + ebw(n)/2;
+  switch( c->kind ){
+  case OG2_C_VALUE:
+    evalue(d, j, n, c->value, c->dim ? 5 : 15); break;
+  case OG2_C_TOGGLE:
+    evalue(d, j, n, c->on ? "ON" : "OFF", c->dim ? 4 : (c->on ? 15 : 7)); break;
+  case OG2_C_CHOICE:
+    evalue(d, j, n, c->value, c->dim ? 4 : (c->on ? 15 : 6)); break;
+  case OG2_C_ACTION: {
+    int w = tw(LFONT, c->value, 1) + 10; if( w > ebw(n) - 8 ) w = ebw(n) - 8;
+    frame_box(d, cx - w/2, VALY-4, w, 15, c->dim ? 4 : 9); evalue(d, j, n, c->value, c->dim ? 5 : 15);
+  } break;
+  case OG2_C_TEXT: {
+    char line[44]; int l = 0, o = 0;
+    for(int i=0; ; ++i){
+      char ch = p->text[i];
+      if( ch == '|' || ch == 0 ){ line[o] = 0; text(d, LFONT, ebx(j)+5, EBY+15+l*11, line, 1, c->dim ? 5 : 10); ++l; o = 0; if( !ch || l >= 3 ) break; }
+      else if( o < 43 && i < (int)sizeof(p->text) ) line[o++] = ch;
+    }
+  } break;
+  case OG2_C_GRAPH: {
+    if( c->value[0] ) elabel_right(d, j, n, c->value, 9);
+    int x0 = ebx(j)+6, w = ebw(n)-12, yc = 41, cnt = p->graph_n ? p->graph_n : 1, bw = w / cnt;
+    for(int x=0; x<w; x+=2) px(d, x0+x, yc, 3);
+    for(int i=0; i<p->graph_n; ++i){
+      int v = p->graph[i], h = (v * 14) / 100, x = x0 + i*bw, g = (i == p->graph_mark) ? 15 : (c->dim ? 4 : 9);
+      if( h > 0 ) rect(d, x, yc - h, bw > 2 ? bw - 1 : 1, h, g);
+      else if( h < 0 ) rect(d, x, yc + 1, bw > 2 ? bw - 1 : 1, -h, g);
+      else rect(d, x, yc - 1, bw > 2 ? bw - 1 : 1, 3, g);
+    }
+  } break;
+  case OG2_C_METER: {
+    if( c->value[0] ) elabel_right(d, j, n, c->value, 12);
+    int x0 = ebx(j)+6, w = ebw(n)-12, y = 30, h = 12, f = (c->meter > 100 ? 100 : c->meter) * w / 100;
+    frame_box(d, x0-1, y-1, w+2, h+2, 4); rect(d, x0, y, f, h, c->dim ? 5 : 12);
+    for(int i=1; i<n; ++i) for(int yy=y+h+3; yy<y+h+6; ++yy) px(d, ebx(j+i)-3, yy, 6);   // column borders: the button below sets that position
+  } break;
+  case OG2_C_KEYS: {
+    if( c->value[0] ) elabel_right(d, j, n, c->value, 12);
+    static const u8 white[7] = {0,2,4,5,7,9,11}, black[5] = {1,3,6,8,10}, bpos[5] = {1,2,4,5,6};
+    int x0 = ebx(j)+8, w = ebw(n)-16, kw = w / 7, y = 26, hh = 28;
+    for(int i=0; i<7; ++i){ int lit = (c->keys >> white[i]) & 1; if( lit ) rect(d, x0+i*kw+1, y+1, kw-1, hh-1, 13); frame_box(d, x0+i*kw, y, kw+1, hh+1, 7); }
+    for(int i=0; i<5; ++i){ int lit = (c->keys >> black[i]) & 1, bx = x0 + bpos[i]*kw - kw/3; rect(d, bx, y, (2*kw)/3, hh*6/10, lit ? 15 : 1); frame_box(d, bx, y, (2*kw)/3, hh*6/10, 7); }
+  } break;
+  default: break;
+  }
+}
+void OG2_RenderPageCell(u8 *out, int cell, const og2_page_t *p)
+{
+  static u8 tmp[OG2_H][CW];
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
+  u8 (*d)[CW] = tmp;
+  int scr = cell / 4;
+  ox_shift = cell * 64;
+  eheader(d, scr, p->head[scr]);
+  for(int j=0; j<16; ++j){
+    const og2_col_t *c = &p->c[j];
+    if( c->kind == OG2_C_NONE || c->kind == OG2_C_SPAN ) continue;
+    int n = c->span ? c->span : 1;
+    if( cell >= j && cell < j + n ) pg_box(d, p, j);
+  }
   ox_shift = 0;
   tile_pack(out, tmp);
 }

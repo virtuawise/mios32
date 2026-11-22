@@ -20,3 +20,9 @@ Decisions taken with the user: boxes in "Elektron style"; velocity as a number i
 4. **No bars under values.** The only bar is the INIT hold progress.
 5. On / active choice = filled box; last touched = double frame; not applicable = dimmed.
 6. Lists (layers A-P, presets, timebase, direction) = chips in one box; one column per option = separate boxes.
+
+## How a page gets its layout
+- Hand-made layout + own mapping: Event, Mode, Divider/Length/Direction (`seq_ui_timing.c`), Transpose.
+- Column page (`og2_page_t`) filled by the page itself (`SEQ_UI_xxx_OledGet`): Groove, Trigger assign, Morph, Manual, FX menu.
+- Column page from a table in `seq_oled.c` (GP column masks + label, value from the LCD): FX sub-pages; MIDI (sections).
+- Anything else: LCD text split into boxes (same grid and rules).
