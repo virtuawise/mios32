@@ -532,14 +532,33 @@ void OG2_RenderEventCell(u8 *out, int cell, const og2_event_t *e)
     text(d, GLCD_FONT_SMALL, ebx(7)+6, 27, "PAR", 1, 8); num2str(b, e->par_layers); text(d, GLCD_FONT_NORMAL, ebx(7)+ebw(1)-9-tw(GLCD_FONT_NORMAL, b, 2), 24, b, 2, 15);
     text(d, GLCD_FONT_SMALL, ebx(7)+6, 45, "TRG", 1, 8); num2str(b, e->trg_layers); text(d, GLCD_FONT_NORMAL, ebx(7)+ebw(1)-9-tw(GLCD_FONT_NORMAL, b, 2), 42, b, 2, 15);
   } break;
-  case 2: {
+  case 2: if( e->mode == 3 ) {
+    eheader(d, 2, "DRUM");
+    evbox(d, 8, "LAYER A", e->lay_a, -1, SELK(8), 0);
+    evbox(d, 9, "LAYER B", e->lay_b, -1, SELK(9), 0);
+    num2str(b, e->drum_inst + 1);
+    evbox(d, 10, "DRUM", b, e->instruments > 1 ? (e->drum_inst * 100) / (e->instruments - 1) : 0, SELK(10), 0);
+    { char nn[8]; note_name(e->drum_note, nn); evbox(d, 11, "NOTE", nn, (e->drum_note * 100) / 127, SELK(11), 0); }
+    break;
+  } else {
     eheader(d, 2, "PARAMETER LAYERS");
     static const char *ly[16] = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P"};
     epicker(d, 8, 2, "LAYER", ly, 16, 8, e->layer_sel, SELK(8) || SELK(9), e->par_layers);
     evbox(d, 10, "TYPE", e->ltype, -1, SELK(10) || e->ltype_pending, 0);
     ebox(d, 11, 1, SELK(11)); elabel(d, 11, "PARAM", SELK(11)); ecbtext(d, ebx(11)+ebw(1)/2, 33, e->param, 1, e->param[0] == '#' ? 15 : 5);
   } break;
-  default: {
+  default: if( e->mode == 3 ) {
+    eheader(d, 3, "ACTIONS");
+    num2str(b, e->vel_n); evbox(d, 12, "VEL N", b, (e->vel_n * 100) / 127, SELK(12), 0);
+    num2str(b, e->vel_a); evbox(d, 13, "VEL A", b, (e->vel_a * 100) / 127, SELK(13), 0);
+    ebox(d, 14, 1, SELK(14)); elabel(d, 14, "PRESETS", SELK(14));
+    { int cx = ebx(14)+ebw(1)/2, w = tw(GLCD_FONT_SMALL, "SELECT", 1) + 8; frame_box(d, cx-w/2, 31, w, 15, 9); ecsmall(d, cx, 35, "SELECT", 15); }
+    { int hot = e->init_needed || SELK(15);
+      ebox(d, 15, 1, hot); elabel(d, 15, "INIT", hot);
+      ecsmall(d, ebx(15)+ebw(1)/2, 29, "HOLD", e->init_needed ? 15 : 8); ecsmall(d, ebx(15)+ebw(1)/2, 38, "2 SEC", e->init_needed ? 15 : 8);
+      int x = ebx(15)+5, w = ebw(1)-10; for(int i=0; i<w; ++i) px(d, x+i, 52, 3); if( e->init_pct ) rect(d, x, 50, (w * e->init_pct) / 100, 5, 15); }
+    break;
+  } else {
     eheader(d, 3, "ACTIONS");
     ebox(d, 12, 2, SELK(12) || SELK(13)); elabel(d, 12, "PRESETS", SELK(12) || SELK(13));
     { int cx = ebx(12)+ebw(2)/2, w = tw(GLCD_FONT_NORMAL, "SELECT", 1) + 14; frame_box(d, cx-w/2, 32, w, 15, 9); ecbtext(d, cx, 36, "SELECT", 1, 15); }

@@ -60,7 +60,12 @@ typedef struct {
   char param[6];        // CC-nummer ("#074") of "---"
   u8 init_pct;          // 0-100: voortgang van het vasthouden van INIT (2 s)
   u8 init_needed;       // 1 = configuratie gewijzigd: INIT nodig
-  u8 sel;               // laatst aangeraakte kolom 0-15 (nieuwe indeling)
+  u8 sel;               // last touched column 0-15
+  // drum mode
+  u8 drum_inst;         // selected instrument (0-based)
+  u8 drum_note, vel_n, vel_a;   // MIDI note, normal and accented velocity of that instrument
+  char lay_a[6], lay_b[6];      // types of the two drum parameter layers
+  u8 trg_steps_drum;    // (unused, steps holds the trigger steps in drum mode)
 } og2_event_t;
 extern void OG2_RenderEventCell(u8 *out2048, int cell, const og2_event_t *e);
 

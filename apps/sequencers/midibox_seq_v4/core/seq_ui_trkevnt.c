@@ -1427,6 +1427,9 @@ static u8 evt_sel = 0;
 static u8 evt_init_held = 0;      // INIT-knop wordt vastgehouden (voor de voortgangsbalk op de OLED's)
 static u32 evt_init_t0 = 0;
 static const s8 evt_map[16] = { 0, 1, 1, 2, 5, 6, 7, -1, 8, 8, 9, 10, 14, 14, 15, 15 };
+// drum mode: 8 LAYER A, 9 LAYER B, 10 DRUM select, 11 NOTE, 12 VEL N, 13 VEL A, 14 PRESETS, 15 INIT
+static const s8 evt_map_drum[16] = { 0, 1, 1, 2, 5, 6, 7, -1, 8, 9, 10, 11, 12, 13, 14, 15 };
+#define EVT_MAP(k) ((layer_config[selected_layer_config].event_mode == SEQ_EVENT_MODE_Drum) ? evt_map_drum[k] : evt_map[k])
 
 // when the visible track changes, re-read its layer configuration immediately (the LCD handler does this later; INIT must not use a stale config)
 static void EvtSyncTrack(void)
@@ -1440,7 +1443,7 @@ static void EvtSyncTrack(void)
 
 static u8 EvtMapActive(void)
 {
-  return (pr_dialog == PR_DIALOG_NONE) && (layer_config[selected_layer_config].event_mode != SEQ_EVENT_MODE_Drum);
+  return (pr_dialog == PR_DIALOG_NONE);
 }
 
 static void EvtModeRange(u8 mode, u8 *first, u8 *last)
@@ -1497,7 +1500,7 @@ static s32 Encoder_HandlerMap(seq_ui_encoder_t encoder, s32 incrementer)
     case 3: return EvtSizeInc(incrementer);
     case 7: return 0;
   }
-  return Encoder_Handler((seq_ui_encoder_t)evt_map[k], incrementer);
+  return Encoder_Handler((seq_ui_encoder_t)EVT_MAP(k), incrementer);
 }
 
 static s32 Button_HandlerMap(seq_ui_button_t button, s32 depressed)
@@ -1507,14 +1510,14 @@ static s32 Button_HandlerMap(seq_ui_button_t button, s32 depressed)
     return Button_Handler(button, depressed);
   int k = (int)button;
   if( !depressed ) evt_sel = k;
-  if( k == 14 || k == 15 ) {
+  if( k == 15 || (k == 14 && layer_config[selected_layer_config].event_mode != SEQ_EVENT_MODE_Drum) ) {   // INIT columns
     if( !depressed ) { evt_init_held = 1; evt_init_t0 = MIOS32_TIMESTAMP_Get(); }
     else evt_init_held = 0;
   }
   switch( k ) {
     case 1: case 2: case 3: case 7: return 0;
   }
-  return Button_Handler((seq_ui_button_t)evt_map[k], depressed);
+  return Button_Handler((seq_ui_button_t)EVT_MAP(k), depressed);
 }
 
 static s32 LED_HandlerMap(u16 *gp_leds)
@@ -1523,6 +1526,16 @@ static s32 LED_HandlerMap(u16 *gp_leds)
   if( !EvtMapActive() )
     return r;
   u16 o = *gp_leds, n = 0;
+  if( layer_config[selected_layer_config].event_mode == SEQ_EVENT_MODE_Drum ) {
+    if( o & 0x0001 ) n |= (1 << 0);
+    if( o & 0x001e ) n |= (1 << 1) | (1 << 2) | (1 << 3);
+    if( o & 0x0020 ) n |= (1 << 4);
+    if( o & 0x0040 ) n |= (1 << 5);
+    if( o & 0x0080 ) n |= (1 << 6);
+    n |= (o & 0xff00);                 // GP9..GP16 keep their position (layer A/B, drum, note, velN/A, presets, init)
+    *gp_leds = n;
+    return r;
+  }
   if( o & 0x0001 ) n |= (1 << 0);
   if( o & 0x001e ) n |= (1 << 1) | (1 << 2) | (1 << 3);
   if( o & 0x0020 ) n |= (1 << 4);
@@ -1557,7 +1570,7 @@ s32 SEQ_UI_TRKEVNT_OledGet(og2_event_t *e)
   EvtModeRange(lc->event_mode, &f, &l);
   e->size_idx = selected_layer_config - f;
   e->size_n = l - f + 1;
-  e->steps = lc->par_steps;
+  e->steps = (lc->event_mode == SEQ_EVENT_MODE_Drum) ? lc->trg_steps : lc->par_steps;
   e->par_layers = lc->par_layers;
   e->trg_layers = lc->trg_layers;
   e->instruments = lc->instruments;
@@ -1589,6 +1602,23 @@ s32 SEQ_UI_TRKEVNT_OledGet(og2_event_t *e)
   if( evt_init_held ) {
     u32 dt = MIOS32_TIMESTAMP_Get() - evt_init_t0;
     e->init_pct = (dt >= 2000) ? 100 : (u8)(dt / 20);
+  }
+  if( lc->event_mode == SEQ_EVENT_MODE_Drum ) {
+    u8 inst = ui_selected_instrument;
+    char *tn;
+    if( inst >= lc->instruments ) inst = 0;
+    e->drum_inst = inst;
+    e->drum_note = SEQ_CC_Get(track, SEQ_CC_LAY_CONST_A1 + inst) & 0x7f;
+    e->vel_n = SEQ_CC_Get(track, SEQ_CC_LAY_CONST_B1 + inst) & 0x7f;
+    e->vel_a = SEQ_CC_Get(track, SEQ_CC_LAY_CONST_C1 + inst) & 0x7f;
+    tn = SEQ_PAR_TypeStr((seq_par_layer_type_t)SEQ_CC_Get(track, SEQ_CC_PAR_ASG_DRUM_LAYER_A));
+    for(k=0; k<5 && tn && tn[k]; ++k) e->lay_a[k] = tn[k];
+    e->lay_a[k] = 0;
+    while( k > 0 && e->lay_a[k-1] == ' ' ) e->lay_a[--k] = 0;
+    tn = SEQ_PAR_TypeStr((seq_par_layer_type_t)SEQ_CC_Get(track, SEQ_CC_PAR_ASG_DRUM_LAYER_B));
+    for(k=0; k<5 && tn && tn[k]; ++k) e->lay_b[k] = tn[k];
+    e->lay_b[k] = 0;
+    while( k > 0 && e->lay_b[k-1] == ' ' ) e->lay_b[--k] = 0;
   }
   e->init_needed = (selected_layer_config != GetLayerConfig(track)) ? 1 : 0;
   e->sel = evt_sel;
