@@ -197,6 +197,45 @@ static s32 midi_page_fill(void)
   return 0;
 }
 
+// Mixer page as a column page: one box per mixer channel (GP1-16), value of the selected mixer parameter
+extern u8 SEQ_UI_MIXER_ParGet(void);
+extern u8 SEQ_UI_MIXER_UtilActive(void);
+static s32 mixer_page_fill(void)
+{
+  static const char pname[16][8] = {"PORT","CHANNEL","PROGRAM","VOLUME","PANORAMA","REVERB","CHORUS","MOD","CC1","CC2","CC3","CC4","CC1 #","CC2 #","CC3 #","CC4 #"};
+  u8 par = SEQ_UI_MIXER_ParGet();
+  int t;
+  if( SEQ_UI_MIXER_UtilActive() ) return -1;
+  if( par > 15 ) par = 0;
+  OG2_PageInit(&pg);
+  sprintf(pg.head[0], "MIXER - %s", pname[par]);
+  { char *mn = SEQ_MIXER_MapNameGet(); sprintf(pg.head[3], "MAP %d", (int)SEQ_MIXER_NumGet() + 1); if( mn && mn[0] && mn[0] != ' ' && strncmp(mn, "Unnamed", 7) ) { strcat(pg.head[3], " "); strncat(pg.head[3], mn, 12); } }
+  for(t=0; t<16; ++t) {
+    og2_col_t *c;
+    char lbl[8];
+    s32 v = SEQ_MIXER_Get(t, par);
+    if( v < 0 ) v = 0;
+    sprintf(lbl, "CH %d", t + 1);
+    c = OG2_PageCol(&pg, t, OG2_C_VALUE, 1, lbl);
+    if( par == SEQ_MIXER_PAR_PORT ) {
+      const char *nm = SEQ_MIDI_PORT_OutNameGet(SEQ_MIDI_PORT_OutIxGet((mios32_midi_port_t)v));
+      strncpy(c->value, nm ? nm : "---", 4);
+    } else if( par == SEQ_MIXER_PAR_CHANNEL ) {
+      sprintf(c->value, "%d", (int)(v & 0x0f) + 1);
+    } else if( par == SEQ_MIXER_PAR_PANORAMA ) {
+      int p = (int)(v & 0x7f) - 64;
+      if( v == 0 ) { strcpy(c->value, "---"); c->dim = 1; }
+      else if( p == 0 ) strcpy(c->value, "C");
+      else sprintf(c->value, "%c%d", p < 0 ? 'L' : 'R', p < 0 ? -p : p);
+    } else if( v == 0 && par >= SEQ_MIXER_PAR_PRG ) {
+      strcpy(c->value, "---"); c->dim = 1;               // 0 = not used (as on the LCD)
+    } else
+      sprintf(c->value, "%d", (int)(v & 0x7f));
+    if( ui_selected_item == t ) pg.sel = 1 << t;
+  }
+  return 0;
+}
+
 // pages that describe themselves as a column page (og2_page_t); < 0 = not available (text view instead)
 static s32 page_fill(void)
 {
@@ -209,6 +248,7 @@ static s32 page_fill(void)
     case SEQ_UI_PAGE_FX:       return SEQ_UI_FX_OledGet(&pg);
     case SEQ_UI_PAGE_MIDI:     return midi_page_fill();
     case SEQ_UI_PAGE_SYSEX:    return SEQ_UI_SYSEX_OledGet(&pg);
+    case SEQ_UI_PAGE_MIXER:    return mixer_page_fill();
     default:                   return lcd_page_fill();
   }
 }
@@ -574,7 +614,7 @@ s32 SEQ_OLED_Handler(void)
 
   if( (ctr % OLED_PERIOD_MS) == 0 ) {
     int c;
-    cur_mode = (ui_page == SEQ_UI_PAGE_MUTE) ? 1 : ((ui_page == SEQ_UI_PAGE_MIXER) ? 2 :
+    cur_mode = (ui_page == SEQ_UI_PAGE_MUTE) ? 1 : ((ui_page == SEQ_UI_PAGE_MIXER) ? ((page_fill() >= 0) ? 9 : 4) :
 	       ((ui_page == SEQ_UI_PAGE_BPM || ui_page == SEQ_UI_PAGE_PATTERN || ui_page == SEQ_UI_PAGE_SONG || ui_page == SEQ_UI_PAGE_SAVE) ? 3 :
 		((ui_page == SEQ_UI_PAGE_EDIT) ? 0 : ((ui_page == SEQ_UI_PAGE_TRKEVNT) ? ((SEQ_UI_TRKEVNT_OledGet(&evt) >= 0) ? 6 : 4) : ((ui_page == SEQ_UI_PAGE_TRKDIV || ui_page == SEQ_UI_PAGE_TRKLEN || ui_page == SEQ_UI_PAGE_TRKDIR) ? 7 : ((ui_page == SEQ_UI_PAGE_TRKMODE) ? 8 : ((page_fill() >= 0) ? 9 : 4)))))));    // other pages (Transpose, Groove, ...): LCD text enlarged
     if( cur_mode == 0 )

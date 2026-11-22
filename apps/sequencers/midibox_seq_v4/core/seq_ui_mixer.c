@@ -778,3 +778,9 @@ u8 SEQ_UI_MIXER_ParGet(void)
 {
   return mixer_par;
 }
+
+// 1 = the options / name utility page is shown (the OLED view then shows the LCD text)
+u8 SEQ_UI_MIXER_UtilActive(void)
+{
+  return show_mixer_util_page ? 1 : 0;
+}
