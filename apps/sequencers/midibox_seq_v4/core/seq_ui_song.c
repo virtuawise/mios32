@@ -21,6 +21,9 @@
 
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 #include "seq_core.h"
 #include "seq_song.h"
 #include "seq_mixer.h"
@@ -1418,6 +1421,47 @@ static s32 EXIT_Handler(void)
   return 0; // no error
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): column page. GP1-8 as on the LCD (labels and values read from the LCD, they change with the
+// action), MODE, position, and the patterns that play now. Utility pages (SELECT/SONG held): LCD text view.
+/////////////////////////////////////////////////////////////////////////////
+extern void SEQ_OLED_LcdCol(og2_page_t *p, int first, int n, const char *label, u8 sel);
+s32 SEQ_UI_SONG_OledGet(og2_page_t *p)
+{
+  int k, g;
+  og2_col_t *c;
+  if( SEQ_FILE_FormattingRequired() || song_util_page != SONG_UTIL_PAGE_NONE )
+    return -1;
+  OG2_PageInit(p);
+  sprintf(p->head[0], "%s - SONG %d", SEQ_SONG_ActiveGet() ? "SONG MODE" : "PHRASE MODE", (int)SEQ_SONG_NumGet() + 1);
+  {
+    static const char *fixed[3] = {"SONG", "POS", "ACTION"};     // G1-G4 and SEL. change with the action: from the LCD
+    for(k=0; k<8; ++k)
+      SEQ_OLED_LcdCol(p, k, 1, (k < 3) ? fixed[k] : NULL, ui_selected_item == k);
+  }
+  c = OG2_PageCol(p, 8, OG2_C_VALUE, 2, "MODE");
+  strcpy(c->value, SEQ_SONG_ActiveGet() ? "SONG" : "PHRASE");
+  if( ui_selected_item == ITEM_MODE ) p->sel |= 0x0300;
+  {
+    u32 pos = SEQ_SONG_PosGet();
+    c = OG2_PageCol(p, 10, OG2_C_VALUE, 2, "POSITION");
+    if( SEQ_BPM_IsRunning() || ui_seq_pause ) sprintf(c->value, "%c%d STEP %d", 'A' + (int)(pos >> 3), (int)(pos & 7) + 1, seq_core_state.ref_step_song + 1);
+    else sprintf(c->value, "%c%d", 'A' + (int)(pos >> 3), (int)(pos & 7) + 1);
+    if( SEQ_SONG_ActiveGet() ) sprintf(p->head[2], "LOOP %d/%d", (int)SEQ_SONG_LoopCtrGet() + 1, (int)SEQ_SONG_LoopCtrMaxGet() + 1);
+  }
+  strcpy(p->head[3], "PLAYING");
+  for(g=0; g<4; ++g) {
+    seq_pattern_t pt = seq_pattern[g];
+    char lbl[4];
+    sprintf(lbl, "G%d", g+1);
+    c = OG2_PageCol(p, 12+g, OG2_C_VALUE, 1, lbl);
+    if( pt.DISABLED ) strcpy(c->value, "--");
+    else sprintf(c->value, "%d:%c%c", pt.bank + 1, 'A' + pt.group + (pt.lower ? 32 : 0), '1' + pt.num);
+    c->dim = 1;
+  }
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

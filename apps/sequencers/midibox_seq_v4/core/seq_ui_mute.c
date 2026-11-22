@@ -20,6 +20,9 @@
 
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 #include "seq_cc.h"
 #include "seq_layer.h"
 #include "seq_par.h"
@@ -429,6 +432,67 @@ static s32 LCD_Handler(u8 high_prio)
   return 0; // no error
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): column page. One box per track (GP1-16 = mute/unmute); while MUTE is held: one box per layer.
+// Not muted: level meter; muted: filled box "MUTE"; synched (un)mute pending: "M 12" / "U 12" (steps to go).
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_UI_MUTE_OledGet(og2_page_t *p)
+{
+  u8 visible_track = SEQ_UI_VisibleTrackGet();
+  int k;
+  if( seq_ui_button_state.CHANGE_ALL_STEPS )
+    return -1;                       // "mute all" screen: LCD text view
+  OG2_PageInit(p);
+  if( seq_ui_button_state.MUTE_PRESSED ) {
+    u8 event_mode = SEQ_CC_Get(visible_track, SEQ_CC_MIDI_EVENT_MODE);
+    u8 num_layers = (event_mode == SEQ_EVENT_MODE_Drum) ? SEQ_TRG_NumInstrumentsGet(visible_track) : SEQ_PAR_NumLayersGet(visible_track);
+    u16 muted = seq_core_trk[visible_track].layer_muted, midi = seq_core_trk[visible_track].layer_muted_from_midi;
+    sprintf(p->head[0], "MUTE LAYERS G%dT%d", (visible_track/4)+1, (visible_track%4)+1);
+    for(k=0; k<16 && k<num_layers; ++k) {
+      char lbl[8];
+      if( event_mode == SEQ_EVENT_MODE_Drum ) sprintf(lbl, "DRUM %d", k+1);
+      else { SEQ_PAR_AssignedTypeStr(visible_track, k, ui_selected_instrument, lbl); lbl[5] = 0; }
+      if( (muted | midi) & (1 << k) ) {
+	og2_col_t *c = OG2_PageCol(p, k, OG2_C_CHOICE, 1, lbl);
+	strcpy(c->value, (midi & (1 << k)) ? "MIDI" : "MUTE");
+	c->on = 1;
+      } else {
+	og2_col_t *c = OG2_PageCol(p, k, OG2_C_METER, 1, lbl);
+	c->meter = ((seq_layer_vu_meter[k] & 0x7f) >> 4) * 100 / 7;
+      }
+    }
+    return 0;
+  }
+  {
+    u16 mute_flags = seq_core_trk_muted;
+    int remaining = (seq_core_steps_per_measure - seq_core_state.ref_step) + 1;
+    strcpy(p->head[0], "MUTE - GROUP 1");
+    strcpy(p->head[1], "GROUP 2");
+    strcpy(p->head[2], "GROUP 3");
+    strcpy(p->head[3], "GROUP 4");
+    for(k=0; k<16; ++k) {
+      char lbl[8];
+      u16 m = 1 << k;
+      og2_col_t *c;
+      sprintf(lbl, "G%dT%d%s", (k/4)+1, (k%4)+1, (seq_core_trk[k].layer_muted || seq_core_trk[k].layer_muted_from_midi) ? " L" : "");
+      if( mute_flags & m ) {
+	c = OG2_PageCol(p, k, OG2_C_CHOICE, 1, lbl);
+	c->on = 1;
+	if( !seq_ui_button_state.SELECT_PRESSED && (seq_core_trk_synched_unmute & m) ) sprintf(c->value, "U %d", remaining);
+	else strcpy(c->value, "MUTE");
+      } else if( !seq_ui_button_state.SELECT_PRESSED && (seq_core_trk_synched_mute & m) ) {
+	c = OG2_PageCol(p, k, OG2_C_VALUE, 1, lbl);
+	sprintf(c->value, "M %d", remaining);
+      } else {
+	c = OG2_PageCol(p, k, OG2_C_METER, 1, lbl);
+	c->meter = ((seq_core_trk[k].vu_meter & 0x7f) >> 4) * 100 / 7;     // 8 levels: fewer screen updates
+      }
+    }
+    p->sel = 1 << visible_track;
+  }
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

@@ -19,6 +19,9 @@
 #include <string.h>
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 #include "tasks.h"
 #include "file.h"
 
@@ -383,6 +386,51 @@ static s32 LCD_Handler(u8 high_prio)
   return 0; // no error
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): column page, one screen per group:
+//   GROUP (category; encoder selects the group) | PATTERN (encoder changes it; GP1-8 / GP9-16 pick letter and number)
+/////////////////////////////////////////////////////////////////////////////
+static void PatStr(char *o, seq_pattern_t p)
+{
+  if( p.DISABLED ) { strcpy(o, "--"); return; }
+  sprintf(o, "%d:%c%c", p.bank + 1, 'A' + p.group + (p.lower ? 32 : 0), '1' + p.num);
+}
+s32 SEQ_UI_PATTERN_OledGet(og2_page_t *p)
+{
+  int g, i;
+  if( SEQ_FILE_FormattingRequired() )
+    return -1;
+  OG2_PageInit(p);
+  for(g=0; g<4; ++g) {
+    char *nm = (char *)seq_pattern_name[g];
+    char lbl[16], cat[6], a[8], b[8];
+    int o = 0;
+    og2_col_t *c;
+    for(i=5; i<20 && nm[i]; ++i) lbl[o++] = nm[i];
+    while( o > 0 && lbl[o-1] == ' ' ) --o;
+    lbl[o] = 0;
+    { int s = 0; while( lbl[s] == ' ' ) ++s; if( s ) memmove(lbl, lbl+s, strlen(lbl+s)+1); }
+    PatStr(a, seq_pattern[g]);
+    if( !strcmp(lbl, "Unnamed") ) lbl[0] = 0;
+    for(i=0; lbl[i]; ++i) if( lbl[i] >= 'a' && lbl[i] <= 'z' ) lbl[i] -= 32;
+    if( lbl[0] ) sprintf(p->head[g], "G%d: %s", g+1, lbl); else sprintf(p->head[g], "G%d: PATTERN %s", g+1, a);
+    for(o=0, i=0; i<5 && nm[i]; ++i) if( nm[i] != ' ' || o ) cat[o++] = nm[i];
+    while( o > 0 && cat[o-1] == ' ' ) --o;
+    cat[o] = 0;
+    c = OG2_PageCol(p, 4*g, OG2_C_CHOICE, 2, "GROUP");
+    strcpy(c->value, cat[0] ? cat : "NO CAT.");
+    c->on = (g == ui_selected_group) || seq_ui_button_state.CHANGE_ALL_STEPS;
+    c = OG2_PageCol(p, 4*g+2, OG2_C_VALUE, 2, "PATTERN");
+    PatStr(b, selected_pattern[g]);
+    if( selected_pattern[g].pattern != seq_pattern[g].pattern || selected_pattern[g].bank != seq_pattern[g].bank )
+      sprintf(c->value, "%s > %s", a, b);                  // switch pending
+    else
+      strcpy(c->value, a);
+    if( g == ui_selected_group ) p->sel |= 0x3 << (4*g+2);
+  }
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

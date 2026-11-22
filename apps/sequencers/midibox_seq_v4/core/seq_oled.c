@@ -53,6 +53,9 @@ extern s32 SEQ_UI_TRKMORPH_OledGet(og2_page_t *p);
 extern s32 SEQ_UI_MANUAL_OledGet(og2_page_t *p);
 extern s32 SEQ_UI_FX_OledGet(og2_page_t *p);
 extern s32 SEQ_UI_SYSEX_OledGet(og2_page_t *p);
+extern s32 SEQ_UI_MUTE_OledGet(og2_page_t *p);
+extern s32 SEQ_UI_PATTERN_OledGet(og2_page_t *p);
+extern s32 SEQ_UI_SONG_OledGet(og2_page_t *p);
 
 /////////////////////////////////////////////////////////////////////////////
 // Column pages from a table: for pages whose LCD values sit in the 5-character GP columns (FX pages).
@@ -148,7 +151,7 @@ static const midi_col_t midi_cols[5][8] = {
   { {0x0100,"IN PORT"},{0x0200,"OUT PORT"},{0x0400,"CHANNEL"},{0x3800,"FUNCTION"},{0x4000,"CC #"},{0,0},{0,0},{0,0} },
   { {0x0300,"BLM SCALAR"},{0xc000,"MIDI"},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0} },
 };
-static void lcd_value(char *v, int first, int n)     // v: 32 bytes
+static void lcd_value(char *v, int first, int n, int strip_label)     // v: 32 bytes; strip_label: "Port: off" -> "off"
 {
   int o = 0, x;
   for(x = first*5; x < (first+n)*5 && o < 31; ++x) {
@@ -157,10 +160,34 @@ static void lcd_value(char *v, int first, int n)     // v: 32 bytes
     v[o++] = (ch >= 32 && ch < 127) ? ch : ' ';
   }
   v[o] = 0;
-  { char *cp = strrchr(v, ':'); if( cp && cp[1] ) memmove(v, cp+1, strlen(cp+1)+1); }      // "Port: off" -> "off"
+  if( strip_label ) { char *cp = strrchr(v, ':'); if( cp && cp[1] ) memmove(v, cp+1, strlen(cp+1)+1); }
   { int a = 0; while( v[a] == ' ' ) ++a; if( a ) memmove(v, v+a, strlen(v+a)+1); }
   { int e = strlen(v); while( e > 0 && v[e-1] == ' ' ) v[--e] = 0; }
 }
+// one column (or a box over n columns) from the LCD: label from row 1 (NULL = take it from the LCD), value from row 2.
+// The selected value blinks on the LCD: the last visible text is kept.
+void SEQ_OLED_LcdCol(og2_page_t *p, int first, int n, const char *label, u8 sel)
+{
+  static char cache[16][28];
+  char v[32], l[32];
+  int x, o;
+  if( first < 0 || first > 15 ) return;
+  lcd_value(v, first, n, 0);
+  if( v[0] == 0 && sel ) strcpy(v, cache[first]); else strncpy(cache[first], v, 27);
+  if( !label ) {
+    for(o=0, x=first*5; x<(first+n)*5 && o<31; ++x) { char ch = SEQ_LCD_BufferCharGet(x, 0); l[o++] = (ch >= 32 && ch < 127) ? ch : ' '; }
+    l[o] = 0;
+    { int a = 0; while( l[a] == ' ' ) ++a; if( a ) memmove(l, l+a, strlen(l+a)+1); }
+    { int e = strlen(l); while( e > 0 && l[e-1] == ' ' ) l[--e] = 0; }
+    for(x=0; l[x]; ++x) if( l[x] >= 'a' && l[x] <= 'z' ) l[x] -= 32;
+    label = l;
+  }
+  if( !v[0] && !label[0] ) return;
+  og2_col_t *c = OG2_PageCol(p, first, OG2_C_VALUE, n, label);
+  strncpy(c->value, v, sizeof(c->value)-1);
+  if( sel ) p->sel |= ((1 << n) - 1) << first;
+}
+
 static s32 midi_page_fill(void)
 {
   static const char *sec[5] = {"TRANSP./ARP","SECTIONS","ROUTER","EXT.CTRL","MISC"};
@@ -187,7 +214,7 @@ static s32 midi_page_fill(void)
     if( !mc->mask ) continue;
     while( first < 16 && !(mc->mask & (1 << first)) ) ++first;
     while( first + n < 16 && (mc->mask & (1 << (first + n))) ) ++n;
-    lcd_value(v, first, n);
+    lcd_value(v, first, n, 1);
     if( v[0] == 0 && (leds & mc->mask) ) strcpy(v, cache[first]); else strncpy(cache[first], v, 27);
     u8 tog = (!strcmp(v, "on") || !strcmp(v, "off")) ? 1 : 0;
     og2_col_t *c = OG2_PageCol(&pg, first, tog ? OG2_C_TOGGLE : OG2_C_VALUE, n, mc->label);
@@ -249,6 +276,9 @@ static s32 page_fill(void)
     case SEQ_UI_PAGE_MIDI:     return midi_page_fill();
     case SEQ_UI_PAGE_SYSEX:    return SEQ_UI_SYSEX_OledGet(&pg);
     case SEQ_UI_PAGE_MIXER:    return mixer_page_fill();
+    case SEQ_UI_PAGE_MUTE:     return SEQ_UI_MUTE_OledGet(&pg);
+    case SEQ_UI_PAGE_PATTERN:  return SEQ_UI_PATTERN_OledGet(&pg);
+    case SEQ_UI_PAGE_SONG:     return SEQ_UI_SONG_OledGet(&pg);
     default:                   return lcd_page_fill();
   }
 }
@@ -614,8 +644,8 @@ s32 SEQ_OLED_Handler(void)
 
   if( (ctr % OLED_PERIOD_MS) == 0 ) {
     int c;
-    cur_mode = (ui_page == SEQ_UI_PAGE_MUTE) ? 1 : ((ui_page == SEQ_UI_PAGE_MIXER) ? ((page_fill() >= 0) ? 9 : 4) :
-	       ((ui_page == SEQ_UI_PAGE_BPM || ui_page == SEQ_UI_PAGE_PATTERN || ui_page == SEQ_UI_PAGE_SONG || ui_page == SEQ_UI_PAGE_SAVE) ? 3 :
+    cur_mode = (ui_page == SEQ_UI_PAGE_MUTE) ? ((page_fill() >= 0) ? 9 : 4) : ((ui_page == SEQ_UI_PAGE_MIXER) ? ((page_fill() >= 0) ? 9 : 4) :
+	       ((ui_page == SEQ_UI_PAGE_BPM || ui_page == SEQ_UI_PAGE_SAVE) ? 3 :
 		((ui_page == SEQ_UI_PAGE_EDIT) ? 0 : ((ui_page == SEQ_UI_PAGE_TRKEVNT) ? ((SEQ_UI_TRKEVNT_OledGet(&evt) >= 0) ? 6 : 4) : ((ui_page == SEQ_UI_PAGE_TRKDIV || ui_page == SEQ_UI_PAGE_TRKLEN || ui_page == SEQ_UI_PAGE_TRKDIR) ? 7 : ((ui_page == SEQ_UI_PAGE_TRKMODE) ? 8 : ((page_fill() >= 0) ? 9 : 4)))))));    // other pages (Transpose, Groove, ...): LCD text enlarged
     if( cur_mode == 0 )
       collect_steps();
@@ -647,8 +677,21 @@ s32 SEQ_OLED_Handler(void)
 	h = fnv(h, (const u8 *)&tim, sizeof(og2_timing_t));
       else if( cur_mode == 8 )
 	h = fnv(h, (const u8 *)&mod, sizeof(og2_mode_t));
-      else if( cur_mode == 9 )
-	h = fnv(h, (const u8 *)&pg, sizeof(og2_page_t));
+      else if( cur_mode == 9 ) {
+	// only what this cell shows: header of its screen, the boxes that cover it, selection (level meters change often)
+	int j;
+	h = fnv(h, (const u8 *)pg.head[c / 4], sizeof(pg.head[0]));
+	for(j=0; j<16; ++j) {
+	  int n = pg.c[j].span ? pg.c[j].span : 1;
+	  if( pg.c[j].kind != OG2_C_NONE && pg.c[j].kind != OG2_C_SPAN && c >= j && c < j + n ) {
+	    u8 sb = ((pg.sel >> j) & ((1 << n) - 1)) ? 1 : 0;
+	    h = fnv(h, (const u8 *)&pg.c[j], sizeof(og2_col_t));
+	    h = fnv(h, &sb, 1);
+	    if( pg.c[j].kind == OG2_C_GRAPH ) h = fnv(h, (const u8 *)pg.graph, sizeof(pg.graph) + 2);
+	    if( pg.c[j].kind == OG2_C_TEXT ) h = fnv(h, (const u8 *)pg.text, sizeof(pg.text));
+	  }
+	}
+      }
       else if( cur_mode == 4 )
 	h = fnv(h, (const u8 *)&groups[c], sizeof(og2_tgroup_t));
       else if( cur_mode == 5 )
