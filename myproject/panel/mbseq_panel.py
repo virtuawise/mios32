@@ -306,6 +306,18 @@ class Seq:
                 if 0 <= disp < 4 and len(out) == 2048:
                     self.oled[disp] = bytes(out)
                     self.version += 1
+            elif cmd == 0x06 and len(d) >= 10:                  # OLED-cel (64x64 px = 512 bytes) in een scherm
+                disp, cell, raw, out = d[7], d[8], d[9:], []
+                for g in range(0, len(raw), 8):
+                    msb = raw[g]
+                    for i, b in enumerate(raw[g + 1:g + 8]):
+                        out.append(b | (0x80 if msb >> i & 1 else 0))
+                if 0 <= disp < 4 and 0 <= cell < 4 and len(out) == 512:
+                    fb = bytearray(self.oled[disp] or bytes(2048))
+                    for y in range(64):
+                        fb[y * 32 + cell * 8:y * 32 + cell * 8 + 8] = bytes(out[y * 8:y * 8 + 8])
+                    self.oled[disp] = bytes(fb)
+                    self.version += 1
             elif cmd == 0x04 and len(d) >= 8:                   # LED-SR's
                 first = d[7]
                 for k, v in enumerate(d[8:]):
