@@ -82,26 +82,25 @@ static void cell(u8 *d, int x0, int num, const oledgui_step_t *s, int playing)
   char b[8];
   if( x0 > 0 ) for(int y=0; y<OLEDGUI_H; y+=4) px(d, x0, y, 1);       // scheidingslijn
 
-  // kop: stapnummer links, noot rechts; bij getriggerde stap gevuld
-  if( s->on ) rect(d, x0+1, 0, 62, 11, 1);
+  // kop (17 px): stapnummer links (klein), noot rechts groot (2x); gevuld als de stap getriggerd is
+  if( s->on ) rect(d, x0+1, 0, 62, 17, 1);
   b[0] = '0' + (num+1)/10; b[1] = '0' + (num+1)%10; b[2] = 0;
-  text(d, GLCD_FONT_SMALL, x0+3, 2, b, 1, s->on);
+  text(d, GLCD_FONT_SMALL, x0+3, 5, b, 1, s->on);
   if( s->note != 0xff ){ OLEDGUI_NoteName(s->note, b); } else { b[0]='-'; b[1]='-'; b[2]=0; }
-  text(d, GLCD_FONT_NORMAL, x0+61-text_w(GLCD_FONT_NORMAL, b, 1), 2, b, 1, s->on);
+  text(d, GLCD_FONT_NORMAL, x0+61-text_w(GLCD_FONT_NORMAL, b, 2), 1, b, 2, s->on);
 
   // ring + waarde
   int lit = s->on ? (s->value*13 + 64) / 127 : 0;
-  ring(d, x0+32, 36, 17, lit, s->on);
+  ring(d, x0+32, 41, 14, lit, s->on);
   if( s->on ){
     b[0] = s->value >= 100 ? '0'+s->value/100 : ' ';
     b[1] = s->value >= 10 ? '0'+(s->value/10)%10 : ' ';
     b[2] = '0' + s->value%10; b[3] = 0;
-    // 3 cijfers van 6 px; hou het binnen de ring (28 px): gewoon 1x, vet (2x offset)
-    int tx = x0+32 - 9, ty = 32;
+    int tx = x0+32 - 9, ty = 37;
     text(d, GLCD_FONT_NORMAL, tx, ty, b, 1, 0);
     text(d, GLCD_FONT_NORMAL, tx+1, ty, b, 1, 0);
   } else {
-    text(d, GLCD_FONT_NORMAL, x0+32-6, 32, "--", 1, 0);
+    text(d, GLCD_FONT_NORMAL, x0+32-6, 37, "--", 1, 0);
   }
 
   // labels onderin: ACC gevuld, SLD tekst
