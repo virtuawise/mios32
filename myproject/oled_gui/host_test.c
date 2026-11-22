@@ -1,0 +1,23 @@
+// Mac-test: rendert een voorbeeldframe naar frame.pgm (4 schermen onder elkaar? nee: naast elkaar, 1024x64)
+#include <stdio.h>
+#include <stdlib.h>
+#include "oled_gui.h"
+int main(int argc, char **argv)
+{
+  static oledgui_frame_t f;
+  oledgui_step_t s[16] = {0};
+  // zelfde voorbeeld als het ontwerp (waarden 110/60/127/90 | rest/100/70/127 | ...)
+  static const u8 notes[16] = {36,36,39,41, 0xff,34,36,42, 36,38,39,38, 36,0xff,34,36};
+  static const u8 vals[16]  = {110,60,127,90, 0,100,70,127, 90,50,120,80, 110,0,100,127};
+  for(int i=0;i<16;++i){ s[i].note=notes[i]; s[i].value=vals[i]; s[i].on = notes[i]!=0xff; }
+  s[0].acc=1; s[2].acc=1; s[2].sld=1; s[1].sld=1; s[5].sld=1; s[10].acc=1; s[12].acc=1; s[14].acc=1;
+  OLEDGUI_RenderSteps(&f, s, argc>1 ? atoi(argv[1]) : 5);
+  FILE *o = fopen("frame.pgm","wb");
+  fprintf(o,"P5\n%d %d\n255\n", OLEDGUI_W*OLEDGUI_NUM_DISPLAYS, OLEDGUI_H);
+  for(int y=0;y<OLEDGUI_H;++y)
+    for(int d=0;d<OLEDGUI_NUM_DISPLAYS;++d)
+      for(int x=0;x<OLEDGUI_W;++x)
+        fputc((f.fb[d][y*OLEDGUI_ROW_BYTES+(x>>3)]>>(x&7))&1 ? 255 : 0, o);
+  fclose(o);
+  return 0;
+}
