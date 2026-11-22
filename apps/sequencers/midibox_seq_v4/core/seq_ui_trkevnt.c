@@ -1428,6 +1428,16 @@ static u8 evt_init_held = 0;      // INIT-knop wordt vastgehouden (voor de voort
 static u32 evt_init_t0 = 0;
 static const s8 evt_map[16] = { 0, 1, 1, 2, 5, 6, 7, -1, 8, 8, 9, 10, 14, 14, 15, 15 };
 
+// when the visible track changes, re-read its layer configuration immediately (the LCD handler does this later; INIT must not use a stale config)
+static void EvtSyncTrack(void)
+{
+  u8 track = SEQ_UI_VisibleTrackGet();
+  if( track != selected_layer_config_track ) {
+    selected_layer_config_track = track;
+    selected_layer_config = GetLayerConfig(track);
+  }
+}
+
 static u8 EvtMapActive(void)
 {
   return (pr_dialog == PR_DIALOG_NONE) && (layer_config[selected_layer_config].event_mode != SEQ_EVENT_MODE_Drum);
@@ -1477,6 +1487,7 @@ static s32 EvtSizeInc(s32 incrementer)
 
 static s32 Encoder_HandlerMap(seq_ui_encoder_t encoder, s32 incrementer)
 {
+  EvtSyncTrack();
   if( (int)encoder > (int)SEQ_UI_ENCODER_GP16 || !EvtMapActive() )
     return Encoder_Handler(encoder, incrementer);
   int k = (int)encoder;
@@ -1491,6 +1502,7 @@ static s32 Encoder_HandlerMap(seq_ui_encoder_t encoder, s32 incrementer)
 
 static s32 Button_HandlerMap(seq_ui_button_t button, s32 depressed)
 {
+  EvtSyncTrack();
   if( (int)button > (int)SEQ_UI_BUTTON_GP16 || !EvtMapActive() )
     return Button_Handler(button, depressed);
   int k = (int)button;
@@ -1530,6 +1542,7 @@ static s32 LED_HandlerMap(u16 *gp_leds)
 /////////////////////////////////////////////////////////////////////////////
 s32 SEQ_UI_TRKEVNT_OledGet(og2_event_t *e)
 {
+  EvtSyncTrack();
   if( !EvtMapActive() )
     return -1;
 

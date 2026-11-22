@@ -1,6 +1,7 @@
-# Virtueel paneel voor MIDIbox SEQ V4+
+# Virtual panel for the MIDIbox SEQ V4+
 
-- `mbseq_panel.py` – virtueel frontpaneel + HTTP-API (poort 8765), praat met de SEQ via USB-remote.
-- `panel_oled.html` – ontwerp met 4 OLED-vlakken (256x64), bereikbaar op `/oled`. OLED-inhoud is een benadering uit de LCD-tekst; echte waarden volgen met de firmware in deze branch.
+- `mbseq_panel.py` – virtual front panel + HTTP API (port 8765); talks to the SEQ over USB remote (`RemotePort` in `MBSEQ_GC.V4`).
+- `panel_oled.html` – the 4-OLED (256x64) front panel at `/oled`; shows the frames streamed by the firmware.
 
-Gebruik: `pip3 install mido python-rtmidi`, dan `python3 mbseq_panel.py --no-browser` en open http://127.0.0.1:8765/oled
+Usage: `pip3 install mido python-rtmidi`, then `python3 mbseq_panel.py --no-browser` and open http://127.0.0.1:8765/oled.
+Stop it with Ctrl+C (SIGINT) so the SEQ leaves remote mode; it holds the MIDI port, so stop it before flashing.
