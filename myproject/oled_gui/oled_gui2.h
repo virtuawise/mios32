@@ -113,6 +113,8 @@ typedef enum {
   OG2_C_GRAPH,      // label + bar graph of page.graph[] (signed, centre line), value = text right in the label row
   OG2_C_METER,      // label + value + horizontal meter (meter = 0..100)
   OG2_C_KEYS,       // label + one-octave keyboard: keys = bit mask of lit keys (bit 0 = C), value = text right in the label row
+  OG2_C_ROW,        // label over several columns, value = one text per column separated by '|', centred above each GP button;
+                    // a text starting with '>' is the marked choice (filled chip)
   OG2_C_SPAN        // continuation of the box that starts in a column to the left
 } og2_ckind_t;
 typedef struct {
@@ -122,7 +124,7 @@ typedef struct {
   u8 dim;           // not applicable
   u8 meter;         // METER: 0..100
   u16 keys;         // KEYS: lit keys
-  char label[14];
+  char label[24];
   char value[28];
 } og2_col_t;
 typedef struct {
@@ -132,7 +134,7 @@ typedef struct {
   s8 graph[16];       // GRAPH data, -100..100
   u8 graph_n;         // number of graph bars
   s8 graph_mark;      // highlighted bar, -1 = none
-  char text[112];      // TEXT box content (one TEXT box per page), lines separated by '|'
+  char text[164];      // TEXT box content (one TEXT box per page), lines separated by '|'
 } og2_page_t;
 extern void OG2_RenderPageCell(u8 *out2048, int cell, const og2_page_t *p);
 extern void OG2_PageInit(og2_page_t *p);                                          // clears the page

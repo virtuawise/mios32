@@ -29,6 +29,7 @@
 
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include "oled_gui2.h"
 #include "seq_cv.h"
 #include "seq_midi_in.h"
 #include "seq_core.h"
@@ -805,6 +806,45 @@ static s32 LCD_Handler(u8 high_prio)
   return 0; // no error
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): column page. GP1-8: the page list (2 entries of 4 columns), GP9-16: session actions.
+// Dialogs (open/save as/new/delete) use the LCD text view.
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_UI_MENU_OledGet(og2_page_t *p)
+{
+  static const char *act[8] = {"OPEN","SAVE","SAVE AS","NEW","DELETE",0,0,"INFO"};
+  og2_col_t *c;
+  int i, k;
+  if( menu_dialog != MENU_DIALOG_NONE )
+    return -1;
+  OG2_PageInit(p);
+  strcpy(p->head[0], "PAGE MENU");
+  {
+    float bpmx10 = SEQ_BPM_EffectiveGet() * 10.0f + 0.5f;
+    int b = (int)bpmx10;
+    sprintf(p->head[1], "%d.%d BPM", b / 10, b % 10);
+  }
+  sprintf(p->head[2], "SESSION %s", seq_file_session_name);
+  for(i=0; i<MENU_NUM_LIST_DISPLAYED_ITEMS; ++i) {
+    char nm[MENU_LIST_ENTRY_WIDTH+1];
+    int o = 0;
+    for(k=0; k<MENU_LIST_ENTRY_WIDTH; ++k) { char ch = ui_global_dir_list[MENU_LIST_ENTRY_WIDTH*i + k]; if( ch == 0 ) break; nm[o++] = ch; }
+    nm[o] = 0;
+    while( o > 0 && nm[o-1] == ' ' ) nm[--o] = 0;
+    { int a = 0; while( nm[a] == ' ' ) ++a; if( a ) memmove(nm, nm+a, strlen(nm+a)+1); }
+    if( !nm[0] ) continue;
+    c = OG2_PageCol(p, 4*i, OG2_C_CHOICE, 4, "PAGE");
+    strncpy(c->value, nm, sizeof(c->value)-1);
+    c->on = (i == menu_selected_item);
+  }
+  for(k=0; k<8; ++k) {
+    if( !act[k] ) continue;
+    c = OG2_PageCol(p, 8+k, OG2_C_ACTION, 1, "SESSION");
+    strcpy(c->value, act[k]);
+  }
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

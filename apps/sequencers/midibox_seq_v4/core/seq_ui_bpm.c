@@ -20,6 +20,9 @@
 
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 
 #include "seq_file.h"
 #include "seq_file_c.h"
@@ -471,6 +474,52 @@ static s32 EXIT_Handler(void)
   return status;
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): column page (GP layout of this page)
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_UI_BPM_OledGet(og2_page_t *p)
+{
+  static const char *mode_str[3] = {"AUTO","MASTER","SLAVE"};
+  og2_col_t *c;
+  s32 st;
+  OG2_PageInit(p);
+  strcpy(p->head[0], "BPM");
+  strcpy(p->head[1], "PRESETS");
+  strcpy(p->head[2], "MIDI CLOCK");
+  c = OG2_PageCol(p, 0, OG2_C_VALUE, 1, "MODE"); strcpy(c->value, mode_str[SEQ_BPM_ModeGet() % 3]);
+  c = OG2_PageCol(p, 1, OG2_C_VALUE, 1, "PRESET"); sprintf(c->value, "%d", seq_core_bpm_preset_num + 1);
+  {
+    float bpm = seq_core_bpm_preset_tempo[seq_core_bpm_preset_num];
+    c = OG2_PageCol(p, 2, OG2_C_VALUE, 2, "TEMPO"); sprintf(c->value, "%d.%d BPM", (int)bpm, (int)(10*bpm) % 10);
+  }
+  c = OG2_PageCol(p, 4, OG2_C_VALUE, 1, "RAMP"); sprintf(c->value, "%d S", (int)seq_core_bpm_preset_ramp[seq_core_bpm_preset_num]);
+  c = OG2_PageCol(p, 5, OG2_C_ACTION, 1, "FIRE"); strcpy(c->value, "PRESET");
+  c = OG2_PageCol(p, 6, OG2_C_ACTION, 1, "PRESETS"); strcpy(c->value, "PAGE");
+  c = OG2_PageCol(p, 8, OG2_C_VALUE, 1, "PORT"); strncpy(c->value, SEQ_MIDI_PORT_ClkNameGet(SEQ_MIDI_PORT_ClkIxGet(selected_mclk_port)), 8);
+  st = SEQ_MIDI_ROUTER_MIDIClockInGet(selected_mclk_port);
+  if( !SEQ_MIDI_PORT_ClkCheckAvailable(selected_mclk_port) ) st = -1;
+  if( st < 0 ) { c = OG2_PageCol(p, 9, OG2_C_VALUE, 1, "CLOCK IN"); strcpy(c->value, "---"); c->dim = 1; }
+  else { c = OG2_PageCol(p, 9, OG2_C_TOGGLE, 1, "CLOCK IN"); c->on = st ? 1 : 0; }
+  st = SEQ_MIDI_ROUTER_MIDIClockOutGet(selected_mclk_port);
+  if( !SEQ_MIDI_PORT_ClkCheckAvailable(selected_mclk_port) ) st = -1;
+  if( st < 0 ) { c = OG2_PageCol(p, 10, OG2_C_VALUE, 1, "CLOCK OUT"); strcpy(c->value, "---"); c->dim = 1; }
+  else { c = OG2_PageCol(p, 10, OG2_C_TOGGLE, 1, "CLOCK OUT"); c->on = st ? 1 : 0; }
+  c = OG2_PageCol(p, 11, OG2_C_VALUE, 2, "DELAY"); sprintf(c->value, "%d MS", SEQ_MIDI_PORT_ClkDelayGet(selected_mclk_port));
+  c = OG2_PageCol(p, 13, OG2_C_ACTION, 2, seq_core_state.EXT_RESTART_REQ ? "ONGOING" : "EXTERNAL"); strcpy(c->value, "RESTART");
+  c = OG2_PageCol(p, 15, OG2_C_ACTION, 1, "TAP"); strcpy(c->value, "TEMPO");
+  switch( ui_selected_item ) {
+  case ITEM_MODE: p->sel = 0x0001; break;
+  case ITEM_PRESET: p->sel = 0x0002; break;
+  case ITEM_BPM: p->sel = 0x000c; break;
+  case ITEM_RAMP: p->sel = 0x0010; break;
+  case ITEM_MCLK_PORT: p->sel = 0x0100; break;
+  case ITEM_MCLK_IN: p->sel = 0x0200; break;
+  case ITEM_MCLK_OUT: p->sel = 0x0400; break;
+  case ITEM_MCLK_DELAY: p->sel = 0x1800; break;
+  }
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

@@ -19,10 +19,14 @@
 #include <string.h>
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 
 #include "seq_pattern.h"
 #include "seq_label.h"
 #include "seq_file_b.h"
+#include "seq_file.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -470,6 +474,63 @@ static s32 LCD_Handler(u8 high_prio)
   return 0; // no error
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): column page. GP1-4 group, GP6/7 target, GP8 save (opens the name editor first).
+// While the name is edited (keypad) the LCD text view is shown.
+/////////////////////////////////////////////////////////////////////////////
+static void SavePatStr(char *o, seq_pattern_t p)
+{
+  if( p.DISABLED ) { strcpy(o, "--"); return; }
+  sprintf(o, "%d:%c%c", p.bank + 1, 'A' + p.group + (p.lower ? 32 : 0), '1' + p.num);
+}
+static void SaveName(char *o, const char *nm, int from, int len)
+{
+  int i, n = 0;
+  for(i=from; i<from+len && nm[i]; ++i) o[n++] = nm[i];
+  while( n > 0 && o[n-1] == ' ' ) --n;
+  o[n] = 0;
+  { int a = 0; while( o[a] == ' ' ) ++a; if( a ) memmove(o, o+a, strlen(o+a)+1); }
+}
+s32 SEQ_UI_SAVE_OledGet(og2_page_t *p)
+{
+  u8 g = ui_selected_group;
+  og2_col_t *c;
+  char b[24];
+  if( edit_label_mode || SEQ_FILE_FormattingRequired() )
+    return -1;
+  OG2_PageInit(p);
+  strcpy(p->head[0], "SAVE PATTERN");
+  strcpy(p->head[1], "TARGET");
+  strcpy(p->head[2], "NAME");
+  c = OG2_PageCol(p, 0, OG2_C_VALUE, 4, "GROUP");
+  sprintf(c->value, "G%d (TRACKS %d-%d)", g + 1, 4*g + 1, 4*g + 4);
+  c = OG2_PageCol(p, 4, OG2_C_VALUE, 1, "CURRENT");
+  SavePatStr(c->value, seq_pattern[g]); c->dim = 1;
+  c = OG2_PageCol(p, 5, OG2_C_VALUE, 2, "SAVE TO");
+  SavePatStr(c->value, save_pattern[g]);
+  if( !SEQ_FILE_B_NumPatterns(save_pattern[g].bank) ) strcat(c->value, " !");
+  c = OG2_PageCol(p, 7, OG2_C_ACTION, 1, "SAVE"); strcpy(c->value, "SAVE");
+  c = OG2_PageCol(p, 8, OG2_C_VALUE, 2, "CATEGORY");
+  SaveName(b, (const char *)seq_pattern_name[g], 0, 5); strcpy(c->value, b[0] ? b : "NO CAT.");
+  c = OG2_PageCol(p, 10, OG2_C_VALUE, 3, "LABEL");
+  SaveName(b, (const char *)seq_pattern_name[g], 5, 15); strcpy(c->value, b[0] ? b : "---");
+  if( ui_selected_item == ITEM_BANK || ui_selected_item == ITEM_PATTERN ) {   // what is stored at the target now
+    char pn[21];
+    SEQ_PATTERN_PeekName(save_pattern[g], pn);
+    c = OG2_PageCol(p, 13, OG2_C_VALUE, 3, "ON DISK AT TARGET");
+    SaveName(b, pn, 0, 5); strcpy(c->value, b);
+    SaveName(b, pn, 5, 15); if( b[0] ) { strcat(c->value, " "); strcat(c->value, b); }
+    if( !c->value[0] ) strcpy(c->value, "EMPTY");
+    c->dim = 1;
+  }
+  switch( ui_selected_item ) {
+  case ITEM_GROUP: p->sel = 0x000f; break;
+  case ITEM_BANK: case ITEM_PATTERN: p->sel = 0x0060; break;
+  case ITEM_SAVE: p->sel = 0x0080; break;
+  }
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

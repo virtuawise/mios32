@@ -37,11 +37,7 @@ static og2_step_t steps[16];
 static u8 play_step = 0xff, trail_step = 0xff;
 static int range_lo, range_hi;
 static og2_kind_t cur_kind = OG2_K_NOTE;
-static u8 cur_mode = 0;                 // 0 = stapweergave, 1 = track-overzicht (MUTE), 2 = mixer (MIXER), 3 = dashboard (BPM/PATTERN/SONG/SAVE)
-static og2_tile_t tiles[16];
-static og2_dash_t dash;
-static og2_text_t texts[16];
-static og2_tgroup_t groups[16];
+static u8 cur_mode = 0;                 // 0 step view, 6 Event, 7 Divider/Length/Direction, 8 Mode, 9 column page
 static og2_event_t evt;
 static og2_timing_t tim;
 static og2_mode_t mod;
@@ -57,6 +53,40 @@ extern s32 SEQ_UI_MUTE_OledGet(og2_page_t *p);
 extern s32 SEQ_UI_PATTERN_OledGet(og2_page_t *p);
 extern s32 SEQ_UI_SONG_OledGet(og2_page_t *p);
 extern s32 SEQ_UI_UTIL_OledGet(og2_page_t *p);
+extern s32 SEQ_UI_SAVE_OledGet(og2_page_t *p);
+extern s32 SEQ_UI_MENU_OledGet(og2_page_t *p);
+extern s32 SEQ_UI_BPM_OledGet(og2_page_t *p);
+extern s32 SEQ_UI_OPT_OledGet(og2_page_t *p);
+extern s32 SEQ_UI_INFO_OledGet(og2_page_t *p);
+
+/////////////////////////////////////////////////////////////////////////////
+// Stable copy of LCD row 2: the cursor blinks the selected value away for a moment; such characters are kept for
+// LCD_KEEP periods (so grouping and values do not jump) and marked as blinking (= selected item).
+/////////////////////////////////////////////////////////////////////////////
+#define LCD_KEEP 75                      // x OLED_PERIOD_MS = 1.5 s
+static char lcd_s1[80];
+static u8 lcd_age[80];
+static u8 lcd_blinkbits[10];
+static seq_ui_page_t lcd_snap_page = SEQ_UI_PAGE_NONE;
+static void lcd_snapshot(void)
+{
+  int x;
+  if( lcd_snap_page != ui_page ) { memset(lcd_s1, ' ', sizeof(lcd_s1)); memset(lcd_age, LCD_KEEP, sizeof(lcd_age)); lcd_snap_page = ui_page; }
+  memset(lcd_blinkbits, 0, sizeof(lcd_blinkbits));
+  for(x=0; x<80; ++x) {
+    char ch = SEQ_LCD_BufferCharGet(x, 1);
+    if( ch < 32 || ch > 126 ) ch = '#';                   // bar / meter characters
+    if( ch != ' ' ) { lcd_s1[x] = ch; lcd_age[x] = 0; }
+    else if( lcd_s1[x] != ' ' && lcd_age[x] < LCD_KEEP ) { ++lcd_age[x]; lcd_blinkbits[x >> 3] |= 1 << (x & 7); }
+    else lcd_s1[x] = ' ';
+  }
+}
+static u8 lcd_blink(int x0, int x1)          // any blinking character in [x0, x1)
+{
+  int x;
+  for(x=x0; x<x1 && x<80; ++x) if( lcd_blinkbits[x >> 3] & (1 << (x & 7)) ) return 1;
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Column pages from a table: for pages whose LCD values sit in the 5-character GP columns (FX pages).
@@ -92,8 +122,6 @@ static const lcd_page_t lcd_pages[] = {
   LP(SEQ_UI_PAGE_FX_SCALE,    "FX SCALE (GLOBAL)", 0, "", "", "", "", it_scl),
 };
 
-static char lcd_cache[16][28];
-static seq_ui_page_t lcd_cache_page = SEQ_UI_PAGE_NONE;
 
 static s32 lcd_page_fill(void)
 {
@@ -102,7 +130,6 @@ static s32 lcd_page_fill(void)
   for(i=0; i<(int)(sizeof(lcd_pages)/sizeof(lcd_page_t)); ++i)
     if( lcd_pages[i].page == ui_page ) lp = &lcd_pages[i];
   if( !lp ) return -1;
-  if( lcd_cache_page != ui_page ) { memset(lcd_cache, 0, sizeof(lcd_cache)); lcd_cache_page = ui_page; }
 
   u8 track = SEQ_UI_VisibleTrackGet();
   OG2_PageInit(&pg);
@@ -119,16 +146,14 @@ static s32 lcd_page_fill(void)
     // value text from the LCD (row 2), trimmed; "label: value" -> value
     char v[28]; int o = 0, x;
     for(x = first*5; x < (first+n)*5 && o < 27; ++x) {
-      char ch = SEQ_LCD_BufferCharGet(x, 1);
-      if( ch == '<' || ch == '>' ) ch = ' ';
+      char ch = lcd_s1[x];
+      if( ch == '<' || ch == '>' || ch == '#' ) ch = ' ';
       v[o++] = (ch >= 32 && ch < 127) ? ch : ' ';
     }
     v[o] = 0;
     { char *cp = strrchr(v, ':'); if( cp && cp[1] ) memmove(v, cp+1, strlen(cp+1)+1); }
     { int a = 0; while( v[a] == ' ' ) ++a; if( a ) memmove(v, v+a, strlen(v+a)+1); }
     { int e = strlen(v); while( e > 0 && v[e-1] == ' ' ) v[--e] = 0; }
-    if( v[0] == 0 && ui_selected_item == i ) strcpy(v, lcd_cache[first]);    // blinking on the LCD: keep the last text
-    else strcpy(lcd_cache[first], v);
 
     u8 on = 0, tog = 0;
     if( !strcmp(v, "on") || !strcmp(v, "yes") ) { tog = 1; on = 1; }
@@ -156,8 +181,8 @@ static void lcd_value(char *v, int first, int n, int strip_label)     // v: 32 b
 {
   int o = 0, x;
   for(x = first*5; x < (first+n)*5 && o < 31; ++x) {
-    char ch = SEQ_LCD_BufferCharGet(x, 1);
-    if( ch == '<' || ch == '>' || ch == '|' ) ch = ' ';
+    char ch = lcd_s1[x];
+    if( ch == '<' || ch == '>' || ch == '|' || ch == '#' ) ch = ' ';
     v[o++] = (ch >= 32 && ch < 127) ? ch : ' ';
   }
   v[o] = 0;
@@ -169,12 +194,10 @@ static void lcd_value(char *v, int first, int n, int strip_label)     // v: 32 b
 // The selected value blinks on the LCD: the last visible text is kept.
 void SEQ_OLED_LcdCol(og2_page_t *p, int first, int n, const char *label, u8 sel)
 {
-  static char cache[16][28];
   char v[32], l[32];
   int x, o;
   if( first < 0 || first > 15 ) return;
   lcd_value(v, first, n, 0);
-  if( v[0] == 0 && sel ) strcpy(v, cache[first]); else strncpy(cache[first], v, 27);
   if( !label ) {
     for(o=0, x=first*5; x<(first+n)*5 && o<31; ++x) { char ch = SEQ_LCD_BufferCharGet(x, 0); l[o++] = (ch >= 32 && ch < 127) ? ch : ' '; }
     l[o] = 0;
@@ -195,7 +218,6 @@ static s32 midi_page_fill(void)
   static const u8 sec_first[5] = {0, 2, 4, 6, 7}, sec_n[5] = {2, 2, 2, 1, 1};
   static const char *sec_head[5] = {"TRANSPOSER/ARP INPUT","KEYBOARD SECTIONS","MIDI ROUTER","EXTERNAL CONTROL","MISC"};
   static u8 sub = 0;
-  static char cache[16][28];
   u16 leds = seq_ui_page_gp_leds;
   int i;
   // section = the low byte of the page's LED pattern (0x03, 0x0c, 0x30, 0x40, 0x80)
@@ -216,7 +238,6 @@ static s32 midi_page_fill(void)
     while( first < 16 && !(mc->mask & (1 << first)) ) ++first;
     while( first + n < 16 && (mc->mask & (1 << (first + n))) ) ++n;
     lcd_value(v, first, n, 1);
-    if( v[0] == 0 && (leds & mc->mask) ) strcpy(v, cache[first]); else strncpy(cache[first], v, 27);
     u8 tog = (!strcmp(v, "on") || !strcmp(v, "off")) ? 1 : 0;
     og2_col_t *c = OG2_PageCol(&pg, first, tog ? OG2_C_TOGGLE : OG2_C_VALUE, n, mc->label);
     if( tog ) c->on = !strcmp(v, "on"); else strncpy(c->value, v, sizeof(c->value)-1);
@@ -264,6 +285,236 @@ static s32 mixer_page_fill(void)
   return 0;
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// Generic column page from the LCD text (pages without their own description).
+// The LCD shows labels on row 1 and values on row 2, mostly in the 5-character GP columns. Neighbouring columns are
+// joined only where a word (label or value) crosses the column border. A value that blinks (LCD cursor) is the
+// selected item: it gets the double frame and keeps its last visible text.
+/////////////////////////////////////////////////////////////////////////////
+
+static void gen_trim_upper(char *s, u8 *sel)
+{
+  int i, o = 0;
+  for(i=0; s[i]; ++i) {
+    char ch = s[i];
+    if( ch == '>' || ch == '<' ) { if( sel ) *sel = 1; ch = ' '; }
+    if( ch < 32 || ch > 126 ) ch = ' ';
+    if( ch >= 'a' && ch <= 'z' ) ch -= 32;
+    s[o++] = ch;
+  }
+  s[o] = 0;
+  { int a = 0; while( s[a] == ' ' ) ++a; if( a ) memmove(s, s+a, strlen(s+a)+1); }
+  { int e = strlen(s); while( e > 0 && s[e-1] == ' ' ) s[--e] = 0; }
+  // collapse runs of spaces
+  for(i=0, o=0; s[i]; ++i) if( !(s[i] == ' ' && o > 0 && s[o-1] == ' ') ) s[o++] = s[i];
+  s[o] = 0;
+}
+
+static s32 lcd_generic_fill(void)
+{
+  char r0[81], r1[81];
+  int x, k;
+  for(x=0; x<80; ++x) { r0[x] = SEQ_LCD_BufferCharGet(x, 0); r1[x] = lcd_s1[x]; }
+  r0[80] = r1[80] = 0;
+  for(x=0; x<80; ++x) if( r0[x] < 32 || r0[x] > 126 ) r0[x] = ' ';
+
+  OG2_PageInit(&pg);
+  {
+    const char *pn = SEQ_UI_PAGES_PageNameGet(ui_page);
+    char h[24]; int i;
+    for(i=0; pn && pn[i] && i<23; ++i) h[i] = pn[i];
+    h[i] = 0;
+    gen_trim_upper(h, NULL);
+    strcpy(pg.head[0], h);
+  }
+  k = 0;
+  while( k < 16 ) {
+    int n = 1;
+    // join with the next column while a word crosses the border (row 1 or row 2)
+    while( k + n < 16 ) {
+      int b = 5*(k+n);
+      #define GEN_SP(ch) ((ch) == ' ' || (ch) == '>' || (ch) == '<' || (ch) == '#')
+      u8 cross0 = r0[b-1] != ' ' && r0[b] != ' ';
+      u8 cross1 = !GEN_SP(r1[b-1]) && !GEN_SP(r1[b]);
+      if( !(cross0 || cross1) ) break;
+      ++n;
+    }
+    char l[84], v[84];
+    u8 sel = 0;
+    if( n > 1 ) {
+      int i, words = 1, marked = -1;
+      for(i=1; i<n; ++i) { int b = 5*(k+i); if( !GEN_SP(r1[b-1]) && !GEN_SP(r1[b]) ) words = 0; }
+      for(i=0; i<n && words; ++i) { int x0 = 5*(k+i); for(x=x0; x<x0+5; ++x) if( r1[x] == '>' || r1[x] == '<' ) marked = i; }
+      if( words ) {                                      // one text per column: a row of GP buttons under one title
+	char t[84], w[8];
+	og2_col_t *c;
+	int o = 0;
+	memcpy(t, &r0[5*k], 5*n); t[5*n] = 0;
+	gen_trim_upper(t, NULL);
+	c = OG2_PageCol(&pg, k, OG2_C_ROW, n, t);
+	for(i=0; i<n; ++i) {
+	  memcpy(w, &r1[5*(k+i)], 5); w[5] = 0;
+	  for(x=0; x<5; ++x) if( w[x] == '#' ) w[x] = ' ';
+	  gen_trim_upper(w, NULL);
+	  if( i ) c->value[o++] = '|';
+	  if( i == marked && o < 26 ) c->value[o++] = '>';
+	  for(x=0; w[x] && o < 26; ++x) c->value[o++] = w[x];
+	}
+	c->value[o] = 0;
+	if( marked >= 0 && lcd_blink(5*(k+marked), 5*(k+marked+1)) ) pg.sel |= 1 << (k+marked);
+	k += n;
+	continue;
+      }
+    }
+    memcpy(l, &r0[5*k], 5*n); l[5*n] = 0;
+    memcpy(v, &r1[5*k], 5*n); v[5*n] = 0;
+    for(x=0; v[x]; ++x) if( v[x] == '#' ) v[x] = ' ';     // bar/meter characters
+    gen_trim_upper(l, NULL);
+    gen_trim_upper(v, &sel);
+    if( lcd_blink(5*k, 5*(k+n)) ) sel = 1;             // blinking value = selected item
+    if( l[0] || v[0] ) {
+      u8 tog = !strcmp(v, "ON") || !strcmp(v, "OFF") || !strcmp(v, "YES") || !strcmp(v, "NO");
+      if( !v[0] ) {                                      // only a label (title text): show it as the value
+	og2_col_t *c = OG2_PageCol(&pg, k, OG2_C_VALUE, n, "");
+	strncpy(c->value, l, sizeof(c->value)-1);
+	c->dim = 1;
+      } else {
+	og2_col_t *c = OG2_PageCol(&pg, k, tog ? OG2_C_TOGGLE : OG2_C_VALUE, n, "");
+	strncpy(c->label, l, sizeof(c->label)-1);
+	if( tog ) c->on = !strcmp(v, "ON") || !strcmp(v, "YES");
+	else strncpy(c->value, v, sizeof(c->value)-1);
+	if( sel ) pg.sel |= ((1 << n) - 1) << k;
+      }
+    }
+    k += n;
+  }
+  return 0;
+}
+
+// text of LCD row (0 = row 1, 1 = row 2 from the stable copy), columns [x0, x1), trimmed, upper case; out: 81 bytes
+void SEQ_OLED_LcdText(char *out, int x0, int x1, int row)
+{
+  int x, o = 0;
+  for(x=x0; x<x1 && x<80 && o<80; ++x) {
+    char ch = row ? lcd_s1[x] : SEQ_LCD_BufferCharGet(x, 0);
+    if( ch < 32 || ch > 126 || ch == '#' || ch == '<' || ch == '>' ) ch = ' ';
+    out[o++] = ch;
+  }
+  out[o] = 0;
+  gen_trim_upper(out, NULL);
+}
+
+// selection from the page's own LED pattern: the item whose GP columns are lit
+static void sel_from_leds(void)
+{
+  extern u16 seq_ui_page_gp_leds;
+  pg.sel = seq_ui_page_gp_leds;
+}
+
+// Track Instrument: GP1-6 as on the LCD, GP8 event page, GP9 name, name/category on the right
+static s32 trkinst_fill(void)
+{
+  static const char *lbl[6] = {"TRACK","PORT","CHANNEL","PROGRAM","BANK H","BANK L"};
+  int k;
+  char t[84];
+  og2_col_t *c;
+  if( SEQ_LCD_BufferCharGet(0, 0) != 'T' ) return -1;      // name editor / dialogs: generic view
+  OG2_PageInit(&pg);
+  strcpy(pg.head[0], "TRACK INSTRUMENT");
+  strcpy(pg.head[2], "EDIT");
+  for(k=0; k<6; ++k) SEQ_OLED_LcdCol(&pg, k, 1, lbl[k], 0);
+  c = OG2_PageCol(&pg, 7, OG2_C_ACTION, 1, "TRACK"); strcpy(c->value, "EVENT");
+  c = OG2_PageCol(&pg, 8, OG2_C_ACTION, 1, "EDIT"); strcpy(c->value, "NAME");
+  SEQ_OLED_LcdText(t, 55, 80, 1);
+  c = OG2_PageCol(&pg, 11, OG2_C_VALUE, 5, "TRACK NAME"); strncpy(c->value, t[0] ? t : "---", sizeof(c->value)-1);
+  sel_from_leds();
+  return 0;
+}
+
+// Euclid: GP1-11 as on the LCD (labels of GP4/5 change with the event mode), the generated pattern on the right
+static s32 euclid_fill(void)
+{
+  static const char *lbl[11] = {"TRACK","TRACK LENGTH",0,0,"VEL N","VEL A","RND ACC.","LENGTH","PULSES","OFFSET",0};
+  char t[44];
+  og2_col_t *c;
+  OG2_PageInit(&pg);
+  strcpy(pg.head[0], "EUCLID GENERATOR");
+  SEQ_OLED_LcdCol(&pg, 0, 1, lbl[0], 0);
+  SEQ_OLED_LcdCol(&pg, 1, 2, lbl[1], 0);
+  SEQ_OLED_LcdCol(&pg, 3, 1, NULL, 0);
+  SEQ_OLED_LcdCol(&pg, 4, 1, NULL, 0);
+  SEQ_OLED_LcdCol(&pg, 5, 1, lbl[4], 0);
+  SEQ_OLED_LcdCol(&pg, 6, 1, lbl[5], 0);
+  SEQ_OLED_LcdCol(&pg, 7, 1, lbl[6], 0);
+  SEQ_OLED_LcdCol(&pg, 8, 1, lbl[7], 0);
+  SEQ_OLED_LcdCol(&pg, 9, 1, lbl[8], 0);
+  SEQ_OLED_LcdCol(&pg, 10, 1, lbl[9], 0);
+  {
+    int x, o = 0;
+    for(x=60; x<80 && o<27; ++x) { char ch = SEQ_LCD_BufferCharGet(x, 0); if( ch == '*' || ch == '.' ) t[o++] = (ch == '*') ? 'X' : '.'; }
+    t[o] = 0;
+  }
+  c = OG2_PageCol(&pg, 12, OG2_C_VALUE, 4, "PATTERN"); strcpy(c->value, t[0] ? t : "---");
+  sel_from_leds();
+  return 0;
+}
+
+// MIDI monitor: per column the port, label = input (name or last event), value = output (name or last event)
+static s32 midimon_fill(void)
+{
+  int k;
+  if( seq_ui_button_state.SELECT_PRESSED ) return -1;     // filter settings: generic view
+  OG2_PageInit(&pg);
+  strcpy(pg.head[0], "MIDI MONITOR (IN / OUT)");
+  for(k=0; k<16; ++k) {
+    char in[84], out[84];
+    og2_col_t *c;
+    SEQ_OLED_LcdText(in, 5*k, 5*k+5, 0);
+    SEQ_OLED_LcdText(out, 5*k, 5*k+5, 1);
+    if( !in[0] && !out[0] ) continue;
+    c = OG2_PageCol(&pg, k, OG2_C_VALUE, 1, in[0] ? in : "---");
+    strcpy(c->value, out[0] ? out : "---");
+  }
+  return 0;
+}
+
+// pages that only show a message (LCD rows 1 and 2) in one text box
+static s32 message_fill(void)
+{
+  char a[84], b[84];
+  og2_col_t *c;
+  OG2_PageInit(&pg);
+  {
+    const char *pn = SEQ_UI_PAGES_PageNameGet(ui_page);
+    int i; for(i=0; pn && pn[i] && i<23; ++i) pg.head[0][i] = pn[i];
+    pg.head[0][i] = 0; gen_trim_upper(pg.head[0], NULL);
+  }
+  SEQ_OLED_LcdText(a, 0, 80, 0);
+  SEQ_OLED_LcdText(b, 0, 80, 1);
+  c = OG2_PageCol(&pg, 0, OG2_C_TEXT, 16, "MESSAGE");
+  snprintf(pg.text, sizeof(pg.text), "%s|%s", a, b);
+  (void)c;
+  return 0;
+}
+
+// Disk main page (dialogs: generic view): GP1 session import, GP2-3 export, GP5 MIDI file import, GP6-7 export, GP8 play
+static s32 disk_fill(void)
+{
+  og2_col_t *c;
+  char a[84];
+  SEQ_OLED_LcdText(a, 0, 40, 0);
+  if( strncmp(a, "SESSIONS", 8) ) return -1;
+  OG2_PageInit(&pg);
+  strcpy(pg.head[0], "DISK - SESSIONS");
+  strcpy(pg.head[1], "MIDI FILES");
+  c = OG2_PageCol(&pg, 0, OG2_C_ACTION, 1, "SESSION"); strcpy(c->value, "IMPORT");
+  c = OG2_PageCol(&pg, 1, OG2_C_ACTION, 2, "SESSION"); strcpy(c->value, "EXPORT");
+  c = OG2_PageCol(&pg, 4, OG2_C_ACTION, 1, "FILE"); strcpy(c->value, "IMPORT");
+  c = OG2_PageCol(&pg, 5, OG2_C_ACTION, 2, "FILE"); strcpy(c->value, "EXPORT");
+  c = OG2_PageCol(&pg, 7, OG2_C_ACTION, 1, "FILE"); strcpy(c->value, "PLAY");
+  return 0;
+}
+
 // pages that describe themselves as a column page (og2_page_t); < 0 = not available (text view instead)
 static s32 page_fill(void)
 {
@@ -281,7 +532,17 @@ static s32 page_fill(void)
     case SEQ_UI_PAGE_PATTERN:  return SEQ_UI_PATTERN_OledGet(&pg);
     case SEQ_UI_PAGE_SONG:     return SEQ_UI_SONG_OledGet(&pg);
     case SEQ_UI_PAGE_UTIL:     return SEQ_UI_UTIL_OledGet(&pg);
-    default:                   return lcd_page_fill();
+    case SEQ_UI_PAGE_SAVE:     return SEQ_UI_SAVE_OledGet(&pg);
+    case SEQ_UI_PAGE_MENU:     return SEQ_UI_MENU_OledGet(&pg);
+    case SEQ_UI_PAGE_BPM:      return SEQ_UI_BPM_OledGet(&pg);
+    case SEQ_UI_PAGE_OPT:      return SEQ_UI_OPT_OledGet(&pg);
+    case SEQ_UI_PAGE_TRKINST:  return trkinst_fill();
+    case SEQ_UI_PAGE_TRKEUCLID: return euclid_fill();
+    case SEQ_UI_PAGE_MIDIMON:  return midimon_fill();
+    case SEQ_UI_PAGE_TRKLIVE:  return message_fill();
+    case SEQ_UI_PAGE_INFO:     return SEQ_UI_INFO_OledGet(&pg);
+    case SEQ_UI_PAGE_DISK:     return disk_fill();
+    default:                   return (lcd_page_fill() >= 0) ? 0 : lcd_generic_fill();
   }
 }
 extern s32 SEQ_UI_TRKMODE_OledGet(og2_mode_t *m);
@@ -456,129 +717,6 @@ static void collect_steps(void)
   OG2_StepRange(steps, &range_lo, &range_hi);
 }
 
-// overzichtspagina's: elke cel is een track (MUTE-pagina) of een mixerkanaal (MIXER-pagina)
-static void collect_tiles(u8 mode)
-{
-  int t;
-  u8 running = SEQ_BPM_IsRunning();
-  for(t=0; t<16; ++t) {
-    og2_tile_t *tl = &tiles[t];
-    memset(tl, 0, sizeof(*tl));
-    if( mode == 1 ) {
-      u16 len = SEQ_CC_Get(t, SEQ_CC_LENGTH) + 1;
-      if( len > 255 ) len = 255;
-      u8 pos = running ? seq_core_trk[t].step : 0xff;
-      u8 win = (pos != 0xff) ? (pos / 16) : ui_selected_step_view;
-      int i;
-      sprintf(tl->label, "G%dT%d", (t / 4) + 1, (t % 4) + 1);
-      tl->flags = ((ui_selected_tracks >> t) & 1) | (((seq_core_trk_muted >> t) & 1) << 1) | (((seq_core_trk_soloed >> t) & 1) << 2);
-      tl->len = len;
-      tl->pos = pos;
-      tl->win = win;
-      for(i=0; i<16; ++i) {
-	u16 step = (u16)win * 16 + i;
-	if( step < len && SEQ_TRG_GateGet(t, step, 0) )
-	  tl->gates |= (1 << i);
-      }
-    } else {
-      static const char pname[16][8] = {"PORT","CHN","PRG","VOLUME","PAN","REVERB","CHORUS","MOD","CC1","CC2","CC3","CC4","CC1#","CC2#","CC3#","CC4#"};
-      u8 par = SEQ_UI_MIXER_ParGet();
-      s32 v;
-      if( par > 15 ) par = 0;
-      sprintf(tl->label, "CH%02d", t + 1);
-      tl->flags = (ui_selected_item == t) ? 1 : 0;
-      v = SEQ_MIXER_Get(t, par); if( v < 0 ) v = 0;
-      tl->v1 = v & 0x7f;
-      strcpy(tl->pname, pname[par]);
-      if( par == SEQ_MIXER_PAR_PORT ) {
-	const char *nm = SEQ_MIDI_PORT_OutNameGet(SEQ_MIDI_PORT_OutIxGet((mios32_midi_port_t)v));
-	int k;
-	for(k=0; k<4 && nm && nm[k]; ++k) tl->txt[k] = nm[k];
-	tl->txt[k] = 0;
-	tl->vmax = 0;
-      } else if( par == SEQ_MIXER_PAR_CHANNEL ) {
-	sprintf(tl->txt, "%d", (int)(v & 0x0f) + 1);
-	tl->vmax = 15;
-      } else if( par == SEQ_MIXER_PAR_PANORAMA ) {
-	int p = (int)(v & 0x7f) - 64;
-	if( v == 0 ) strcpy(tl->txt, "---");
-	else if( p == 0 ) strcpy(tl->txt, "C");
-	else sprintf(tl->txt, "%c%d", p < 0 ? 'L' : 'R', p < 0 ? -p : p);
-	tl->vmax = 127; tl->pan = 1;
-      } else {
-	if( v == 0 && par >= SEQ_MIXER_PAR_PRG )
-	  strcpy(tl->txt, "---");            // 0 = niet gebruikt (zoals op het LCD)
-	else
-	  sprintf(tl->txt, "%d", (int)(v & 0x7f));
-	tl->vmax = 127;
-      }
-      // kleine vakjes: poort, MIDI-kanaal, programma van dit kanaal
-      {
-	s32 pv = SEQ_MIXER_Get(t, SEQ_MIXER_PAR_PORT);
-	const char *pn = SEQ_MIDI_PORT_OutNameGet(SEQ_MIDI_PORT_OutIxGet((mios32_midi_port_t)(pv < 0 ? 0 : pv)));
-	int q;
-	for(q=0; q<4 && pn && pn[q]; ++q) tl->port[q] = pn[q];
-	tl->port[q] = 0;
-	pv = SEQ_MIXER_Get(t, SEQ_MIXER_PAR_CHANNEL); tl->chn = (pv < 0) ? 0 : (pv & 0x0f);
-	pv = SEQ_MIXER_Get(t, SEQ_MIXER_PAR_PRG);     tl->v3  = (pv < 0) ? 0 : (pv & 0x7f);
-      }
-    }
-  }
-}
-
-// dashboard: BPM, maat/tel, patronen per groep, sessienaam
-static void collect_dash(void)
-{
-  int g, k;
-  u32 tick = SEQ_BPM_TickGet();
-  u32 ppqn = SEQ_BPM_PPQN_Get();
-  if( ppqn < 4 ) ppqn = 96;
-  memset(&dash, 0, sizeof(dash));
-  dash.bpm10 = (u16)(SEQ_BPM_Get() * 10.0f + 0.5f);
-  dash.running = SEQ_BPM_IsRunning() ? 1 : 0;
-  dash.master = SEQ_BPM_IsMaster() ? 1 : 0;
-  dash.bar = (tick / (ppqn * 4)) + 1;
-  dash.beat = (tick / ppqn) % 4;
-  dash.sixt = (tick / (ppqn / 4)) % 16;
-  for(k=0; k<12 && seq_file_session_name[k]; ++k)
-    dash.session[k] = seq_file_session_name[k];
-  for(g=0; g<4; ++g) {
-    char *nm = SEQ_PATTERN_NameGet(g);
-    dash.pat_group[g] = seq_pattern[g].group;
-    dash.pat_num[g] = seq_pattern[g].num;
-    dash.pat_req[g] = seq_pattern[g].REQ ? 1 : 0;
-    if( nm )
-      for(k=0; k<9 && nm[k]; ++k)
-	dash.pat_name[g][k] = nm[k];
-  }
-  dash.sel_track = SEQ_UI_VisibleTrackGet();
-  for(k=0; k<16; ++k)
-    if( (seq_core_trk_muted >> k) & 1 )
-      ++dash.muted_cnt;
-}
-
-// tekst-weergave: de LCD-tekst van de SEQ, 5 tekens per GP-kolom (80 kolommen / 16 knoppen)
-static void collect_text(void)
-{
-  int c, i;
-  for(c=0; c<16; ++c) {
-    for(i=0; i<5; ++i) {
-      texts[c].l1[i] = SEQ_LCD_BufferCharGet(c*5 + i, 0);
-      texts[c].l2[i] = SEQ_LCD_BufferCharGet(c*5 + i, 1);
-    }
-    texts[c].l1[5] = 0;
-    texts[c].l2[5] = 0;
-  }
-  {
-    u8 r0[80], r1[80];
-    for(i=0; i<80; ++i) {
-      r0[i] = SEQ_LCD_BufferCharGet(i, 0);
-      r1[i] = SEQ_LCD_BufferCharGet(i, 1);
-    }
-    OG2_TextGroups(r0, r1, groups);
-  }
-}
-
 // run-length (PackBits): 0..127 = kopieer c+1 bytes; 128..255 = herhaal volgende byte (c-126) keer
 static int rle_encode(const u8 *in, int n, u8 *out)
 {
@@ -646,23 +784,24 @@ s32 SEQ_OLED_Handler(void)
 
   if( (ctr % OLED_PERIOD_MS) == 0 ) {
     int c;
-    cur_mode = (ui_page == SEQ_UI_PAGE_MUTE) ? ((page_fill() >= 0) ? 9 : 4) : ((ui_page == SEQ_UI_PAGE_MIXER) ? ((page_fill() >= 0) ? 9 : 4) :
-	       ((ui_page == SEQ_UI_PAGE_BPM || ui_page == SEQ_UI_PAGE_SAVE) ? 3 :
-		((ui_page == SEQ_UI_PAGE_EDIT) ? 0 : ((ui_page == SEQ_UI_PAGE_TRKEVNT) ? ((SEQ_UI_TRKEVNT_OledGet(&evt) >= 0) ? 6 : 4) : ((ui_page == SEQ_UI_PAGE_TRKDIV || ui_page == SEQ_UI_PAGE_TRKLEN || ui_page == SEQ_UI_PAGE_TRKDIR) ? 7 : ((ui_page == SEQ_UI_PAGE_TRKMODE) ? 8 : ((page_fill() >= 0) ? 9 : 4)))))));    // other pages (Transpose, Groove, ...): LCD text enlarged
+    lcd_snapshot();
+    // 0 step view, 6 Event, 7 Divider/Length/Direction, 8 Mode: own layouts; 9 = column page (own description or LCD converter)
+    if( ui_page == SEQ_UI_PAGE_EDIT ) cur_mode = 0;
+    else if( ui_page == SEQ_UI_PAGE_TRKEVNT && SEQ_UI_TRKEVNT_OledGet(&evt) >= 0 ) cur_mode = 6;
+    else if( ui_page == SEQ_UI_PAGE_TRKDIV || ui_page == SEQ_UI_PAGE_TRKLEN || ui_page == SEQ_UI_PAGE_TRKDIR ) cur_mode = 7;
+    else if( ui_page == SEQ_UI_PAGE_TRKMODE ) cur_mode = 8;
+    else {
+      if( page_fill() < 0 ) lcd_generic_fill();
+      cur_mode = 9;
+    }
     if( cur_mode == 0 )
       collect_steps();
-    else if( cur_mode == 3 )
-      collect_dash();
-    else if( cur_mode == 4 || cur_mode == 5 )
-      collect_text();
     else if( cur_mode == 7 )
       SEQ_UI_TIMING_OledGet(&tim);
     else if( cur_mode == 8 )
       SEQ_UI_TRKMODE_OledGet(&mod);
     // mode 9: column page (pg was filled when the mode was chosen)
     // mode 6: Event page in its own layout (evt was filled when the mode was chosen)
-    else if( cur_mode != 6 && cur_mode != 9 )
-      collect_tiles(cur_mode);
     if( resend_ctr >= OLED_RESEND_MS ) {
       resend_ctr = 0;
       for(c=0; c<OLED_NUM_CELLS; ++c)
@@ -694,21 +833,6 @@ s32 SEQ_OLED_Handler(void)
 	  }
 	}
       }
-      else if( cur_mode == 4 )
-	h = fnv(h, (const u8 *)&groups[c], sizeof(og2_tgroup_t));
-      else if( cur_mode == 5 )
-	h = fnv(h, (const u8 *)&texts[c], sizeof(og2_text_t));
-      else if( cur_mode == 3 ) {
-	// alleen de velden die dit scherm (c/4) tekent: voorkomt dat alle cellen bij elke zestiende opnieuw gestuurd worden
-	switch( c / 4 ) {
-	  case 0: h = fnv(h, (const u8 *)&dash.bpm10, 2); h = fnv(h, &dash.running, 2); h = fnv(h, &dash.beat, 1); break;
-	  case 1: h = fnv(h, (const u8 *)&dash.bar, 2); h = fnv(h, &dash.beat, 1); h = fnv(h, &dash.sixt, 1); h = fnv(h, &dash.running, 1); break;
-	  case 2: h = fnv(h, dash.pat_group, 12); h = fnv(h, (const u8 *)dash.pat_name, sizeof(dash.pat_name)); break;
-	  default: h = fnv(h, (const u8 *)dash.session, sizeof(dash.session)); h = fnv(h, &dash.sel_track, 2); h = fnv(h, &dash.running, 1); break;
-	}
-      }
-      else
-	h = fnv(h, (const u8 *)&tiles[c], sizeof(og2_tile_t));
       h = fnv(h, (const u8 *)&range_lo, sizeof(int));
       h = fnv(h, (const u8 *)&range_hi, sizeof(int));
       u8 flags[3] = { play_step == c, trail_step == c, cur_kind };
@@ -756,16 +880,6 @@ s32 SEQ_OLED_Handler(void)
 	  OG2_RenderModeCell(cell_buf, c, &mod);
 	else if( cur_mode == 9 )
 	  OG2_RenderPageCell(cell_buf, c, &pg);
-	else if( cur_mode == 4 )
-	  OG2_RenderTextGroupCell(cell_buf, c, &groups[c]);
-	else if( cur_mode == 5 )
-	  OG2_RenderPlainCell(cell_buf, c, &texts[c]);
-	else if( cur_mode == 3 )
-	  OG2_RenderDashCell(cell_buf, c, &dash);
-	else if( cur_mode == 1 )
-	  OG2_RenderTrackTile(cell_buf, c, &tiles[c]);
-	else if( cur_mode == 2 )
-	  OG2_RenderMixerTile(cell_buf, c, &tiles[c]);
 	else
 	  OG2_RenderCell(cell_buf, c, &steps[c], range_lo, range_hi, play_step == c, trail_step == c, cur_layer_name, cur_kind);
 	int n = rle_encode(cell_buf, sizeof(cell_buf), rle_buf);

@@ -25,6 +25,9 @@
 
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 
 #include "seq_terminal.h"
 #include "uip_terminal.h"
@@ -347,6 +350,39 @@ static s32 LCD_Handler(u8 high_prio)
   return 0; // no error
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): GP1-8 choose what is shown (4 entries of 2 columns), the information on the right
+/////////////////////////////////////////////////////////////////////////////
+extern void SEQ_OLED_LcdText(char *out, int x0, int x1, int row);
+s32 SEQ_UI_INFO_OledGet(og2_page_t *p)
+{
+  og2_col_t *c;
+  int i, k;
+  char a[84], b[84];
+  OG2_PageInit(p);
+  SEQ_OLED_LcdText(a, 0, 31, 0);
+  strncpy(p->head[0], a, 23);
+  SEQ_OLED_LcdText(a, 31, 40, 0);
+  if( a[0] ) sprintf(p->head[1], "UPTIME %s", a);
+  for(i=0; i<NUM_LIST_DISPLAYED_ITEMS; ++i) {
+    char nm[LIST_ENTRY_WIDTH+1];
+    int o = 0;
+    for(k=0; k<LIST_ENTRY_WIDTH; ++k) { char ch = ui_global_dir_list[LIST_ENTRY_WIDTH*i + k]; if( !ch ) break; nm[o++] = (ch >= 'a' && ch <= 'z') ? ch - 32 : ch; }
+    nm[o] = 0;
+    while( o > 0 && nm[o-1] == ' ' ) nm[--o] = 0;
+    { int s = 0; while( nm[s] == ' ' ) ++s; if( s ) memmove(nm, nm+s, strlen(nm+s)+1); }
+    if( !nm[0] ) continue;
+    c = OG2_PageCol(p, 2*i, OG2_C_CHOICE, 2, "SHOW");
+    strcpy(c->value, nm);
+    c->on = (i == ui_selected_item);
+  }
+  SEQ_OLED_LcdText(a, 40, 80, 0);
+  SEQ_OLED_LcdText(b, 40, 80, 1);
+  c = OG2_PageCol(p, 8, OG2_C_TEXT, 8, "INFORMATION");
+  snprintf(p->text, sizeof(p->text), "%s|%s", a, b);
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

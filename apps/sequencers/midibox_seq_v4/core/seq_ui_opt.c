@@ -21,6 +21,9 @@
 
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 
 #include "seq_file.h"
 #include "seq_file_c.h"
@@ -1455,6 +1458,27 @@ static s32 EXIT_Handler(void)
   return status;
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): GP7/8 select the option, GP9-16 change it. The value line is taken from the LCD.
+/////////////////////////////////////////////////////////////////////////////
+extern void SEQ_OLED_LcdText(char *out, int x0, int x1, int row);
+s32 SEQ_UI_OPT_OledGet(og2_page_t *p)
+{
+  og2_col_t *c;
+  char t[44];
+  int i;
+  OG2_PageInit(p);
+  strcpy(p->head[0], "OPTIONS");
+  c = OG2_PageCol(p, 6, OG2_C_VALUE, 2, "OPTION"); sprintf(c->value, "%d / %d", local_selected_item + 1, NUM_OF_ITEMS);
+  for(i=0; i<40 && item_text[local_selected_item][0][i]; ++i) { char ch = item_text[local_selected_item][0][i]; t[i] = (ch >= 'a' && ch <= 'z') ? ch - 32 : ch; }
+  t[i] = 0;
+  while( i > 0 && t[i-1] == ' ' ) t[--i] = 0;
+  c = OG2_PageCol(p, 8, OG2_C_VALUE, 8, t);
+  SEQ_OLED_LcdText(c->value, 40, 80, 1);
+  p->sel = 0x00c0;
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

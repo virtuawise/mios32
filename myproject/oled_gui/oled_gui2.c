@@ -473,13 +473,16 @@ static void ecbtext(u8 (*d)[CW], int cx, int y, const char *s, int sc, int g){ i
 static void ecsmall(u8 (*d)[CW], int cx, int y, const char *s, int g){ int w = tw(LFONT, s, 1); text(d, LFONT, cx-w/2, y-1, s, 1, g); }
 static void ebox(u8 (*d)[CW], int k, int n, int sel){ int x = ebx(k), w = ebw(n); if( sel ) rect(d, x, EBY, w, EBH, 2); frame_box(d, x, EBY, w, EBH, sel ? 15 : 9); if( sel ) frame_box(d, x+1, EBY+1, w-2, EBH-2, 15); }
 static void elabel(u8 (*d)[CW], int k, const char *l, int sel){ text(d, LFONT, ebx(k)+5, EBY+4, l, 1, sel ? 12 : 9); }
+// label that is clipped to a box of n columns
+static void elabel_n(u8 (*d)[CW], int k, int n, const char *l, int sel){ char b[44]; int i, m = (ebw(n) - 8) / 6; if( m > 43 ) m = 43; for(i=0; l[i] && i<m; ++i) b[i] = l[i]; b[i] = 0; elabel(d, k, b, sel); }
 // UI rules (boxed pages): label top-left in LFONT; value always 1x bold upper case at VALY; no bars under values;
 // on / active = filled box; last touched = double frame; lists = chips
 #define VALY 34
 static void evalue(u8 (*d)[CW], int k, int n, const char *v, int g)
 {
-  char u[12]; int i = 0;
-  for(; v[i] && i < 11; ++i) u[i] = (v[i] >= 'a' && v[i] <= 'z' && !(v[i] == 'x' && v[i+1] >= '0' && v[i+1] <= '9')) ? v[i] - 32 : v[i];   // keep 'x1' (replay)
+  char u[32]; int i = 0, maxc = (ebw(n) - 8) / 6;      // clip to the box (6 px per character)
+  if( maxc > 31 ) maxc = 31;
+  for(; v[i] && i < maxc; ++i) u[i] = (v[i] >= 'a' && v[i] <= 'z' && !(v[i] == 'x' && v[i+1] >= '0' && v[i+1] <= '9')) ? v[i] - 32 : v[i];   // keep 'x1' (replay)
   u[i] = 0;
   ecbtext(d, ebx(k) + ebw(n)/2, VALY, u, 1, g);
 }
@@ -774,7 +777,7 @@ og2_col_t *OG2_PageCol(og2_page_t *p, int k, u8 kind, int span, const char *labe
   og2_col_t *c = &p->c[k];
   memset(c, 0, sizeof(*c));
   c->kind = kind; c->span = span;
-  if( label ){ int i = 0; for(; label[i] && i < 13; ++i) c->label[i] = label[i]; c->label[i] = 0; }
+  if( label ){ int i = 0; for(; label[i] && i < 23; ++i) c->label[i] = label[i]; c->label[i] = 0; }
   for(int i=1; i<span; ++i){ memset(&p->c[k+i], 0, sizeof(og2_col_t)); p->c[k+i].kind = OG2_C_SPAN; }
   return c;
 }
@@ -785,7 +788,7 @@ static void pg_box(u8 (*d)[CW], const og2_page_t *p, int j)
   int fill = (c->kind == OG2_C_TOGGLE || c->kind == OG2_C_CHOICE) && c->on && !c->dim;
   ebox(d, j, n, sel);
   if( fill && !sel ) rect(d, ebx(j)+1, EBY+1, ebw(n)-2, EBH-2, 3);
-  elabel(d, j, c->label, sel || fill);
+  elabel_n(d, j, n, c->label, sel || fill);
   int cx = ebx(j) + ebw(n)/2;
   switch( c->kind ){
   case OG2_C_VALUE:
@@ -799,11 +802,27 @@ static void pg_box(u8 (*d)[CW], const og2_page_t *p, int j)
     frame_box(d, cx - w/2, VALY-4, w, 15, c->dim ? 4 : 9); evalue(d, j, n, c->value, c->dim ? 5 : 15);
   } break;
   case OG2_C_TEXT: {
-    char line[44]; int l = 0, o = 0;
+    char line[84]; int l = 0, o = 0;
     for(int i=0; ; ++i){
       char ch = p->text[i];
       if( ch == '|' || ch == 0 ){ line[o] = 0; text(d, LFONT, ebx(j)+5, EBY+15+l*11, line, 1, c->dim ? 5 : 10); ++l; o = 0; if( !ch || l >= 3 ) break; }
-      else if( o < 43 && i < (int)sizeof(p->text) ) line[o++] = ch;
+      else if( o < 83 && i < (int)sizeof(p->text) ) line[o++] = ch;
+    }
+  } break;
+  case OG2_C_ROW: {
+    const char *q = c->value;
+    for(int i=0; i<n && *q; ++i){
+      char t[12]; int o = 0, mark = 0;
+      if( *q == '>' ){ mark = 1; ++q; }
+      while( *q && *q != '|' ){ if( o < 9 ) t[o++] = *q; ++q; }
+      t[o] = 0;
+      if( *q == '|' ) ++q;
+      if( !t[0] ) continue;
+      int ccx = ebx(j+i) + ebw(1)/2, w = tw(LFONT, t, 1) + 6;
+      if( w > ebw(1) - 4 ) w = ebw(1) - 4;
+      if( mark ){ rect(d, ccx - w/2, VALY-3, w, 13, c->dim ? 6 : 13); ecbtext(d, ccx, VALY, t, 1, 0); }
+      else ecbtext(d, ccx, VALY, t, 1, c->dim ? 5 : 12);
+      if( i > 0 ) for(int y=EBY+16; y<EBY+EBH-6; y+=2) px(d, ebx(j+i)-3, y, 3);     // faint divider: one GP button per text
     }
   } break;
   case OG2_C_GRAPH: {
