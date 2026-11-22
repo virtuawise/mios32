@@ -40,8 +40,8 @@ static void note_name(u8 note, char *out)
 }
 static void num3(char *b, int v){ b[0] = v>=100 ? '0'+v/100 : ' '; b[1] = v>=10 ? '0'+(v/10)%10 : ' '; b[2] = '0'+v%10; b[3] = 0; }
 
-#define ROLL_TOP 14
-#define ROLL_BOT 47     // y van de laagste noot
+#define ROLL_TOP 21
+#define ROLL_BOT 48     // y van de laagste noot
 
 static void cell(u8 (*d)[CW], int divider, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer)
 {
@@ -51,16 +51,16 @@ static void cell(u8 (*d)[CW], int divider, int num, const og2_step_t *s, int lo,
   if( bg ) rect(d, x0+1, 0, 62, 64, bg);
   if( divider ) for(int y=0; y<64; y+=4) px(d, x0, y, 2);         // scheidingslijn
 
-  // kop: stapnummer + noot
+  // kop: stapnummer klein links, noot GROOT (2x, vet) rechts
   b[0] = '0'+(num+1)/10; b[1] = '0'+(num+1)%10; b[2] = 0;
   text(d, GLCD_FONT_SMALL, x0+3, 3, b, 1, s->on ? 9 : 4);
   if( s->on && s->note != 0xff ){
     note_name(s->note, b);
-    int w = tw(GLCD_FONT_NORMAL, b, 1);
-    text(d, GLCD_FONT_NORMAL, x0+61-w, 3, b, 1, 15);
-    text(d, GLCD_FONT_NORMAL, x0+62-w, 3, b, 1, 15);          // vet
+    int w = tw(GLCD_FONT_NORMAL, b, 2);
+    text(d, GLCD_FONT_NORMAL, x0+61-w, 3, b, 2, 15);
+    text(d, GLCD_FONT_NORMAL, x0+62-w, 3, b, 2, 15);          // vet
   } else {
-    text(d, GLCD_FONT_NORMAL, x0+61-12, 3, "--", 1, 3);
+    text(d, GLCD_FONT_NORMAL, x0+61-24, 3, "--", 2, 3);
   }
 
   // pianoroll-vlak: octaaflijnen (C) gestippeld
