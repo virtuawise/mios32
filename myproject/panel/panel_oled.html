@@ -158,7 +158,7 @@ function update(s){
     else if(!oledReal[d]) drawOled(d);
   }
   for(const[n,[g,r]]of Object.entries(s.leds)){
-    if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!!(g||r));continue;}
+    if(n.startsWith('GP')){continue;}   // GP-knoppen lopen niet meer mee met de sequencer (de afspeelstap staat al op de schermen)
     const b=btnEls[n];if(b)b.classList.toggle('on',!!g);}
   beat.classList.toggle('on',!!(s.leds.BEAT&&s.leds.BEAT[0]));
 }
