@@ -1,0 +1,6 @@
+# bouwresultaten van de Mac-tests
+oled_gui/host_test
+oled_gui/host_test2
+oled_gui/*.pgm
+oled_gui/*.png
+!oled_gui/voorbeeld_stapweergave.png
