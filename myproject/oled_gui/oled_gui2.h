@@ -66,6 +66,7 @@ extern void OG2_RenderMixerTile(u8 *out2048, int num, const og2_tile_t *t);
 extern void OG2_RenderSteps(og2_frame_t *f, const og2_step_t st[16], u8 play_step, u8 trail_step);
 // voorstel-layout: vierkant hoofdvak + 3 symboolvakjes eronder (accent / glide / roll-skip-kans)
 extern void OG2_RenderCellBoxed(u8 *out2048, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer, og2_kind_t kind);
+extern int og2_vel_style;
 extern void OG2_StepRange(const og2_step_t st[16], int *lo, int *hi);
 extern void OG2_RenderCell(u8 *out2048, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer, og2_kind_t kind);
 #endif

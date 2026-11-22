@@ -432,6 +432,7 @@ static void slot_icon(u8 (*d)[CW], int x, int y, int kind, int on)
   }
 }
 
+int og2_vel_style = 0;      // 0 verticaal balkje (huidig), 1 segmenten, 2 vulling, 3 boog, 4 balkdikte
 void OG2_RenderCellBoxed(u8 *out, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer, og2_kind_t kind)
 {
   static u8 tmp[OG2_H][CW];
@@ -445,6 +446,10 @@ void OG2_RenderCellBoxed(u8 *out, int num, const og2_step_t *s, int lo, int hi, 
   frame_box(d, bx, by, bw, bh, playing ? 15 : (on ? 9 : 3));
   if( playing ) frame_box(d, bx+1, by+1, bw-2, bh-2, 15);
   if( trailing && !playing ) frame_box(d, bx+1, by+1, bw-2, bh-2, 5);
+  if( og2_vel_style == 2 && on && kind == OG2_K_NOTE ){                    // velocity = vulniveau van het hele vak (van onder naar boven)
+    int fh = (s->vel * (bh-2)) / 127;
+    rect(d, bx+1, by+bh-1-fh, bw-2, fh, playing ? 8 : 5);
+  }
   // stapnummer klein linksboven in het vak
   b[0] = '0'+(num+1)/10; b[1] = '0'+(num+1)%10; b[2] = 0;
   text(d, GLCD_FONT_SMALL, bx+3, by+3, b, 1, on ? 9 : 4);
@@ -457,12 +462,24 @@ void OG2_RenderCellBoxed(u8 *out, int num, const og2_step_t *s, int lo, int hi, 
       // lengte: horizontaal balkje onderin; glide = balk loopt door tot de rand van het vak
       int len = 2 + (s->len > 100 ? 100 : s->len) * 44 / 100;
       for(int x=0; x<46; ++x) px(d, bx+6+x, by+bh-6, 3);                       // spoor
-      rect(d, bx+6, by+bh-7, len, 3, 13);
-      if( s->sld ) rect(d, bx+6+len, by+bh-7, 46-len+3, 3, 15);
-      // velocity: dun verticaal balkje rechts (van onder naar boven)
+      int th = (og2_vel_style == 4) ? 2 + (s->vel * 6) / 127 : 3;                 // stijl 4: dikte van het lengte-balkje = velocity
+      rect(d, bx+6, by+bh-4-th, len, th, 13);
+      if( s->sld ) rect(d, bx+6+len, by+bh-4-th, 46-len+3, th, 15);
+      // velocity: verschillende stijlen (voorbeeld)
       int vh = (s->vel * 22) / 127;
-      for(int y=0; y<24; ++y) px(d, bx+bw-8, by+bh-10-y, 3);                   // spoor
-      rect(d, bx+bw-9, by+bh-10-vh, 3, vh + 1, 14);
+      if( og2_vel_style == 0 ){
+        for(int y=0; y<24; ++y) px(d, bx+bw-8, by+bh-10-y, 3);
+        rect(d, bx+bw-9, by+bh-10-vh, 3, vh + 1, 14);
+      } else if( og2_vel_style == 1 ){            // segmenten (zoals een LED-meter) linksboven in het vak
+        int seg = (s->vel * 6 + 126) / 127;
+        for(int i=0; i<6; ++i) rect(d, bx+bw-9, by+bh-12-i*4, 5, 3, i < seg ? (i > 4 ? 15 : 13) : 3);
+      } else if( og2_vel_style == 3 ){            // boog van 9 puntjes rechtsonder
+        static const s8 AX[9] = {0,1,3,5,7,8,9,9,9}, AY[9] = {-9,-6,-4,-2,-1,0,0,0,0};
+        int lit = (s->vel * 9 + 126) / 127;
+        for(int i=0; i<9; ++i){ int x = bx+bw-14 + (i<5 ? i*2 : 8), y = by+bh-9 - (i<5 ? 8-i*2 + (i==0?0:0) : (8-i)*2+0); (void)AX; (void)AY;
+          rect(d, bx+bw-6, by+bh-10-i*2-1, 2, 1, 0); (void)x; (void)y; }
+        for(int i=0; i<9; ++i){ int ang = i; int px_ = bx+bw-8 - (int)(7 - (i*i*7)/64); int py_ = by+bh-9 - i*2; rect(d, px_, py_, 2, 2, i < lit ? 15 : 3); }
+      }
     } else {
       hline(d, bx+16, by+bh/2+2, 24, 3, 2);
     }

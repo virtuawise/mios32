@@ -13,6 +13,18 @@ static void dump(const char *name, void (*fn)(u8*,int,const og2_tile_t*), og2_ti
 }
 int main(int argc, char **argv)
 {
+  if( argc>1 && !strcmp(argv[1],"velstyles") ){
+    og2_step_t s[4] = {0}; static const u8 notes[4]={36,36,39,41}, vel[4]={110,60,127,90}, len[4]={80,40,100,20};
+    for(int i=0;i<4;++i){ s[i].note=notes[i]; s[i].vel=vel[i]; s[i].len=len[i]; s[i].prob=100; s[i].on=1; }
+    static og2_frame_t f; static u8 cb[2048];
+    static const int styles[4] = {1,2,3,4};
+    for(int k=0;k<4;++k){ og2_vel_style = styles[k];
+      for(int n=0;n<4;++n){ OG2_RenderCellBoxed(cb, n, &s[n], 36, 41, 0, 0, "NOTE", OG2_K_NOTE);
+        for(int y=0;y<OG2_H;++y) for(int x=0;x<64;++x) f.gray[k][y][n*64+x] = (x&1)?(cb[y*32+x/2]&15):(cb[y*32+x/2]>>4); } }
+    FILE *o = fopen("velstyles.pgm","wb"); fprintf(o,"P5\n%d %d\n15\n", OG2_W*OG2_DISPLAYS, OG2_H);
+    for(int y=0;y<OG2_H;++y) for(int d=0;d<OG2_DISPLAYS;++d) for(int x=0;x<OG2_W;++x) fputc(f.gray[d][y][x], o);
+    fclose(o); return 0;
+  }
   if( argc>1 && !strncmp(argv[1],"boxed",5) ){
     og2_step_t s[16] = {0};
     static const u8 notes[16] = {36,36,39,41, 0xff,34,36,48, 36,38,43,38, 36,0xff,34,46};
