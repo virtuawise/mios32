@@ -146,6 +146,8 @@ async function drawReal(d){   // 4-bit grijs framebuffer uit de firmware: 256x64
   g.putImageData(im,0,0);
 }
 function update(s){
+  const row0=s.lcd[0].map(c=>c>=32&&c<127?String.fromCharCode(c):' ').join('');
+  const inEdit=/^G\dT\d .*P[A-P]:/.test(row0);        // stap-/laagpagina herkend aan de kop 'G1T1 ... PA:Note'
   // stapnoten staan op de tweede LCD-regel: 8 stappen per LCD, 5 tekens per stap
   for(let i=0;i<16;i++){const lcd=i<8?0:1,off=lcd*40+(i%8)*5;
     stepNote[i]=s.lcd[1].slice(off,off+4).map(ch).join('');}
@@ -158,7 +160,7 @@ function update(s){
     else if(!oledReal[d]) drawOled(d);
   }
   for(const[n,[g,r]]of Object.entries(s.leds)){
-    if(n.startsWith('GP')){continue;}   // GP-knoppen lopen niet meer mee met de sequencer (de afspeelstap staat al op de schermen)
+    if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!inEdit&&!!(g||r));continue;}   // GP-knoppen lopen alleen mee in submenu's (in het stapscherm staat de afspeelstap op de OLED's)
     const b=btnEls[n];if(b)b.classList.toggle('on',!!g);}
   beat.classList.toggle('on',!!(s.leds.BEAT&&s.leds.BEAT[0]));
 }
