@@ -43,8 +43,8 @@ int main(int argc, char **argv)
     fclose(o); return 0;
   }
   if( argc>1 && !strcmp(argv[1],"text") ){
-    const char *L1 = " Forward  >PingPong< Rand.Dir  Rand.D+S Fwd. Back Replay  Repeat Skip Itv. SyncM          ";
-    const char *L2 = "G1T1  Backward  Pendulum  Rand.Step       1     0    x1       0    0    4   no            ";
+    const char *L1 = "Trk. Type Steps/ParL/TrgL Port Chn. Trk.Layer  controls                         ";
+    const char *L2 = "G1T1 Note   128   8    8  USB2   1  Inst  A    Note                PRESETS  INIT";
     og2_text_t tx[16]; for(int c=0;c<16;++c){ memcpy(tx[c].l1, L1+c*5, 5); tx[c].l1[5]=0; memcpy(tx[c].l2, L2+c*5, 5); tx[c].l2[5]=0; }
     static og2_frame_t f; static u8 cb[2048];
     for(int n=0;n<16;++n){ OG2_RenderTextCell(cb, n, &tx[n]);

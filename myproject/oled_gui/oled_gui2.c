@@ -335,15 +335,40 @@ static void textcell_line(u8 (*d)[CW], int y, const char *s)
   }
 }
 
+// 'hokjes'-weergave van de LCD-tekst: elk onderdeel (5 tekens per GP-kolom) krijgt een vak; regel 1 = label klein, regel 2 = waarde groot.
+// Gekozen onderdelen op het LCD staan tussen '>' en '<' -> felle dubbele rand.
+static int trim_copy(char *o, const char *s, int *sel)
+{
+  int n = 5, i = 0, j;
+  while( n > 0 && (s[n-1] == ' ' || s[n-1] == 0 || s[n-1] == '<' || s[n-1] == '>') ){ if( s[n-1] == '<' ) *sel = 1; --n; }
+  while( i < n && (s[i] == ' ' || s[i] == '>' || s[i] == '<') ){ if( s[i] == '>' ) *sel = 1; ++i; }
+  for(j=0; i<n; ++i){ unsigned char c = (unsigned char)s[i]; o[j++] = (c < 32 || c > 126) ? '#' : (char)c; }
+  o[j] = 0; return j;
+}
+
 void OG2_RenderTextCell(u8 *out, int cell, const og2_text_t *t)
 {
   static u8 tmp[OG2_H][CW];
   for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
   u8 (*d)[CW] = tmp;
-  if( (cell & 3) != 0 ) for(int y=0; y<64; y+=4) px(d, 0, y, 2);
-  textcell_line(d, 6, t->l1);
-  hline(d, 4, 31, 56, 2, 3);
-  textcell_line(d, 38, t->l2);
+  char a[8], b[8]; int sel = 0;
+  int na = trim_copy(a, t->l1, &sel), nb = trim_copy(b, t->l2, &sel);
+  const int bx = 4, by = 3, bw = 56, bh = 56;
+  if( na == 0 && nb == 0 ){ for(int x=0; x<bw; x+=4) px(d, bx+x, by+bh/2, 2); tile_pack(out, tmp); return; }   // leeg: stipjes
+  if( sel ) rect(d, bx, by, bw, bh, 2);
+  frame_box(d, bx, by, bw, bh, sel ? 15 : 9);
+  if( sel ) frame_box(d, bx+1, by+1, bw-2, bh-2, 15);
+  if( nb > 0 && na > 0 ){                                  // label klein boven, waarde groot
+    text(d, GLCD_FONT_SMALL, bx+4, by+4, a, 1, sel ? 12 : 9);
+    int sc = (tw(GLCD_FONT_NORMAL, b, 2) > 50) ? 1 : 2, w = tw(GLCD_FONT_NORMAL, b, sc);
+    int ty = sc == 2 ? by+24 : by+28;
+    text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2 - 1, ty, b, sc, 15); text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2, ty, b, sc, 15);
+  } else {                                                 // maar 1 regel: die is de inhoud
+    const char *m = na > 0 ? a : b;
+    int sc = (tw(GLCD_FONT_NORMAL, m, 2) > 50) ? 1 : 2, w = tw(GLCD_FONT_NORMAL, m, sc);
+    int ty = by + bh/2 - (sc == 2 ? 8 : 4);
+    text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2 - 1, ty, m, sc, 15); text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2, ty, m, sc, 15);
+  }
   tile_pack(out, tmp);
 }
 

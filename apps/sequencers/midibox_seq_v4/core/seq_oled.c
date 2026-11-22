@@ -264,6 +264,16 @@ static void collect_tiles(u8 mode)
 	  sprintf(tl->txt, "%d", (int)(v & 0x7f));
 	tl->vmax = 127;
       }
+      // kleine vakjes: poort, MIDI-kanaal, programma van dit kanaal
+      {
+	s32 pv = SEQ_MIXER_Get(t, SEQ_MIXER_PAR_PORT);
+	const char *pn = SEQ_MIDI_PORT_OutNameGet(SEQ_MIDI_PORT_OutIxGet((mios32_midi_port_t)(pv < 0 ? 0 : pv)));
+	int q;
+	for(q=0; q<4 && pn && pn[q]; ++q) tl->port[q] = pn[q];
+	tl->port[q] = 0;
+	pv = SEQ_MIXER_Get(t, SEQ_MIXER_PAR_CHANNEL); tl->chn = (pv < 0) ? 0 : (pv & 0x0f);
+	pv = SEQ_MIXER_Get(t, SEQ_MIXER_PAR_PRG);     tl->v3  = (pv < 0) ? 0 : (pv & 0x7f);
+      }
     }
   }
 }
