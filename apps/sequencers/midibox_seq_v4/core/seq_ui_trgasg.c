@@ -289,10 +289,9 @@ s32 SEQ_UI_TRGASG_OledGet(og2_page_t *p)
     else if( v > num ) { strcpy(c->value, "---"); c->dim = 1; }
     else sprintf(c->value, "LAYER %c", 'A' + v - 1);
   }
-  strcpy(p->head[2], "");
-  strcpy(p->head[3], "INFO");
-  c = OG2_PageCol(p, 10, OG2_C_TEXT, 6, "LAYERS");
-  sprintf(p->text, "Each function follows one|trigger layer of the track.|This track has %d layers (A-%c).", num, 'A' + (num ? num : 1) - 1);
+  c = OG2_PageCol(p, 15, OG2_C_VALUE, 1, "LAYERS");          // trigger layers of this track (info)
+  if( num ) sprintf(c->value, "A-%c", 'A' + num - 1); else strcpy(c->value, "NONE");
+  c->dim = 1;
   if( ui_selected_item <= ITEM_ROLL_GATE ) p->sel = 1 << ui_selected_item;
   return 0;
 }
