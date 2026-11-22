@@ -131,6 +131,20 @@ static void collect_steps(void)
     if( s->on && SEQ_LAYER_GetEvntOfLayer(track, step, 0, instrument, &e) >= 0 ) {
       s->note = e.midi_package.note;
       s->vel = e.midi_package.velocity & 0x7f;
+      if( ltype == SEQ_PAR_Type_Note && SEQ_CC_Get(track, SEQ_CC_MODE) == SEQ_CORE_TRKMODE_Arpeggiator ) {
+	// Arpeggiator: de waarde is een arp-code (toets 1-4 + octaaf, of '*' = multi-arp), zoals SEQ_LCD_PrintArp
+	u8 a = s->note;
+	s->arp = 1;
+	if( a < 4 ) {
+	  strcpy(s->txt, "---");
+	} else {
+	  int key_num = (a >> 2) & 0x3, arp_oct = (a >> 4) & 0x7;
+	  char kc;
+	  if( arp_oct < 2 ) { kc = '*'; arp_oct = ((a >> 2) & 7) - 4; }
+	  else { kc = '1' + key_num; arp_oct -= 4; }
+	  sprintf(s->txt, "%c%c%d", kc, arp_oct >= 0 ? '+' : '-', arp_oct >= 0 ? arp_oct : -arp_oct);
+	}
+      }
       s32 l = e.len;
       if( l < 0 && step < 256 ) l = SEQ_PAR_LengthGet(track, step, instrument, 0x0000);
       if( l < 0 ) l = 48;

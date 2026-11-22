@@ -448,9 +448,10 @@ void OG2_RenderCellBoxed(u8 *out, int num, const og2_step_t *s, int lo, int hi, 
   // stapnummer klein linksboven in het vak
   b[0] = '0'+(num+1)/10; b[1] = '0'+(num+1)%10; b[2] = 0;
   text(d, GLCD_FONT_SMALL, bx+3, by+3, b, 1, on ? 9 : 4);
+  if( layer && layer[0] ) text(d, GLCD_FONT_SMALL, bx+bw-3-tw(GLCD_FONT_SMALL, layer, 1), by+3, layer, 1, on ? 8 : 4);   // parameterlabel
   if( kind == OG2_K_NOTE ){
     if( on && s->note != 0xff ){
-      note_name(s->note, b);
+      if( s->arp ) { int k; for(k=0; k<5 && s->txt[k]; ++k) b[k] = s->txt[k]; b[k] = 0; } else note_name(s->note, b);
       int w = tw(GLCD_FONT_NORMAL, b, 2);
       text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2 - 1, by+14, b, 2, 15); text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2, by+14, b, 2, 15);
       // lengte-balkje (helderheid = velocity) onderin het vak; glide = balk loopt door tot de rand
@@ -490,10 +491,10 @@ void OG2_RenderCell(u8 *out, int num, const og2_step_t *s, int lo, int hi, int p
 {
   static u8 tmp[OG2_H][CW];
   for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
-  if( kind == OG2_K_NOTE )
-    cell_note(tmp, (num & 3) != 0, num, s, lo, hi, playing, trailing, layer ? layer : "VEL");
-  else
-    cell_layer(tmp, (num & 3) != 0, num, s, lo, playing, trailing, layer ? layer : "?", kind);
+  (void)cell_note; (void)cell_layer;     // oude weergaven (blijven beschikbaar), de standaard is nu de vierkante-hokjes-layout
+  tile_pack(out, tmp);
+  OG2_RenderCellBoxed(out, num, s, lo, hi, playing, trailing, layer ? layer : "", kind);
+  return;
   for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; x+=2) out[y*32 + x/2] = (tmp[y][x] << 4) | tmp[y][x+1];
 }
 
