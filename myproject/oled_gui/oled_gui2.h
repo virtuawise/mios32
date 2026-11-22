@@ -13,6 +13,7 @@ typedef struct {
   u8 prob;      // 0..100
   s8 delay;     // -? .. +: verschuiving in % van de stap (0..99)
   u8 on, acc, sld, roll, skip;
+  u8 glide_to;  // noot waar de glide naartoe loopt (volgende getriggerde stap), 0xff = onbekend
   u8 value;     // waarde van de actieve laag (0..127) onderin
 } og2_step_t;
 typedef struct {

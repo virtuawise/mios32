@@ -74,6 +74,9 @@ static void cell(u8 (*d)[CW], int divider, int num, const og2_step_t *s, int lo,
     int gx = x0 + 4 + (s->delay > 0 ? (s->delay*50)/100 : 0);
     int len = 2 + (s->len > 100 ? 100 : s->len)*(56 - (gx-x0-4))/100; if( len < 3 ) len = 3;
     int g = 5 + (s->vel*10)/127;                                       // velocity = helderheid
+    int ramp = (s->sld ? 1 : 0);
+    int ramp_x = 46;                       // hier begint de helling (glide)
+    if( ramp && gx + len > ramp_x ) len = ramp_x - gx;
     for(int i=0; i<len; ++i){
       int on = 1;
       if( s->prob < 100 ){                                              // probability = korrel
@@ -85,7 +88,15 @@ static void cell(u8 (*d)[CW], int divider, int num, const og2_step_t *s, int lo,
     }
     rect(d, gx, y-1, 3, 6, 15);                                         // kop van de noot (gate-start)
     if( s->acc ){ hline(d, gx-1, y-3, 5, 15, 0); hline(d, gx-1, y-4, 5, 15, 0); }                      // accentstreepje
-    if( s->sld ){ for(int i=0; i<6; ++i){ px(d, gx+len+i, y+2-i/2, 13); px(d, gx+len+i, y+3-i/2, 13); } }// glide-staartje
+    if( ramp ){                                                        // glide: schuine lijn naar de volgende noot (rechts in de cel)
+      int y2 = (s->glide_to != 0xff) ? ROLL_BOT - ((s->glide_to-lo)*(ROLL_BOT-ROLL_TOP-3))/span : y - 4;
+      int x1 = gx + len, x2 = 61;
+      for(int x=x1; x<=x2; ++x){
+        int yy = y + ((y2 - y) * (x - x1)) / (x2 - x1 > 0 ? x2 - x1 : 1);
+        for(int t=0; t<4; ++t) px(d, x, yy+t, 14);
+      }
+      rect(d, x2-1, y2-1, 3, 6, 15);                                   // pijlkop-blokje bij de volgende toonhoogte
+    }// glide-staartje
   } else {
     hline(d, x0+22, (ROLL_TOP+ROLL_BOT)/2, 20, 3, 2);                    // lege stap: stippellijn
   }

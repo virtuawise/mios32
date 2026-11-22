@@ -93,6 +93,16 @@ static void collect_steps(void)
     }
   }
 
+  // glide: naar welke noot loopt de glide? (volgende getriggerde stap op deze pagina)
+  for(i=0; i<16; ++i) {
+    steps[i].glide_to = 0xff;
+    if( steps[i].sld && steps[i].on ) {
+      int j;
+      for(j=i+1; j<16; ++j)
+	if( steps[j].on && steps[j].note != 0xff ) { steps[i].glide_to = steps[j].note; break; }
+    }
+  }
+
   u8 new_play = 0xff;
   if( SEQ_BPM_IsRunning() ) {
     u8 cur = seq_core_trk[track].step;

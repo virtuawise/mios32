@@ -11,6 +11,7 @@ int main(int argc, char **argv)
   static const s8 dly[16]   = {0,0,0,40, 0,0,20,0, 0,0,0,0, 0,0,30,0};
   for(int i=0;i<16;++i){ s[i].note=notes[i]; s[i].vel=vel[i]; s[i].len=len[i]; s[i].prob=prob[i]; s[i].delay=dly[i]; s[i].on=notes[i]!=0xff; s[i].value=vel[i]; }
   s[0].acc=1; s[2].acc=1; s[2].sld=1; s[1].sld=1; s[7].roll=1; s[10].acc=1; s[12].acc=1; s[14].skip=1; s[3].roll=1;
+  s[2].glide_to=notes[7]; s[7].sld=1; s[7].len=100; s[7].glide_to=36; s[1].glide_to=39; s[2].len=100;
   f.layer_name = "VEL";
   OG2_RenderSteps(&f, s, argc>1?atoi(argv[1]):5, argc>2?atoi(argv[2]):4);
   FILE *o = fopen("frame2.pgm","wb");
