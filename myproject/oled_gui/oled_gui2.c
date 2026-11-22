@@ -270,33 +270,51 @@ void OG2_RenderTrackTile(u8 *out, int num, const og2_tile_t *t)
   tile_pack(out, tmp);
 }
 
-// ---- tegel: mixerkanaal; toont de waarde van de gekozen mixerpagina (Port, Chn, Prg, Vol, Pan, ...) ----
+static void frame_box(u8 (*d)[CW], int x, int y, int w, int h, int g);
+// ---- tegel: mixerkanaal in hokjes (zoals het stapscherm) ----
+// groot vak = waarde van de gekozen mixerpagina; 3 kleine vakjes eronder = poort, MIDI-kanaal, programma
+static void slot_text(u8 (*d)[CW], int x, int y, const char *t, int on)
+{
+  frame_box(d, x, y, 18, 13, on ? 9 : 3);
+  int w = tw(GLCD_FONT_SMALL, t, 1);
+  text(d, GLCD_FONT_SMALL, x + 9 - w/2, y+3, t, 1, on ? 15 : 5);
+}
+
 void OG2_RenderMixerTile(u8 *out, int num, const og2_tile_t *t)
 {
   static u8 tmp[OG2_H][CW];
   for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
   u8 (*d)[CW] = tmp;
+  char b[8];
   int sel = t->flags & 1;
-  if( sel ) rect(d, 1, 0, 62, 64, 2);
-  if( (num & 3) != 0 ) for(int y=0; y<64; y+=4) px(d, 0, y, 2);
-  text(d, GLCD_FONT_SMALL, 3, 3, t->label, 1, sel ? 15 : 9);
-  { int sc = (tw(GLCD_FONT_NORMAL, t->txt, 2) > 36) ? 1 : 2;       // lange teksten (poortnamen) kleiner
-    int w = tw(GLCD_FONT_NORMAL, t->txt, sc), ty = sc == 2 ? 3 : 10;
-    text(d, GLCD_FONT_NORMAL, 61-w, ty, t->txt, sc, 15); text(d, GLCD_FONT_NORMAL, 62-w, ty, t->txt, sc, 15); }
+  const int bx = 4, by = 3, bw = 56, bh = 43;
+  if( sel ) rect(d, bx, by, bw, bh, 2);
+  frame_box(d, bx, by, bw, bh, sel ? 15 : 9);
+  if( sel ) frame_box(d, bx+1, by+1, bw-2, bh-2, 15);
+  // kanaalnummer klein linksboven, paginanaam rechtsboven
+  b[0] = '0' + (num+1)/10; b[1] = '0' + (num+1)%10; b[2] = 0;
+  text(d, GLCD_FONT_SMALL, bx+3, by+3, b, 1, sel ? 15 : 9);
+  text(d, GLCD_FONT_SMALL, bx+bw-3-tw(GLCD_FONT_SMALL, t->pname, 1), by+3, t->pname, 1, sel ? 12 : 8);
+  // waarde groot
+  { int sc = (tw(GLCD_FONT_NORMAL, t->txt, 2) > 48) ? 1 : 2, w = tw(GLCD_FONT_NORMAL, t->txt, sc), ty = sc == 2 ? by+14 : by+17;
+    text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2 - 1, ty, t->txt, sc, 15); text(d, GLCD_FONT_NORMAL, bx + bw/2 - w/2, ty, t->txt, sc, 15); }
+  // balkje onderin (pan: schuif met middenstreep)
   if( t->vmax ){
-    int w = (t->v1 * 56) / t->vmax; if( w > 56 ) w = 56;
-    for(int x=0; x<56; ++x){ px(d, 4+x, 28, 3); px(d, 4+x, 38, 3); }
+    for(int x=0; x<46; ++x) px(d, bx+5+x, by+bh-7, 3);
     if( t->pan ){
-      rect(d, 4+28, 25, 1, 17, 5);
-      rect(d, 4 + (t->v1 * 52) / t->vmax, 27, 4, 12, 15);
+      rect(d, bx+5+23, by+bh-11, 1, 7, 5);
+      rect(d, bx+5 + (t->v1 * 42) / t->vmax, by+bh-10, 4, 6, 15);
     } else {
-      rect(d, 4, 29, w, 9, 12);
+      int w = (t->v1 * 46) / t->vmax; if( w > 46 ) w = 46;
+      rect(d, bx+5, by+bh-8, w, 3, 13);
     }
-  } else {
-    hline(d, 20, 33, 24, 3, 2);
   }
-  { int w = tw(GLCD_FONT_SMALL, t->pname, 1);
-    text(d, GLCD_FONT_SMALL, 32 - w/2, 53, t->pname, 1, 8); }
+  // 3 kleine vakjes: poort, MIDI-kanaal, programma
+  char c2[6]; int k = 0; if( t->chn+1 >= 10 ) c2[k++] = '0' + (t->chn+1)/10; c2[k++] = '0' + (t->chn+1)%10; c2[k] = 0;
+  char c3[6]; if( t->v3 ) { k = 0; if( t->v3 >= 100 ) c3[k++] = '0' + t->v3/100; if( t->v3 >= 10 ) c3[k++] = '0' + (t->v3/10)%10; c3[k++] = '0' + t->v3%10; c3[k] = 0; } else { c3[0] = '-'; c3[1] = '-'; c3[2] = 0; }
+  slot_text(d, 2, 50, t->port, 1);
+  slot_text(d, 23, 50, c2, 1);
+  slot_text(d, 44, 50, c3, t->v3 != 0);
   tile_pack(out, tmp);
 }
 

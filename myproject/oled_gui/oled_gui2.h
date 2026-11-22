@@ -42,6 +42,8 @@ typedef struct {
   char pname[8];     // mixer: naam van de pagina ("VOLUME")
   u8 vmax;           // mixer: maximale waarde voor de balk (0 = geen balk)
   u8 pan;            // mixer: 1 = pan-schuif met middenstreep
+  char port[6];      // mixer: poortnaam ("USB1") voor het kleine vakje
+  u8 chn;            // mixer: MIDI-kanaal 0-15 voor het kleine vakje
 } og2_tile_t;
 // ---- dashboard (globale pagina's: BPM, PATTERN, SONG, SAVE): 4 schermen als samengesteld beeld
 typedef struct {
