@@ -6,6 +6,8 @@
 #define OG2_DISPLAYS 4
 #define OG2_W 256
 #define OG2_H 64
+typedef enum { OG2_K_NOTE=0, OG2_K_VEL, OG2_K_LEN, OG2_K_PROB, OG2_K_DELAY, OG2_K_ROLL, OG2_K_GENERIC } og2_kind_t;
+
 typedef struct {
   u8 note;      // 0..127, 0xff = geen
   u8 vel;       // 0..127
@@ -14,14 +16,17 @@ typedef struct {
   s8 delay;     // -? .. +: verschuiving in % van de stap (0..99)
   u8 on, acc, sld, roll, skip;
   u8 glide_to;  // noot waar de glide naartoe loopt (volgende getriggerde stap), 0xff = onbekend
-  u8 value;     // waarde van de actieve laag (0..127) onderin
+  u8 value;     // waarde van de actieve laag (0..127) onderin (alleen NOTE-weergave)
+  u8 lval;      // ruwe waarde van de gekozen parameterlaag (0..127)
+  char txt[6];  // tekst van die waarde, bv "75%", "Gld.", "3U05" (max 4 tekens + 0)
 } og2_step_t;
 typedef struct {
   u8 gray[OG2_DISPLAYS][OG2_H][OG2_W];   // 1 byte per pixel, 0..15 (prototype; verpakking naar 4 bit volgt)
   const char *layer_name;                // naam van de actieve laag, bv "VEL"
+  og2_kind_t kind;                       // soort laag: bepaalt de weergave
 } og2_frame_t;
 // play_step 0..15 of 0xff; trail_step = vorige stap voor de uitdovende staart (0xff = geen)
 extern void OG2_RenderSteps(og2_frame_t *f, const og2_step_t st[16], u8 play_step, u8 trail_step);
 extern void OG2_StepRange(const og2_step_t st[16], int *lo, int *hi);
-extern void OG2_RenderCell(u8 *out2048, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer);
+extern void OG2_RenderCell(u8 *out2048, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer, og2_kind_t kind);
 #endif

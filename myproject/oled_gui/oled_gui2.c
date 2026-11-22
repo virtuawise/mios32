@@ -43,7 +43,10 @@ static void num3(char *b, int v){ b[0] = v>=100 ? '0'+v/100 : ' '; b[1] = v>=10 
 #define ROLL_TOP 21
 #define ROLL_BOT 48     // y van de laagste noot
 
-static void cell(u8 (*d)[CW], int divider, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer)
+static void cell_note(u8 (*d)[CW], int divider, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer);
+static void cell_layer(u8 (*d)[CW], int divider, int num, const og2_step_t *s, int lo, int playing, int trailing, const char *layer, og2_kind_t kind);
+
+static void cell_note(u8 (*d)[CW], int divider, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer)
 {
   char b[8];
   const int x0 = 0;
@@ -124,6 +127,98 @@ static void cell(u8 (*d)[CW], int divider, int num, const og2_step_t *s, int lo,
   if( playing ){ rect(d, x0+1, 0, 62, 2, 15); rect(d, x0+1, 62, 62, 2, 15); }
 }
 
+
+// ---- weergave voor een gekozen parameterlaag (lengte, probability, delay, roll, velocity, overig): de laagwaarde is groot,
+//      de noot is bijzaak (klein, linksonder)
+static void ring_gauge(u8 (*d)[CW], int cx, int cy, int r, int lit, int bright)
+{
+  static const s8 RC2[13] = {-71,-92,-100,-92,-71,-38,0,38,71,92,100,92,71};
+  static const s8 RS2[13] = {71,38,0,-38,-71,-92,-100,-92,-71,-38,0,38,71};
+  for(int k=0; k<13; ++k){
+    int x = cx + (RC2[k]*r)/100, y = cy + (RS2[k]*r)/100;
+    if( k < lit ) rect(d, x-1, y-1, 3, 3, bright ? 15 : 9); else px(d, x, y, bright ? 6 : 3);
+  }
+}
+
+static void cell_layer(u8 (*d)[CW], int divider, int num, const og2_step_t *s, int lo, int playing, int trailing, const char *layer, og2_kind_t kind)
+{
+  char b[8];
+  const int x0 = 0;
+  int bg = playing ? 3 : (trailing ? 1 : 0);
+  int on = s->on;
+  int hot = on ? 15 : 7;                              // waarde ook tonen bij stappen zonder gate (gedimd)
+  if( bg ) rect(d, x0+1, 0, 62, 64, bg);
+  if( divider ) for(int y=0; y<64; y+=4) px(d, x0, y, 2);
+
+  // kop: stapnummer klein, laagwaarde groot (2x, vet)
+  b[0] = '0'+(num+1)/10; b[1] = '0'+(num+1)%10; b[2] = 0;
+  text(d, GLCD_FONT_SMALL, x0+3, 3, b, 1, on ? 9 : 4);
+  { int w = tw(GLCD_FONT_NORMAL, s->txt, 2);
+    text(d, GLCD_FONT_NORMAL, x0+61-w, 3, s->txt, 2, hot);
+    text(d, GLCD_FONT_NORMAL, x0+62-w, 3, s->txt, 2, hot); }
+
+  // lichaam (y 21..48): visualisatie per laagsoort
+  int cy = 35;
+  switch( kind ){
+  case OG2_K_LEN: {                                    // lengte als balk over de stap, Gld. = legato-pijl
+    hline(d, x0+4, cy, 56, 3, 0);
+    int glide = s->lval >= 96;
+    int w = glide ? 42 : 2 + ((s->lval > 95 ? 95 : s->lval) * 54) / 95;
+    rect(d, x0+4, cy-3, w, 7, on ? 12 : 6);
+    rect(d, x0+4, cy-4, 2, 9, 15);
+    if( glide ){ for(int i=0; i<9; ++i){ rect(d, x0+46+i, cy-4+i/2, 1, 9-i, 15); } }
+  } break;
+  case OG2_K_PROB: {                                   // probability als vulling van een vak
+    int p = s->lval > 100 ? 100 : s->lval;
+    for(int x=0; x<40; ++x) for(int y=0; y<18; ++y)
+      if( x*100/40 < p ) px(d, x0+12+x, 26+y, ((x+y)&1) ? hot-3 : hot);
+    for(int x=0; x<40; ++x){ px(d, x0+12+x, 25, 5); px(d, x0+12+x, 44, 5); }
+  } break;
+  case OG2_K_DELAY: {                                  // delay als verschuiving binnen de stap
+    int dl = (s->lval > 95 ? 95 : s->lval);
+    hline(d, x0+4, cy, 56, 3, 0);
+    for(int i=0; i<5; ++i) px(d, x0+4+i*14, cy-3, 4), px(d, x0+4+i*14, cy+3, 4);
+    rect(d, x0+4 + (dl*50)/95, cy-5, 4, 11, hot);
+  } break;
+  case OG2_K_ROLL: {                                   // roll: aantal slagen met oplopende/aflopende velocity
+    int v = s->lval;
+    if( v ){
+      int n = ((v & 0x30) >> 4) + 2, up = (v & 0x40) != 0, vc = v & 0xf;
+      for(int i=0; i<n; ++i){
+        int g = up ? 6 + (i*8)/(n > 1 ? n-1 : 1) : 14 - (i*8)/(n > 1 ? n-1 : 1);
+        if( vc == 0 ) g = 12;
+        int bw = 8, gap = 2, tot = n*bw + (n-1)*gap, bx = x0 + 32 - tot/2 + i*(bw+gap);
+        rect(d, bx, 26, bw, 18, g);
+      }
+    } else hline(d, x0+22, cy, 20, 3, 2);
+  } break;
+  case OG2_K_VEL:
+  default: {                                           // ring met waarde
+    int lit = (s->lval * 13 + 64) / 127;
+    ring_gauge(d, x0+32, cy+1, 13, lit, on);
+  } break;
+  }
+
+  // onderrij: noot klein, iconen, laagnaam
+  int ix = x0+3;
+  if( on && s->note != 0xff ){
+    note_name(s->note, b);
+    text(d, GLCD_FONT_NORMAL, ix, 53, b, 1, 8);
+    ix += tw(GLCD_FONT_NORMAL, b, 1) + 3;
+  }
+  struct { u8 on; char c; } ic[4] = {{s->acc,'A'},{s->sld,'S'},{s->roll,'R'},{s->skip,'K'}};
+  for(int i=0; i<4; ++i) if( ic[i].on && ix + 8 <= x0+46 ){
+    rect(d, ix, 52, 8, 9, 10);
+    char t[2] = {ic[i].c, 0};
+    for(int cx=0; cx<4; ++cx) for(int cy2=0; cy2<8; ++cy2)
+      if( (GLCD_FONT_SMALL[4+GLCD_FONT_SMALL[2]+GLCD_FONT_SMALL[3]*(u8)t[0]+cx] >> cy2) & 1 ) px(d, ix+2+cx, 52+cy2, 0);
+    ix += 10;
+  }
+  text(d, GLCD_FONT_SMALL, x0+61-tw(GLCD_FONT_SMALL, layer, 1), 53, layer, 1, 6);
+
+  if( playing ){ rect(d, x0+1, 0, 62, 2, 15); rect(d, x0+1, 62, 62, 2, 15); }
+}
+
 void OG2_StepRange(const og2_step_t st[16], int *lo, int *hi)
 {
   int l = 127, h = 0;
@@ -133,11 +228,14 @@ void OG2_StepRange(const og2_step_t st[16], int *lo, int *hi)
 }
 
 // rendert 1 stap-kolom (64x64) naar 2048 bytes: 4 bit per pixel, 32 bytes per rij, eerste pixel = hoge nibble
-void OG2_RenderCell(u8 *out, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer)
+void OG2_RenderCell(u8 *out, int num, const og2_step_t *s, int lo, int hi, int playing, int trailing, const char *layer, og2_kind_t kind)
 {
   static u8 tmp[OG2_H][CW];
   for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
-  cell(tmp, (num & 3) != 0, num, s, lo, hi, playing, trailing, layer ? layer : "VEL");
+  if( kind == OG2_K_NOTE )
+    cell_note(tmp, (num & 3) != 0, num, s, lo, hi, playing, trailing, layer ? layer : "VEL");
+  else
+    cell_layer(tmp, (num & 3) != 0, num, s, lo, playing, trailing, layer ? layer : "?", kind);
   for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; x+=2) out[y*32 + x/2] = (tmp[y][x] << 4) | tmp[y][x+1];
 }
 
@@ -149,7 +247,7 @@ void OG2_RenderSteps(og2_frame_t *f, const og2_step_t st[16], u8 play_step, u8 t
   OG2_StepRange(st, &lo, &hi);
   for(int n=0; n<16; ++n){
     int d = n/4, k = n%4;
-    OG2_RenderCell(c, n, &st[n], lo, hi, play_step == n, trail_step == n, f->layer_name);
+    OG2_RenderCell(c, n, &st[n], lo, hi, play_step == n, trail_step == n, f->layer_name, f->kind);
     for(int y=0; y<OG2_H; ++y) for(int x=0; x<64; ++x)
       f->gray[d][y][k*64+x] = (x & 1) ? (c[y*32+x/2] & 15) : (c[y*32+x/2] >> 4);
   }

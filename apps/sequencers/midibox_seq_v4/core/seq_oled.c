@@ -7,6 +7,7 @@
  */
 #include <mios32.h>
 #include <string.h>
+#include <stdio.h>
 #include "tasks.h"
 
 #include "seq_oled.h"
@@ -28,6 +29,8 @@
 static og2_step_t steps[16];
 static u8 play_step = 0xff, trail_step = 0xff;
 static int range_lo, range_hi;
+static og2_kind_t cur_kind = OG2_K_NOTE;
+static char cur_layer_name[8] = "VEL";
 static u32 sent_hash[OLED_NUM_CELLS];
 static u8 sent_valid[OLED_NUM_CELLS];
 static u8 dirty[OLED_NUM_CELLS];
@@ -59,6 +62,30 @@ static void collect_steps(void)
   u16 base = (u16)ui_selected_step_view * 16;
   int i;
 
+  // gekozen parameterlaag bepaalt de weergave
+  u8 layer = ui_selected_par_layer;
+  seq_par_layer_type_t ltype = SEQ_PAR_AssignmentGet(track, layer);
+  switch( ltype ) {
+    case SEQ_PAR_Type_Note: case SEQ_PAR_Type_Chord1: case SEQ_PAR_Type_Chord2: case SEQ_PAR_Type_Chord3: cur_kind = OG2_K_NOTE; break;
+    case SEQ_PAR_Type_Velocity: cur_kind = OG2_K_VEL; break;
+    case SEQ_PAR_Type_Length: cur_kind = OG2_K_LEN; break;
+    case SEQ_PAR_Type_Probability: cur_kind = OG2_K_PROB; break;
+    case SEQ_PAR_Type_Delay: cur_kind = OG2_K_DELAY; break;
+    case SEQ_PAR_Type_Roll: cur_kind = OG2_K_ROLL; break;
+    default: cur_kind = OG2_K_GENERIC; break;
+  }
+  {
+    char tmp[16];
+    tmp[0] = 0;
+    if( SEQ_PAR_AssignedTypeStr(track, layer, instrument, tmp) >= 0 && tmp[0] ) {
+      int k;
+      for(k=0; k<4 && tmp[k]; ++k) cur_layer_name[k] = tmp[k];
+      cur_layer_name[k] = 0;
+    } else {
+      strcpy(cur_layer_name, "PAR");
+    }
+  }
+
   for(i=0; i<16; ++i) {
     u16 step = base + i;
     seq_layer_evnt_t e;
@@ -76,6 +103,20 @@ static void collect_steps(void)
       if( p >= 0 && p <= 100 ) s->prob = p;
       s32 d = SEQ_PAR_StepDelayGet(track, step, instrument, 0x0000);
       if( d > 0 && d < 96 ) s->delay = (d * 100) / 96;
+    }
+    if( cur_kind != OG2_K_NOTE && step < 256 ) {
+      s32 raw = SEQ_PAR_Get(track, step, layer, instrument);
+      if( raw < 0 ) raw = 0;
+      s->lval = raw & 0x7f;
+      switch( cur_kind ) {
+        case OG2_K_LEN:  if( raw >= 96 ) strcpy(s->txt, "Gld."); else sprintf(s->txt, "%d%%", (int)(raw * 100) / 96); break;
+        case OG2_K_PROB: sprintf(s->txt, "%d%%", (int)(raw > 100 ? 100 : raw)); break;
+        case OG2_K_ROLL:
+          if( raw == 0 ) strcpy(s->txt, "----");
+          else sprintf(s->txt, "%d%c%02d", (int)(((raw & 0x30)>>4) + 2), (raw & 0x40) ? 'U' : 'D', (int)(raw & 0xf));
+          break;
+        default: sprintf(s->txt, "%d", (int)raw); break;
+      }
     }
     if( s->on && SEQ_LAYER_GetEvntOfLayer(track, step, 0, instrument, &e) >= 0 ) {
       s->note = e.midi_package.note;
@@ -162,8 +203,9 @@ s32 SEQ_OLED_Handler(void)
       h = fnv(h, (const u8 *)&steps[c], sizeof(og2_step_t));
       h = fnv(h, (const u8 *)&range_lo, sizeof(int));
       h = fnv(h, (const u8 *)&range_hi, sizeof(int));
-      u8 flags[2] = { play_step == c, trail_step == c };
-      h = fnv(h, flags, 2);
+      u8 flags[3] = { play_step == c, trail_step == c, cur_kind };
+      h = fnv(h, flags, 3);
+      h = fnv(h, (const u8 *)cur_layer_name, 4);
       cur_hash[c] = h;
       dirty[c] = !sent_valid[c] || sent_hash[c] != h;
     }
@@ -176,7 +218,7 @@ s32 SEQ_OLED_Handler(void)
       u8 c = next_cell;
       next_cell = (next_cell + 1) % OLED_NUM_CELLS;
       if( dirty[c] ) {
-	OG2_RenderCell(cell_buf, c, &steps[c], range_lo, range_hi, play_step == c, trail_step == c, "VEL");
+	OG2_RenderCell(cell_buf, c, &steps[c], range_lo, range_hi, play_step == c, trail_step == c, cur_layer_name, cur_kind);
 	int n = rle_encode(cell_buf, sizeof(cell_buf), rle_buf);
 	if( SEQ_MIDI_SYSEX_REMOTE_Server_SendOLEDCell(c / 4, c % 4, rle_buf, n) >= 0 ) {
 	  sent_hash[c] = cur_hash[c];
