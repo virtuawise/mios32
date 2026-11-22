@@ -20,6 +20,9 @@
 
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 #include "tasks.h"
 
 #include "file.h"
@@ -336,6 +339,54 @@ static s32 EXIT_Handler(void)
   return status;
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): column page. Each list entry is one box over two GP columns (button pair = entry).
+//   device list: 8 x DEVICE | file list: 6 x FILE, PORT, DELAY, EXIT | errors: one text box
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_UI_SYSEX_OledGet(og2_page_t *p)
+{
+  og2_col_t *c;
+  int i, k, n = dir_name[0] ? (NUM_LIST_DISPLAYED_ITEMS-2) : NUM_LIST_DISPLAYED_ITEMS;
+  OG2_PageInit(p);
+  if( dir_name[0] ) sprintf(p->head[0], "SYSEX /SYSEX/%s", dir_name); else strcpy(p->head[0], "SYSEX - DEVICES");
+
+  if( dir_num_items <= 0 ) {
+    c = OG2_PageCol(p, 0, OG2_C_TEXT, 4, "SD CARD");
+    if( dir_num_items == FILE_ERR_NO_DIR )
+      sprintf(p->text, "Directory /SYSEX%s%s not found.|Put the .SYX files in /SYSEX/<DEVICE>/|on the SD card.", dir_name[0] ? "/" : "", dir_name);
+    else if( dir_num_items == 0 )
+      sprintf(p->text, dir_name[0] ? "No .SYX files in /SYSEX/%s." : "No device folders in /SYSEX%s.", dir_name);
+    else
+      sprintf(p->text, "SD card access error %d.", (int)dir_num_items);
+    if( dir_name[0] ) { c = OG2_PageCol(p, 15, OG2_C_ACTION, 1, "BACK"); strcpy(c->value, "EXIT"); }
+    return 0;
+  }
+
+  {
+    int first = dir_view_offset + 1, last = dir_view_offset + n;
+    if( last > dir_num_items ) last = dir_num_items;
+    sprintf(p->head[dir_name[0] ? 2 : 3], "%d-%d OF %d", first, last, (int)dir_num_items);
+  }
+  for(i=0; i<n; ++i) {
+    char name[10];
+    int o = 0;
+    if( dir_view_offset + i >= dir_num_items ) break;
+    for(k=0; k<8; ++k) { char ch = ui_global_dir_list[LIST_ENTRY_WIDTH*i + k]; if( ch != ' ' && ch != 0 ) name[o++] = ch; }
+    name[o] = 0;
+    c = OG2_PageCol(p, 2*i, OG2_C_CHOICE, 2, dir_name[0] ? "FILE" : "DEVICE");
+    strcpy(c->value, name);
+    c->on = (i == ui_selected_item);
+  }
+  if( dir_name[0] ) {
+    char pn[6];
+    c = OG2_PageCol(p, 12, OG2_C_VALUE, 1, "PORT"); strcpy(c->value, SEQ_MIDI_PORT_OutPortToName(sysex_port, pn));
+    c = OG2_PageCol(p, 13, OG2_C_VALUE, 2, "DELAY"); sprintf(c->value, "%d MS", sysex_delay_between_dumps);
+    c = OG2_PageCol(p, 15, OG2_C_ACTION, 1, "BACK"); strcpy(c->value, "EXIT");
+    strcpy(p->head[3], "SEND");
+  }
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation
