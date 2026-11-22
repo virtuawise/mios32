@@ -69,7 +69,7 @@ typedef struct {
 } og2_event_t;
 extern void OG2_RenderEventCell(u8 *out2048, int cell, const og2_event_t *e);
 
-// ---- Timing page (menu -> Divider / Length / Direction): length, clock, direction and repeat on one layout
+// ---- Timing pages (menu -> Divider / Length / Direction): one struct, each menu has its own layout (page)
 typedef struct {
   char track[6];        // "G1T1"
   u16 length, loop;     // 1-based
@@ -85,6 +85,9 @@ typedef struct {
   u8 repeat, skip;      // 0-16
   u8 itv;               // repeat/skip interval 1-64
   u8 sel;               // last touched column 0-15
+  u8 page;              // 0 Divider, 1 Length, 2 Direction (each menu has its own page)
+  u8 qsel_loops;        // Length: 1 = presets set length + loop (loops mode)
+  u16 loop_presets[8];  // Length, loops mode: loop start of each preset (1-based); presets[] then holds the lengths
 } og2_timing_t;
 extern void OG2_RenderTimingCell(u8 *out2048, int cell, const og2_timing_t *t);
 

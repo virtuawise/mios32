@@ -584,6 +584,23 @@ static void etoggle(u8 (*d)[CW], int k, const char *l, int on, int sel, int dim)
 // small text right-aligned in the label row of a box spanning n columns
 static void elabel_right(u8 (*d)[CW], int k, int n, const char *s, int g){ text(d, LFONT, ebx(k)+ebw(n)-5-tw(LFONT, s, 1), EBY+4, s, 1, g); }
 
+// box for one option of a choice that has one column per option: the active option is filled
+static void echoice(u8 (*d)[CW], int k, const char *l, const char *v, int on, int sel, int dim)
+{
+  ebox(d, k, 1, sel);
+  if( on && !sel ) rect(d, ebx(k)+1, EBY+1, ebw(1)-2, EBH-2, 3);
+  elabel(d, k, l, sel || on);
+  evalue(d, k, 1, v, dim ? 4 : (on ? 15 : 6));
+}
+static void theader(u8 (*d)[CW], int scr, const char *t, const char *track)
+{
+  char h[28]; int n = 0;
+  for(; t[n] && n < 18; ++n) h[n] = t[n];
+  if( track ){ h[n++] = ' '; for(int i=0; track[i] && n < 26; ++i) h[n++] = track[i]; }
+  h[n] = 0;
+  eheader(d, scr, h);
+}
+
 void OG2_RenderTimingCell(u8 *out, int cell, const og2_timing_t *t)
 {
   static u8 tmp[OG2_H][CW];
@@ -593,48 +610,96 @@ void OG2_RenderTimingCell(u8 *out, int cell, const og2_timing_t *t)
   ox_shift = cell * 64;
   char b[12];
   #define SELT(k) (t->sel == (k))
-  switch( scr ){
-  case 0: {
-    char h[24] = "TIMING ";
-    int n = 7; for(int i=0; t->track[i] && n < 12; ++i) h[n++] = t->track[i];
-    h[n] = 0; strcat(h, " - LENGTH");
-    eheader(d, 0, h);
-    int over = t->length > t->num_steps;
-    if( over ) strcpy(b, "!!!"); else num2str(b, t->length);
-    evbox(d, 0, "LENGTH", b, t->num_steps ? ((over ? t->num_steps : t->length) * 100) / t->num_steps : 0, SELT(0), 0);
-    num2str(b, t->loop);
-    evbox(d, 1, "LOOP", b, t->length > 1 ? ((t->loop - 1) * 100) / (t->length - 1) : 0, SELT(1), t->loop > t->length);
-    static char ps[8][5]; const char *pp[8]; int act = 0;
-    for(int i=0; i<8; ++i){ num2str(ps[i], t->presets[i]); pp[i] = ps[i]; if( t->presets[i] <= t->num_steps ) act = i + 1; }
-    epicker(d, 2, 2, "PRESETS", pp, 8, 4, t->len_preset == 0xff ? -1 : t->len_preset, SELT(2) || SELT(3), act);
-    num2str(b, t->num_steps); { char m[12] = "OF "; strcat(m, b); elabel_right(d, 2, 2, m, 6); }
-  } break;
-  case 1: {
-    eheader(d, 1, "CLOCK");
-    static const char *tb[8] = {"1","2","4","8","8T","16","16T","32"};
-    int sb = SELT(4) || SELT(5);
-    epicker(d, 4, 2, "TIMEBASE", tb, 8, 4, (t->manual || t->tb_preset == 0xff) ? -1 : t->tb_preset, sb, t->manual ? 0 : 8);
-    if( t->manual ) strcpy(b, "MANUAL"); else { b[0] = '/'; num2str(b+1, t->divider); if( t->triplet ) strcat(b, " T"); }
-    elabel_right(d, 4, 2, b, (t->manual || t->tb_preset != 0xff) ? 6 : 15);     // bright when the divider is not one of the presets
-    etoggle(d, 6, "SYNC BAR", t->sync, SELT(6), t->manual);
-    etoggle(d, 7, "MANUAL", t->manual, SELT(7), 0);
-  } break;
-  case 2: {
-    eheader(d, 2, "DIRECTION");
-    static const char *dr[7] = {"FWD","BCK","P-P","PEN","RND","STP","R+S"};
+  if( t->page == 0 ) {                     // ---- DIVIDER ----
+    int man = t->manual;
+    switch( scr ){
+    case 0:
+      theader(d, 0, "DIVIDER", t->track);
+      evbox(d, 0, "TRACK", t->track, -1, SELT(0), 0);
+      if( man ) strcpy(b, "---"); else num2str(b, t->divider);
+      evbox(d, 1, "DIVIDER", b, -1, SELT(1), man);
+      etoggle(d, 2, "TRIPLET", t->triplet, SELT(2), man);
+      etoggle(d, 3, "SYNC BAR", t->sync, SELT(3), man);
+      break;
+    case 1:
+      theader(d, 1, "CLOCK", 0);
+      etoggle(d, 4, "MANUAL", man, SELT(4), 0);
+      ebox(d, 5, 3, 0); elabel(d, 5, "STEPS PER BAR", 0);
+      if( man ) evalue(d, 5, 3, "MANUAL CLOCK", 6);
+      else {   // a step lasts divider/16 of a quarter note... 256/divider steps per bar, x1.5 for triplets
+        int x10 = (2560 * (t->triplet ? 3 : 2)) / (2 * t->divider);
+        num2str(b, x10 / 10);
+        if( x10 % 10 ){ int n = 0; while( b[n] ) ++n; b[n] = '.'; b[n+1] = '0' + x10 % 10; b[n+2] = 0; }
+        evalue(d, 5, 3, b, 15);
+      }
+      break;
+    default: {
+      theader(d, scr, scr == 2 ? "TIMEBASE" : "", 0);
+      static const char *tb[8] = {"1","2","4","8","8T","16","16T","32"};
+      for(int i=0; i<4; ++i){ int k = scr*4 + i, n = k - 8;
+        echoice(d, k, "TIMEBASE", tb[n], !man && t->tb_preset == n, SELT(k), man); }
+    } break;
+    }
+  } else if( t->page == 1 ) {              // ---- LENGTH ----
+    switch( scr ){
+    case 0: {
+      theader(d, 0, "LENGTH", t->track);
+      evbox(d, 0, "TRACK", t->track, -1, SELT(0), 0);
+      int over = t->length > t->num_steps;
+      if( over ) strcpy(b, "!!!"); else num2str(b, t->length);
+      evbox(d, 1, "LENGTH", b, -1, SELT(1), 0);
+      num2str(b, t->loop);
+      evbox(d, 2, "LOOP", b, -1, SELT(2), t->loop > t->length);
+      evbox(d, 3, "PRESETS", t->qsel_loops ? "LOOPS" : "LENGTH", -1, SELT(3), 0);
+    } break;
+    case 1: {
+      theader(d, 1, "OVERVIEW", 0);
+      ebox(d, 4, 4, 0); elabel(d, 4, "STEPS", 0);
+      num2str(b, t->num_steps); { char m[16] = "OF "; strcat(m, b); elabel_right(d, 4, 4, m, 9); }
+      // ruler: the steps the track is prepared for, played range bright, loop part brightest
+      int x0 = ebx(4) + 6, w = ebw(4) - 12, y = 33, h = 10, n = t->num_steps ? t->num_steps : 1;
+      int len = t->length > n ? n : t->length, lp = t->loop > len ? len : t->loop;
+      frame_box(d, x0-1, y-1, w+2, h+2, 4);
+      rect(d, x0, y, (len * w) / n, h, 7);
+      if( lp > 1 ) rect(d, x0, y, ((lp - 1) * w) / n, h, 4);
+      for(int s=16; s<n; s+=16) for(int yy=y+h+2; yy<y+h+5; ++yy) px(d, x0 + (s * w) / n, yy, 6);
+      num2str(b, t->length); { char m[24] = "PLAYS "; if( t->loop > 1 ){ char c[8]; num2str(c, t->loop); strcat(m, c); strcat(m, "-"); } else strcat(m, "1-"); strcat(m, b); ecsmall(d, ebx(4)+ebw(4)/2, 52, m, 9); }
+    } break;
+    default:
+      theader(d, scr, scr == 2 ? "PRESETS" : "", 0);
+      for(int i=0; i<4; ++i){ int k = scr*4 + i, n = k - 8;
+        if( t->qsel_loops ){ char c[8]; num2str(b, t->loop_presets[n]); strcat(b, "-"); num2str(c, t->presets[n]); strcat(b, c); }
+        else num2str(b, t->presets[n]);
+        echoice(d, k, t->qsel_loops ? "LOOP" : "LENGTH", b, t->len_preset == n, SELT(k), t->presets[n] > t->num_steps); }
+      break;
+    }
+  } else {                                 // ---- DIRECTION ----
     static const char *dn[7] = {"FORWARD","BACKWARD","PINGPONG","PENDULUM","RAND.DIR","RAND.STP","RAND.D+S"};
-    epicker(d, 8, 2, "DIR", dr, 7, 4, t->dir < 7 ? t->dir : -1, SELT(8) || SELT(9), 7);
-    if( t->dir < 7 ) elabel_right(d, 8, 2, dn[t->dir], 12);
-    num2str(b, t->fwd);  evbox(d, 10, "FORWARD", b, ((t->fwd - 1) * 100) / 7, SELT(10), 0);
-    num2str(b, t->back); evbox(d, 11, "JMP BACK", b, (t->back * 100) / 7, SELT(11), 0);
-  } break;
-  default: {
-    eheader(d, 3, "REPEAT / SKIP");
-    b[0] = 'x'; num2str(b+1, t->replay); evbox(d, 12, "REPLAY", b, ((t->replay - 1) * 100) / 7, SELT(12), 0);
-    num2str(b, t->repeat); evbox(d, 13, "REPEAT", b, (t->repeat * 100) / 16, SELT(13), t->repeat == 0);
-    num2str(b, t->skip);   evbox(d, 14, "SKIP", b, (t->skip * 100) / 16, SELT(14), t->skip == 0);
-    num2str(b, t->itv);    evbox(d, 15, "INTERVAL", b, ((t->itv - 1) * 100) / 63, SELT(15), t->repeat == 0 && t->skip == 0);
-  } break;
+    switch( scr ){
+    case 0:
+      theader(d, 0, "DIRECTION", t->track);
+      evbox(d, 0, "TRACK", t->track, -1, SELT(0), 0);
+      for(int k=1; k<4; ++k) echoice(d, k, "DIR", dn[k-1], t->dir == k-1, SELT(k), 0);
+      break;
+    case 1:
+      theader(d, 1, "", 0);
+      for(int k=4; k<8; ++k) echoice(d, k, "DIR", dn[k-1], t->dir == k-1, SELT(k), 0);
+      break;
+    case 2:
+      theader(d, 2, "STEPS", 0);
+      num2str(b, t->fwd);  evbox(d, 8, "FORWARD", b, -1, SELT(8), 0);
+      num2str(b, t->back); evbox(d, 9, "JMP BACK", b, -1, SELT(9), 0);
+      ebox(d, 10, 2, SELT(10) || SELT(11)); elabel(d, 10, "REPLAY", SELT(10) || SELT(11));
+      b[0] = 'x'; num2str(b+1, t->replay); evalue(d, 10, 2, b, 15);
+      break;
+    default:
+      theader(d, 3, "REPEAT / SKIP", 0);
+      num2str(b, t->repeat); evbox(d, 12, "REPEAT", b, -1, SELT(12), t->repeat == 0);
+      num2str(b, t->skip);   evbox(d, 13, "SKIP", b, -1, SELT(13), t->skip == 0);
+      num2str(b, t->itv);    evbox(d, 14, "INTERVAL", b, -1, SELT(14), t->repeat == 0 && t->skip == 0);
+      etoggle(d, 15, "SYNC BAR", t->sync, SELT(15), 0);
+      break;
+    }
   }
   #undef SELT
   ox_shift = 0;
@@ -657,15 +722,6 @@ static const char *const mode_help[16][4] = {
   {"SUSTAIN","Notes are held until the","next note is played.",""},
   {"","","",""},{"","","",""},{"","","",""},{"","","",""}
 };
-// one box per mode column: the active mode is filled with a full bar (like an ON switch)
-static void mmode(u8 (*d)[CW], int k, const char *t, int on, int sel)
-{
-  ebox(d, k, 1, sel);
-  if( on && !sel ) rect(d, ebx(k)+1, EBY+1, ebw(1)-2, EBH-2, 3);
-  elabel(d, k, "MODE", sel || on);
-  evalue(d, k, 1, t, on ? 15 : 6);
-}
-
 void OG2_RenderModeCell(u8 *out, int cell, const og2_mode_t *m)
 {
   static u8 tmp[OG2_H][CW];
@@ -681,7 +737,7 @@ void OG2_RenderModeCell(u8 *out, int cell, const og2_mode_t *m)
     strcat(h, m->track);
     eheader(d, 0, h);
     static const char *shrt[4] = {"OFF","NORMAL","TRANSP.","ARPEGGIO"};
-    for(int i=0; i<4; ++i) mmode(d, i, shrt[i], m->mode == i, SELM(i));
+    for(int i=0; i<4; ++i) echoice(d, i, "MODE", shrt[i], m->mode == i, SELM(i), 0);
   } break;
   case 1: {
     eheader(d, 1, "BUS / NOTE STACK");

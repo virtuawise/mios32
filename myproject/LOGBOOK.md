@@ -14,4 +14,6 @@ Goal: SEQ V4+ with 4 x SSD1322 (256x64) instead of two 2x40 LCDs; develop and te
 - **Timing page**: the Divider, Length and Direction pages share one layout and mapping (`seq_ui_timing.c`): LENGTH, LOOP, length PRESETS | TIMEBASE presets, DIVIDER (raw, button = triplet), SYNC BAR, MANUAL | DIRECTION, FORWARD, JUMP BACK | REPLAY, REPEAT, SKIP, INTERVAL. Datawheel and Up/Down change the last touched column.
 - Labels and headers in the normal 6x8 font; the panel page draws the OLEDs 4x oversampled (pixelated downscaling dropped pixel rows).
 - **Mode page**: MODE as 4 chips (turn/press = choose), BUS, NOTE first/last, HOLD, SORT, RESTART, STEP TRG, FORCE TO SCALE, SUSTAIN, info box with a short explanation of the last touched item (`seq_ui_trkmode.c`).
+- Divider, Length and Direction each have their own page again (one shared Timing screen for three menu buttons was confusing); columns follow the GP layout of the original pages (GP1 = track, GP9-16 = presets/timebase, GP2-8 = directions).
+- GP LEDs on menu pages only light the menu button of the page; boxed pages follow fixed UI rules (`oled_gui/DESIGN.md`).
 - Next: Transpose, Groove, Generate, FX, Live/Manual, Global pages (see `oled_gui/UI_ANALYSIS.md`); real SSD1322 driver hookup.

@@ -72,7 +72,8 @@ int main(int argc, char **argv)
     og2_timing_t t; memset(&t,0,sizeof(t)); strcpy(t.track,"G1T2"); t.length=16; t.loop=1; t.num_steps=64;
     static const u16 pr[8]={4,8,16,24,32,64,128,256}; for(int i=0;i<8;++i) t.presets[i]=pr[i]; t.len_preset=2;
     t.divider=16; t.tb_preset=5; t.sync=1; t.dir=2; t.fwd=1; t.back=0; t.replay=1; t.repeat=0; t.skip=2; t.itv=4;
-    t.sel = argv[1][6] ? atoi(argv[1]+6) : 0;
+    t.page = argv[1][6] ? argv[1][6]-'0' : 0; t.sel = argv[1][7] ? atoi(argv[1]+7) : 0;
+    if( t.page==1 && t.sel==3 ){ t.qsel_loops=1; static const u16 lp[8]={1,5,9,13,1,1,17,25}, ll[8]={4,8,12,16,16,32,32,32}; for(int i=0;i<8;++i){ t.loop_presets[i]=lp[i]; t.presets[i]=ll[i]; } t.len_preset=0xff; t.loop=5; }
     if( t.sel==7 ){ t.manual=1; }
     if( t.sel==5 ){ t.divider=12; t.tb_preset=0xff; t.triplet=1; }
     static og2_frame_t f; static u8 c[2048];
