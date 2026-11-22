@@ -19,6 +19,9 @@
 #include "seq_lcd.h"
 #include "seq_ui.h"
 #include "seq_cc.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -365,14 +368,92 @@ static s32 LCD_Handler(u8 high_prio)
 
 
 /////////////////////////////////////////////////////////////////////////////
+// 4 x OLED layout (myproject): own encoder/button/LED mapping, the LCD text stays as it is
+//   0-3 MODE off/normal/transpose/arpeggiator (turn or press = choose that mode)
+//   4 BUS | 5 NOTE first/last | 6 HOLD | 7 SORT | 8 RESTART | 9 STEP TRG | 10 FORCE TO SCALE | 11 SUSTAIN | 12-15 info
+/////////////////////////////////////////////////////////////////////////////
+static u8 mode_sel = 1;
+static const u8 mode_col_item[16] = { ITEM_MODE, ITEM_MODE, ITEM_MODE, ITEM_MODE, ITEM_BUS, ITEM_FIRST_NOTE, ITEM_HOLD, ITEM_SORT,
+				      ITEM_RESTART, ITEM_STEP_TRG, ITEM_FORCE_SCALE, ITEM_SUSTAIN, 0xff, 0xff, 0xff, 0xff };
+
+static s32 Encoder_HandlerMap(seq_ui_encoder_t encoder, s32 incrementer)
+{
+  if( encoder <= SEQ_UI_ENCODER_GP16 ) {
+    int k = (int)encoder;
+    if( mode_col_item[k] == 0xff ) return 0;
+    mode_sel = k;
+    if( k < 4 ) {
+      ui_selected_item = ITEM_MODE;
+      return SEQ_UI_CC_Set(SEQ_CC_MODE, k);
+    }
+    ui_selected_item = mode_col_item[k];
+    return Encoder_Handler(SEQ_UI_ENCODER_Datawheel, incrementer);
+  }
+  if( encoder == SEQ_UI_ENCODER_Datawheel ) {
+    ui_selected_item = mode_col_item[mode_sel];
+    s32 r = Encoder_Handler(SEQ_UI_ENCODER_Datawheel, incrementer);
+    if( mode_sel < 4 ) mode_sel = SEQ_CC_Get(SEQ_UI_VisibleTrackGet(), SEQ_CC_MODE);
+    return r;
+  }
+  return Encoder_Handler(encoder, incrementer);
+}
+
+static s32 Button_HandlerMap(seq_ui_button_t button, s32 depressed)
+{
+  if( button <= SEQ_UI_BUTTON_GP16 ) {
+    if( depressed ) return 0;
+    return Encoder_HandlerMap((seq_ui_encoder_t)button, 0);     // 0 = toggle / choose
+  }
+  if( !depressed && (button == SEQ_UI_BUTTON_Up || button == SEQ_UI_BUTTON_Down) )
+    return Encoder_HandlerMap(SEQ_UI_ENCODER_Datawheel, (button == SEQ_UI_BUTTON_Up) ? 1 : -1);
+  return Button_Handler(button, depressed);
+}
+
+static s32 LED_HandlerMap(u16 *gp_leds)
+{
+  u8 track = SEQ_UI_VisibleTrackGet();
+  u8 f = SEQ_CC_Get(track, SEQ_CC_MODE_FLAGS);
+  u16 n = 1 << (SEQ_CC_Get(track, SEQ_CC_MODE) & 3);       // active mode
+  if( mode_sel >= 4 ) n |= 1 << mode_sel;
+  if( f & (1<<1) ) n |= 1 << 6;          // hold
+  if( !(f & (1<<0)) ) n |= 1 << 7;       // sort (inverted flag)
+  if( f & (1<<2) ) n |= 1 << 8;          // restart
+  if( f & (1<<6) ) n |= 1 << 9;          // step trigger
+  if( f & (1<<3) ) n |= 1 << 10;         // force to scale
+  if( f & (1<<4) ) n |= 1 << 11;         // sustain
+  *gp_leds = n;
+  return 0;
+}
+
+s32 SEQ_UI_TRKMODE_OledGet(og2_mode_t *m)
+{
+  u8 track = SEQ_UI_VisibleTrackGet();
+  u8 f = SEQ_CC_Get(track, SEQ_CC_MODE_FLAGS);
+  memset(m, 0, sizeof(*m));
+  sprintf(m->track, "G%dT%d", (track / 4) + 1, (track % 4) + 1);
+  m->mode = SEQ_CC_Get(track, SEQ_CC_MODE) & 3;
+  m->bus = SEQ_CC_Get(track, SEQ_CC_BUSASG) & 3;
+  m->first = (f >> 5) & 1;
+  m->hold = (f >> 1) & 1;
+  m->sort = (f & 1) ? 0 : 1;
+  m->restart = (f >> 2) & 1;
+  m->steptrg = (f >> 6) & 1;
+  m->fts = (f >> 3) & 1;
+  m->sustain = (f >> 4) & 1;
+  m->sel = mode_sel;
+  return 0;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // Initialisation
 /////////////////////////////////////////////////////////////////////////////
 s32 SEQ_UI_TRKMODE_Init(u32 mode)
 {
   // install callback routines
-  SEQ_UI_InstallButtonCallback(Button_Handler);
-  SEQ_UI_InstallEncoderCallback(Encoder_Handler);
-  SEQ_UI_InstallLEDCallback(LED_Handler);
+  SEQ_UI_InstallButtonCallback(Button_HandlerMap);
+  SEQ_UI_InstallEncoderCallback(Encoder_HandlerMap);
+  SEQ_UI_InstallLEDCallback(LED_HandlerMap);
   SEQ_UI_InstallLCDCallback(LCD_Handler);
 
   return 0; // no error

@@ -12,4 +12,6 @@ Goal: SEQ V4+ with 4 x SSD1322 (256x64) instead of two 2x40 LCDs; develop and te
 - **Event page (menu -> Event) has its own layout and its own encoder/button/LED mapping** (`seq_ui_trkevnt.c`: `Encoder_HandlerMap`, table `evt_map`), with an INIT hold progress bar.
 - Event page drum variant (layers A/B, drum, note, velocity N/A); BEAT LED and menu-button LED on the panel.
 - **Timing page**: the Divider, Length and Direction pages share one layout and mapping (`seq_ui_timing.c`): LENGTH, LOOP, length PRESETS | TIMEBASE presets, DIVIDER (raw, button = triplet), SYNC BAR, MANUAL | DIRECTION, FORWARD, JUMP BACK | REPLAY, REPEAT, SKIP, INTERVAL. Datawheel and Up/Down change the last touched column.
-- Next: Groove/Transpose, Generate, FX, Live/Manual, Global pages (see `oled_gui/UI_ANALYSIS.md`); real SSD1322 driver hookup.
+- Labels and headers in the normal 6x8 font; the panel page draws the OLEDs 4x oversampled (pixelated downscaling dropped pixel rows).
+- **Mode page**: MODE as 4 chips (turn/press = choose), BUS, NOTE first/last, HOLD, SORT, RESTART, STEP TRG, FORCE TO SCALE, SUSTAIN, info box with a short explanation of the last touched item (`seq_ui_trkmode.c`).
+- Next: Transpose, Groove, Generate, FX, Live/Manual, Global pages (see `oled_gui/UI_ANALYSIS.md`); real SSD1322 driver hookup.

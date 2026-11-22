@@ -88,6 +88,17 @@ typedef struct {
 } og2_timing_t;
 extern void OG2_RenderTimingCell(u8 *out2048, int cell, const og2_timing_t *t);
 
+// ---- Mode page (menu -> Mode): track mode, bus, note stack options
+typedef struct {
+  char track[6];        // "G1T1"
+  u8 mode;              // 0 off, 1 normal, 2 transpose, 3 arpeggiator
+  u8 bus;               // 0-3
+  u8 first;             // 1 = first note, 0 = last note
+  u8 hold, sort, restart, steptrg, fts, sustain;   // 1 = on (sort already de-inverted)
+  u8 sel;               // last touched column 0-15
+} og2_mode_t;
+extern void OG2_RenderModeCell(u8 *out2048, int cell, const og2_mode_t *m);
+
 // ---- dashboard (globale pagina's: BPM, PATTERN, SONG, SAVE): 4 schermen als samengesteld beeld
 typedef struct {
   u16 bpm10;          // BPM x 10

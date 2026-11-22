@@ -44,6 +44,8 @@ static og2_text_t texts[16];
 static og2_tgroup_t groups[16];
 static og2_event_t evt;
 static og2_timing_t tim;
+static og2_mode_t mod;
+extern s32 SEQ_UI_TRKMODE_OledGet(og2_mode_t *m);
 extern s32 SEQ_UI_TRKEVNT_OledGet(og2_event_t *e);
 #include "seq_ui_timing.h"
 static char cur_layer_name[8] = "VEL";
@@ -407,7 +409,7 @@ s32 SEQ_OLED_Handler(void)
     int c;
     cur_mode = (ui_page == SEQ_UI_PAGE_MUTE) ? 1 : ((ui_page == SEQ_UI_PAGE_MIXER) ? 2 :
 	       ((ui_page == SEQ_UI_PAGE_BPM || ui_page == SEQ_UI_PAGE_PATTERN || ui_page == SEQ_UI_PAGE_SONG || ui_page == SEQ_UI_PAGE_SAVE) ? 3 :
-		((ui_page == SEQ_UI_PAGE_EDIT) ? 0 : ((ui_page == SEQ_UI_PAGE_TRKEVNT) ? ((SEQ_UI_TRKEVNT_OledGet(&evt) >= 0) ? 6 : 4) : ((ui_page == SEQ_UI_PAGE_TRKDIV || ui_page == SEQ_UI_PAGE_TRKLEN || ui_page == SEQ_UI_PAGE_TRKDIR) ? 7 : 5)))));    // other pages (Mode, Transpose, ...): LCD text enlarged
+		((ui_page == SEQ_UI_PAGE_EDIT) ? 0 : ((ui_page == SEQ_UI_PAGE_TRKEVNT) ? ((SEQ_UI_TRKEVNT_OledGet(&evt) >= 0) ? 6 : 4) : ((ui_page == SEQ_UI_PAGE_TRKDIV || ui_page == SEQ_UI_PAGE_TRKLEN || ui_page == SEQ_UI_PAGE_TRKDIR) ? 7 : ((ui_page == SEQ_UI_PAGE_TRKMODE) ? 8 : 5))))));    // other pages (Transpose, Groove, ...): LCD text enlarged
     if( cur_mode == 0 )
       collect_steps();
     else if( cur_mode == 3 )
@@ -416,8 +418,10 @@ s32 SEQ_OLED_Handler(void)
       collect_text();
     else if( cur_mode == 7 )
       SEQ_UI_TIMING_OledGet(&tim);
+    else if( cur_mode == 8 )
+      SEQ_UI_TRKMODE_OledGet(&mod);
     // mode 6: Event page in its own layout (evt was filled when the mode was chosen)
-    else if( cur_mode != 6 )
+    else if( cur_mode != 6 && cur_mode != 8 )
       collect_tiles(cur_mode);
     if( resend_ctr >= OLED_RESEND_MS ) {
       resend_ctr = 0;
@@ -433,6 +437,8 @@ s32 SEQ_OLED_Handler(void)
 	h = fnv(h, (const u8 *)&evt, sizeof(og2_event_t));
       else if( cur_mode == 7 )
 	h = fnv(h, (const u8 *)&tim, sizeof(og2_timing_t));
+      else if( cur_mode == 8 )
+	h = fnv(h, (const u8 *)&mod, sizeof(og2_mode_t));
       else if( cur_mode == 4 )
 	h = fnv(h, (const u8 *)&groups[c], sizeof(og2_tgroup_t));
       else if( cur_mode == 5 )
@@ -491,6 +497,8 @@ s32 SEQ_OLED_Handler(void)
 	  OG2_RenderEventCell(cell_buf, c, &evt);
 	else if( cur_mode == 7 )
 	  OG2_RenderTimingCell(cell_buf, c, &tim);
+	else if( cur_mode == 8 )
+	  OG2_RenderModeCell(cell_buf, c, &mod);
 	else if( cur_mode == 4 )
 	  OG2_RenderTextGroupCell(cell_buf, c, &groups[c]);
 	else if( cur_mode == 5 )

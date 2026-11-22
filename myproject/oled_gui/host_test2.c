@@ -58,6 +58,16 @@ int main(int argc, char **argv)
     for(int y=0;y<OG2_H;++y) for(int d=0;d<OG2_DISPLAYS;++d) for(int x=0;x<OG2_W;++x) fputc(f.gray[d][y][x], o);
     fclose(o); return 0;
   }
+  if( argc>1 && !strncmp(argv[1],"mode",4) ){
+    og2_mode_t m; memset(&m,0,sizeof(m)); strcpy(m.track,"G1T1"); m.mode=3; m.bus=0; m.first=1; m.hold=1; m.sort=1; m.fts=1;
+    m.sel = argv[1][4] ? atoi(argv[1]+4) : 0; if( m.sel==1 ) m.mode=1;
+    static og2_frame_t f; static u8 c[2048];
+    for(int n=0;n<16;++n){ OG2_RenderModeCell(c, n, &m);
+      for(int y=0;y<OG2_H;++y) for(int x=0;x<64;++x) f.gray[n/4][y][(n%4)*64+x] = (x&1)?(c[y*32+x/2]&15):(c[y*32+x/2]>>4); }
+    FILE *o = fopen("mode.pgm","wb"); fprintf(o,"P5\n%d %d\n15\n", OG2_W*OG2_DISPLAYS, OG2_H);
+    for(int y=0;y<OG2_H;++y) for(int d=0;d<OG2_DISPLAYS;++d) for(int x=0;x<OG2_W;++x) fputc(f.gray[d][y][x], o);
+    fclose(o); return 0;
+  }
   if( argc>1 && !strncmp(argv[1],"timing",6) ){
     og2_timing_t t; memset(&t,0,sizeof(t)); strcpy(t.track,"G1T2"); t.length=16; t.loop=1; t.num_steps=64;
     static const u16 pr[8]={4,8,16,24,32,64,128,256}; for(int i=0;i<8;++i) t.presets[i]=pr[i]; t.len_preset=2;

@@ -646,6 +646,80 @@ void OG2_RenderTimingCell(u8 *out, int cell, const og2_timing_t *t)
   tile_pack(out, tmp);
 }
 
+// ---- Mode page ----
+static const char *const mode_help[16][4] = {
+  {"OFF","The track plays nothing.","",""},
+  {"NORMAL","Steps play their own notes.","",""},
+  {"TRANSPOSE","Step notes are transposed by","the note held on the bus","(keyboard or another track)."},
+  {"ARPEGGIATOR","Steps pick notes from the","notes held on the bus","(arp codes in the note layer)."},
+  {"BUS","Which of the 4 busses feeds","this track in Transpose/Arp.",""},
+  {"NOTE","FIRST: the first held note","is used for transposing,","LAST: the last played note."},
+  {"HOLD","Held notes stay on the bus","after the keys are released.",""},
+  {"SORT","ON: notes sorted by pitch,","OFF: in the order played.",""},
+  {"RESTART","The track restarts when a","new note arrives after all","keys were released."},
+  {"STEP TRIGGER","The track advances one step","with every incoming note.",""},
+  {"FORCE TO SCALE","Notes are forced to the","global scale.",""},
+  {"SUSTAIN","Notes are held until the","next note is played.",""},
+  {"","","",""},{"","","",""},{"","","",""},{"","","",""}
+};
+// one chip per column inside a box that spans columns k..k+n-1
+static void mchip(u8 (*d)[CW], int k, const char *t, int on, int dim)
+{
+  int x = k*64 + 9, w = 46, y = 28, h = 20;
+  if( on ) rect(d, x, y, w, h, 13); else frame_box(d, x, y, w, h, dim ? 3 : 6);
+  ecsmall(d, x + w/2, y + h/2 - 3, t, on ? 0 : (dim ? 4 : 10));
+}
+
+void OG2_RenderModeCell(u8 *out, int cell, const og2_mode_t *m)
+{
+  static u8 tmp[OG2_H][CW];
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
+  u8 (*d)[CW] = tmp;
+  int scr = cell / 4, na = (m->mode < 2);      // note stack options only matter for Transpose / Arpeggiator
+  ox_shift = cell * 64;
+  char b[8];
+  #define SELM(k) (m->sel == (k))
+  switch( scr ){
+  case 0: {
+    char h[24] = "MODE ";
+    strcat(h, m->track);
+    eheader(d, 0, h);
+    int sb = SELM(0) || SELM(1) || SELM(2) || SELM(3);
+    ebox(d, 0, 4, sb); elabel(d, 0, "MODE", sb);
+    static const char *full[4] = {"OFF","NORMAL","TRANSPOSE","ARPEGGIATOR"};
+    static const char *shrt[4] = {"OFF","NORMAL","TRANSP","ARP"};
+    elabel_right(d, 0, 4, full[m->mode & 3], 12);
+    for(int i=0; i<4; ++i) mchip(d, i, shrt[i], m->mode == i, 0);
+  } break;
+  case 1: {
+    eheader(d, 1, "BUS / NOTE STACK");
+    b[0] = '0' + 1 + (m->bus & 3); b[1] = 0;
+    evbox(d, 4, "BUS", b, ((m->bus & 3) * 100) / 3, SELM(4), na);
+    evbox(d, 5, "NOTE", m->first ? "FIRST" : "LAST", -1, SELM(5), na);
+    etoggle(d, 6, "HOLD", m->hold, SELM(6), na);
+    etoggle(d, 7, "SORT", m->sort, SELM(7), na);
+  } break;
+  case 2: {
+    eheader(d, 2, "OPTIONS");
+    etoggle(d, 8, "RESTART", m->restart, SELM(8), na);
+    etoggle(d, 9, "STEP TRG", m->steptrg, SELM(9), na);
+    etoggle(d, 10, "FORCE SC", m->fts, SELM(10), 0);
+    etoggle(d, 11, "SUSTAIN", m->sustain, SELM(11), 0);
+  } break;
+  default: {
+    eheader(d, 3, "INFO");
+    int i = (m->sel < 4) ? m->mode & 3 : m->sel;   // mode columns: explain the active mode
+    if( i > 11 ) i = (m->mode & 3);
+    ebox(d, 12, 4, 0);
+    text(d, LFONT, ebx(12)+5, EBY+4, mode_help[i][0], 1, 12);
+    for(int l=1; l<4; ++l) text(d, LFONT, ebx(12)+5, EBY+5+l*11, mode_help[i][l], 1, 9);
+  } break;
+  }
+  #undef SELM
+  ox_shift = 0;
+  tile_pack(out, tmp);
+}
+
 // ---- dashboard ----
 static void numtxt(char *o, int v, int width)       // rechts uitgelijnd getal
 {
