@@ -18,6 +18,8 @@
 #include "seq_par.h"
 #include "seq_layer.h"
 #include "seq_midi_sysex.h"
+#include "seq_mixer.h"
+#include "seq_cc.h"
 
 #include "oled_gui2.h"
 
@@ -30,6 +32,8 @@ static og2_step_t steps[16];
 static u8 play_step = 0xff, trail_step = 0xff;
 static int range_lo, range_hi;
 static og2_kind_t cur_kind = OG2_K_NOTE;
+static u8 cur_mode = 0;                 // 0 = stapweergave, 1 = track-overzicht (MUTE-pagina), 2 = mixer (MIXER-pagina)
+static og2_tile_t tiles[16];
 static char cur_layer_name[8] = "VEL";
 static u32 sent_hash[OLED_NUM_CELLS];
 static u8 sent_valid[OLED_NUM_CELLS];
@@ -157,6 +161,40 @@ static void collect_steps(void)
   OG2_StepRange(steps, &range_lo, &range_hi);
 }
 
+// overzichtspagina's: elke cel is een track (MUTE-pagina) of een mixerkanaal (MIXER-pagina)
+static void collect_tiles(u8 mode)
+{
+  int t;
+  u8 running = SEQ_BPM_IsRunning();
+  for(t=0; t<16; ++t) {
+    og2_tile_t *tl = &tiles[t];
+    memset(tl, 0, sizeof(*tl));
+    if( mode == 1 ) {
+      u16 len = SEQ_CC_Get(t, SEQ_CC_LENGTH) + 1;
+      if( len > 255 ) len = 255;
+      u8 pos = running ? seq_core_trk[t].step : 0xff;
+      u8 win = (pos != 0xff) ? (pos / 16) : ui_selected_step_view;
+      int i;
+      sprintf(tl->label, "G%dT%d", (t / 4) + 1, (t % 4) + 1);
+      tl->flags = ((ui_selected_tracks >> t) & 1) | (((seq_core_trk_muted >> t) & 1) << 1) | (((seq_core_trk_soloed >> t) & 1) << 2);
+      tl->len = len;
+      tl->pos = pos;
+      tl->win = win;
+      for(i=0; i<16; ++i) {
+	u16 step = (u16)win * 16 + i;
+	if( step < len && SEQ_TRG_GateGet(t, step, 0) )
+	  tl->gates |= (1 << i);
+      }
+    } else {
+      s32 v;
+      sprintf(tl->label, "CH%02d", t + 1);
+      v = SEQ_MIXER_Get(t, SEQ_MIXER_PAR_VOLUME);   tl->v1 = (v < 0) ? 0 : (v & 0x7f);
+      v = SEQ_MIXER_Get(t, SEQ_MIXER_PAR_PANORAMA); tl->v2 = (v < 0) ? 64 : (v & 0x7f);
+      v = SEQ_MIXER_Get(t, SEQ_MIXER_PAR_PRG);      tl->v3 = (v < 0) ? 0 : (v & 0x7f);
+    }
+  }
+}
+
 // run-length (PackBits): 0..127 = kopieer c+1 bytes; 128..255 = herhaal volgende byte (c-126) keer
 static int rle_encode(const u8 *in, int n, u8 *out)
 {
@@ -192,7 +230,11 @@ s32 SEQ_OLED_Handler(void)
 
   if( (ctr % OLED_PERIOD_MS) == 0 ) {
     int c;
-    collect_steps();
+    cur_mode = (ui_page == SEQ_UI_PAGE_MUTE) ? 1 : ((ui_page == SEQ_UI_PAGE_MIXER) ? 2 : 0);
+    if( cur_mode == 0 )
+      collect_steps();
+    else
+      collect_tiles(cur_mode);
     if( resend_ctr >= OLED_RESEND_MS ) {
       resend_ctr = 0;
       for(c=0; c<OLED_NUM_CELLS; ++c)
@@ -200,7 +242,11 @@ s32 SEQ_OLED_Handler(void)
     }
     for(c=0; c<OLED_NUM_CELLS; ++c) {
       u32 h = 2166136261u;
-      h = fnv(h, (const u8 *)&steps[c], sizeof(og2_step_t));
+      h = fnv(h, &cur_mode, 1);
+      if( cur_mode == 0 )
+	h = fnv(h, (const u8 *)&steps[c], sizeof(og2_step_t));
+      else
+	h = fnv(h, (const u8 *)&tiles[c], sizeof(og2_tile_t));
       h = fnv(h, (const u8 *)&range_lo, sizeof(int));
       h = fnv(h, (const u8 *)&range_hi, sizeof(int));
       u8 flags[3] = { play_step == c, trail_step == c, cur_kind };
@@ -218,7 +264,12 @@ s32 SEQ_OLED_Handler(void)
       u8 c = next_cell;
       next_cell = (next_cell + 1) % OLED_NUM_CELLS;
       if( dirty[c] ) {
-	OG2_RenderCell(cell_buf, c, &steps[c], range_lo, range_hi, play_step == c, trail_step == c, cur_layer_name, cur_kind);
+	if( cur_mode == 1 )
+	  OG2_RenderTrackTile(cell_buf, c, &tiles[c]);
+	else if( cur_mode == 2 )
+	  OG2_RenderMixerTile(cell_buf, c, &tiles[c]);
+	else
+	  OG2_RenderCell(cell_buf, c, &steps[c], range_lo, range_hi, play_step == c, trail_step == c, cur_layer_name, cur_kind);
 	int n = rle_encode(cell_buf, sizeof(cell_buf), rle_buf);
 	if( SEQ_MIDI_SYSEX_REMOTE_Server_SendOLEDCell(c / 4, c % 4, rle_buf, n) >= 0 ) {
 	  sent_hash[c] = cur_hash[c];

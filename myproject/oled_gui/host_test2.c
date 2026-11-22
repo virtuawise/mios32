@@ -2,8 +2,26 @@
 #include <stdlib.h>
 #include <string.h>
 #include "oled_gui2.h"
+static void dump(const char *name, void (*fn)(u8*,int,const og2_tile_t*), og2_tile_t *tl)
+{
+  static og2_frame_t f; static u8 c[2048];
+  for(int n=0;n<16;++n){ fn(c, n, &tl[n]);
+    for(int y=0;y<OG2_H;++y) for(int x=0;x<64;++x) f.gray[n/4][y][(n%4)*64+x] = (x&1)?(c[y*32+x/2]&15):(c[y*32+x/2]>>4); }
+  FILE *o = fopen(name,"wb"); fprintf(o,"P5\n%d %d\n15\n", OG2_W*OG2_DISPLAYS, OG2_H);
+  for(int y=0;y<OG2_H;++y) for(int d=0;d<OG2_DISPLAYS;++d) for(int x=0;x<OG2_W;++x) fputc(f.gray[d][y][x], o);
+  fclose(o);
+}
 int main(int argc, char **argv)
 {
+  if( argc>1 && !strcmp(argv[1],"tiles") ){
+    og2_tile_t tl[16]; memset(tl,0,sizeof(tl));
+    for(int i=0;i<16;++i){ sprintf(tl[i].label,"G%dT%d",i/4+1,i%4+1); tl[i].len = (i%4==0)?16:(i%4==1?15:(i%4==2?32:13)); tl[i].pos = (i%5==0)?0xff:(i*3)%tl[i].len; tl[i].win = tl[i].pos==0xff?0:tl[i].pos/16; tl[i].gates = (i*2731+977)&0xffff; tl[i].v1 = 40+i*5; tl[i].v2 = 20+i*6; tl[i].v3 = i*7; }
+    tl[0].flags=1; tl[3].flags=2; tl[6].flags=4; tl[7].flags=2;
+    dump("tiles_tracks.pgm", OG2_RenderTrackTile, tl); dump("tiles_mixer.pgm", OG2_RenderMixerTile, tl);
+    for(int i=0;i<16;++i) sprintf(tl[i].label,"CH%02d",i+1);
+    dump("tiles_mixer.pgm", OG2_RenderMixerTile, tl);
+    return 0;
+  }
   static og2_frame_t f; og2_step_t s[16] = {0};
   static const u8 notes[16] = {36,36,39,41, 0xff,34,36,48, 36,38,43,38, 36,0xff,34,46};
   static const u8 vel[16]   = {110,60,127,90, 0,100,70,127, 90,50,120,80, 110,0,100,127};

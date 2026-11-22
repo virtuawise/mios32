@@ -25,6 +25,19 @@ typedef struct {
   const char *layer_name;                // naam van de actieve laag, bv "VEL"
   og2_kind_t kind;                       // soort laag: bepaalt de weergave
 } og2_frame_t;
+// ---- overzichtspagina's: elke cel (64x64) is een tegel: een track (MUTE-pagina) of een mixerkanaal (MIXER-pagina)
+typedef struct {
+  char label[6];     // "G1T1" / "CH01"
+  u8 flags;          // bit0 geselecteerd, bit1 gemute, bit2 solo
+  u8 len;            // tracklengte in stappen (1..256)
+  u8 pos;            // absolute afspeelstap, 0xff = stil
+  u8 win;            // 16-stappenvenster dat getoond wordt (0 = stap 1-16)
+  u16 gates;         // 16 bits: gate per stap in het venster
+  u8 v1, v2, v3;     // mixer: volume, pan, programma (0..127)
+} og2_tile_t;
+extern void OG2_RenderTrackTile(u8 *out2048, int num, const og2_tile_t *t);
+extern void OG2_RenderMixerTile(u8 *out2048, int num, const og2_tile_t *t);
+
 // play_step 0..15 of 0xff; trail_step = vorige stap voor de uitdovende staart (0xff = geen)
 extern void OG2_RenderSteps(og2_frame_t *f, const og2_step_t st[16], u8 play_step, u8 trail_step);
 extern void OG2_StepRange(const og2_step_t st[16], int *lo, int *hi);

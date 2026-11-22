@@ -219,6 +219,74 @@ static void cell_layer(u8 (*d)[CW], int divider, int num, const og2_step_t *s, i
   if( playing ){ rect(d, x0+1, 0, 62, 2, 15); rect(d, x0+1, 62, 62, 2, 15); }
 }
 
+
+// ---- tegel: track (overzicht van alle tracks: gate-raster, afspeelpositie, mute/solo) ----
+static void tile_pack(u8 *out, u8 (*tmp)[CW])
+{
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; x+=2) out[y*32 + x/2] = (tmp[y][x] << 4) | tmp[y][x+1];
+}
+
+void OG2_RenderTrackTile(u8 *out, int num, const og2_tile_t *t)
+{
+  static u8 tmp[OG2_H][CW];
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
+  u8 (*d)[CW] = tmp;
+  int sel = t->flags & 1, mute = (t->flags >> 1) & 1, solo = (t->flags >> 2) & 1;
+  int dim = mute ? 1 : 0;
+  if( sel ) rect(d, 1, 0, 62, 64, 2);
+  if( (num & 3) != 0 ) for(int y=0; y<64; y+=4) px(d, 0, y, 2);
+  text(d, GLCD_FONT_NORMAL, 3, 3, t->label, 1, sel ? 15 : (dim ? 5 : 11));
+  text(d, GLCD_FONT_NORMAL, 4, 3, t->label, 1, sel ? 15 : (dim ? 5 : 11));
+  if( mute ){ rect(d, 46, 2, 15, 11, 12); text(d, GLCD_FONT_NORMAL, 49, 3, "M", 1, 0); text(d, GLCD_FONT_NORMAL, 50, 3, "M", 1, 0); }
+  else if( solo ){ rect(d, 46, 2, 15, 11, 15); text(d, GLCD_FONT_NORMAL, 49, 3, "S", 1, 0); text(d, GLCD_FONT_NORMAL, 50, 3, "S", 1, 0); }
+  else { char b[6]; int v = t->len; b[0] = v>=100 ? '0'+v/100 : ' '; b[1] = v>=10 ? '0'+(v/10)%10 : ' '; b[2] = '0'+v%10; b[3] = 0;
+         text(d, GLCD_FONT_SMALL, 61 - tw(GLCD_FONT_SMALL, b, 1), 4, b, 1, 6); }
+
+  // 16 stappen in 2 rijen van 8
+  int cur = (t->pos != 0xff) ? (t->pos - t->win*16) : -1;
+  for(int i=0; i<16; ++i){
+    int bx = 4 + (i & 7) * 7, by = 18 + (i >> 3) * 14, step = t->win*16 + i;
+    int active = step < t->len;
+    int on = (t->gates >> i) & 1;
+    if( !active ){ px(d, bx+2, by+5, 2); continue; }
+    if( on ) rect(d, bx, by, 6, 11, dim ? 5 : (cur == i ? 15 : 12));
+    else { for(int x=0; x<6; ++x){ px(d, bx+x, by, 3); px(d, bx+x, by+10, 3); } for(int y=0; y<11; ++y){ px(d, bx, by+y, 3); px(d, bx+5, by+y, 3); } }
+    if( cur == i ){ rect(d, bx-1, by+12, 8, 2, 15); }
+  }
+  // voortgangsbalk over de hele tracklengte
+  for(int x=0; x<56; ++x) px(d, 4+x, 52, 3);
+  if( t->pos != 0xff ){ int w = (t->pos * 56) / (t->len ? t->len : 1); rect(d, 4, 51, w+1, 3, dim ? 5 : 13); }
+  // vensternummer (welke 16 stappen)
+  if( t->len > 16 ){ char b[4]; b[0]='p'; b[1]='0'+t->win+1; b[2]=0; text(d, GLCD_FONT_SMALL, 4, 56, b, 1, 6); }
+  tile_pack(out, tmp);
+}
+
+// ---- tegel: mixerkanaal (volume, pan, programma) ----
+void OG2_RenderMixerTile(u8 *out, int num, const og2_tile_t *t)
+{
+  static u8 tmp[OG2_H][CW];
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
+  u8 (*d)[CW] = tmp;
+  char b[8];
+  if( (num & 3) != 0 ) for(int y=0; y<64; y+=4) px(d, 0, y, 2);
+  text(d, GLCD_FONT_SMALL, 3, 3, t->label, 1, 9);
+  b[0] = t->v1 >= 100 ? '0'+t->v1/100 : ' '; b[1] = t->v1 >= 10 ? '0'+(t->v1/10)%10 : ' '; b[2] = '0'+t->v1%10; b[3] = 0;
+  { int w = tw(GLCD_FONT_NORMAL, b, 2);
+    text(d, GLCD_FONT_NORMAL, 61-w, 3, b, 2, 15); text(d, GLCD_FONT_NORMAL, 62-w, 3, b, 2, 15); }
+  // volume: horizontale balk
+  for(int x=0; x<56; ++x){ px(d, 4+x, 24, 3); px(d, 4+x, 32, 3); }
+  rect(d, 4, 25, (t->v1 * 56) / 127, 7, 12);
+  // pan: lijn met midden-streep en markering
+  for(int x=0; x<56; ++x) px(d, 4+x, 41, 3);
+  rect(d, 4+28, 38, 1, 7, 5);
+  rect(d, 4 + (t->v2 * 52) / 127, 37, 4, 9, 15);
+  { int p = (int)t->v2 - 64; char c = p < 0 ? 'L' : (p > 0 ? 'R' : 'C'); if( p < 0 ) p = -p;
+    b[0] = c; b[1] = p >= 10 ? '0'+p/10 : ' '; b[2] = p ? '0'+p%10 : ' '; b[3] = 0; text(d, GLCD_FONT_NORMAL, 4, 53, b, 1, 9); }
+  { char c[8]; c[0]='P'; c[1]='g'; c[2] = ' '; c[3] = t->v3 >= 100 ? '0'+t->v3/100 : ' '; c[4] = t->v3 >= 10 ? '0'+(t->v3/10)%10 : ' '; c[5] = '0'+t->v3%10; c[6]=0;
+    text(d, GLCD_FONT_SMALL, 61 - tw(GLCD_FONT_SMALL, c, 1), 53, c, 1, 6); }
+  tile_pack(out, tmp);
+}
+
 void OG2_StepRange(const og2_step_t st[16], int *lo, int *hi)
 {
   int l = 127, h = 0;
