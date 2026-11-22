@@ -35,7 +35,11 @@ typedef struct {
   u8 pos;            // absolute afspeelstap, 0xff = stil
   u8 win;            // 16-stappenvenster dat getoond wordt (0 = stap 1-16)
   u16 gates;         // 16 bits: gate per stap in het venster
-  u8 v1, v2, v3;     // mixer: volume, pan, programma (0..127)
+  u8 v1, v2, v3;     // (oud) mixer: volume, pan, programma
+  char txt[6];       // mixer: waarde van de gekozen mixerpagina als tekst ("USB1", "100", "L24")
+  char pname[8];     // mixer: naam van de pagina ("VOLUME")
+  u8 vmax;           // mixer: maximale waarde voor de balk (0 = geen balk)
+  u8 pan;            // mixer: 1 = pan-schuif met middenstreep
 } og2_tile_t;
 // ---- dashboard (globale pagina's: BPM, PATTERN, SONG, SAVE): 4 schermen als samengesteld beeld
 typedef struct {

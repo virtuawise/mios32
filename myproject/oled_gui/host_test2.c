@@ -26,7 +26,7 @@ int main(int argc, char **argv)
   }
   if( argc>1 && !strcmp(argv[1],"tiles") ){
     og2_tile_t tl[16]; memset(tl,0,sizeof(tl));
-    for(int i=0;i<16;++i){ sprintf(tl[i].label,"G%dT%d",i/4+1,i%4+1); tl[i].len = (i%4==0)?16:(i%4==1?15:(i%4==2?32:13)); tl[i].pos = (i%5==0)?0xff:(i*3)%tl[i].len; tl[i].win = tl[i].pos==0xff?0:tl[i].pos/16; tl[i].gates = (i*2731+977)&0xffff; tl[i].v1 = 40+i*5; tl[i].v2 = 20+i*6; tl[i].v3 = i*7; }
+    for(int i=0;i<16;++i){ sprintf(tl[i].label,"G%dT%d",i/4+1,i%4+1); tl[i].len = (i%4==0)?16:(i%4==1?15:(i%4==2?32:13)); tl[i].pos = (i%5==0)?0xff:(i*3)%tl[i].len; tl[i].win = tl[i].pos==0xff?0:tl[i].pos/16; tl[i].gates = (i*2731+977)&0xffff; tl[i].v1 = 40+i*5; tl[i].v2 = 20+i*6; tl[i].v3 = i*7; sprintf(tl[i].txt,"%d",40+i*5); strcpy(tl[i].pname,"VOLUME"); tl[i].vmax=127; }
     tl[0].flags=1; tl[3].flags=2; tl[6].flags=4; tl[7].flags=2;
     dump("tiles_tracks.pgm", OG2_RenderTrackTile, tl); dump("tiles_mixer.pgm", OG2_RenderMixerTile, tl);
     for(int i=0;i<16;++i) sprintf(tl[i].label,"CH%02d",i+1);

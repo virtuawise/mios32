@@ -270,29 +270,33 @@ void OG2_RenderTrackTile(u8 *out, int num, const og2_tile_t *t)
   tile_pack(out, tmp);
 }
 
-// ---- tegel: mixerkanaal (volume, pan, programma) ----
+// ---- tegel: mixerkanaal; toont de waarde van de gekozen mixerpagina (Port, Chn, Prg, Vol, Pan, ...) ----
 void OG2_RenderMixerTile(u8 *out, int num, const og2_tile_t *t)
 {
   static u8 tmp[OG2_H][CW];
   for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
   u8 (*d)[CW] = tmp;
-  char b[8];
+  int sel = t->flags & 1;
+  if( sel ) rect(d, 1, 0, 62, 64, 2);
   if( (num & 3) != 0 ) for(int y=0; y<64; y+=4) px(d, 0, y, 2);
-  text(d, GLCD_FONT_SMALL, 3, 3, t->label, 1, 9);
-  b[0] = t->v1 >= 100 ? '0'+t->v1/100 : ' '; b[1] = t->v1 >= 10 ? '0'+(t->v1/10)%10 : ' '; b[2] = '0'+t->v1%10; b[3] = 0;
-  { int w = tw(GLCD_FONT_NORMAL, b, 2);
-    text(d, GLCD_FONT_NORMAL, 61-w, 3, b, 2, 15); text(d, GLCD_FONT_NORMAL, 62-w, 3, b, 2, 15); }
-  // volume: horizontale balk
-  for(int x=0; x<56; ++x){ px(d, 4+x, 24, 3); px(d, 4+x, 32, 3); }
-  rect(d, 4, 25, (t->v1 * 56) / 127, 7, 12);
-  // pan: lijn met midden-streep en markering
-  for(int x=0; x<56; ++x) px(d, 4+x, 41, 3);
-  rect(d, 4+28, 38, 1, 7, 5);
-  rect(d, 4 + (t->v2 * 52) / 127, 37, 4, 9, 15);
-  { int p = (int)t->v2 - 64; char c = p < 0 ? 'L' : (p > 0 ? 'R' : 'C'); if( p < 0 ) p = -p;
-    b[0] = c; b[1] = p >= 10 ? '0'+p/10 : ' '; b[2] = p ? '0'+p%10 : ' '; b[3] = 0; text(d, GLCD_FONT_NORMAL, 4, 53, b, 1, 9); }
-  { char c[8]; c[0]='P'; c[1]='g'; c[2] = ' '; c[3] = t->v3 >= 100 ? '0'+t->v3/100 : ' '; c[4] = t->v3 >= 10 ? '0'+(t->v3/10)%10 : ' '; c[5] = '0'+t->v3%10; c[6]=0;
-    text(d, GLCD_FONT_SMALL, 61 - tw(GLCD_FONT_SMALL, c, 1), 53, c, 1, 6); }
+  text(d, GLCD_FONT_SMALL, 3, 3, t->label, 1, sel ? 15 : 9);
+  { int sc = (tw(GLCD_FONT_NORMAL, t->txt, 2) > 36) ? 1 : 2;       // lange teksten (poortnamen) kleiner
+    int w = tw(GLCD_FONT_NORMAL, t->txt, sc), ty = sc == 2 ? 3 : 10;
+    text(d, GLCD_FONT_NORMAL, 61-w, ty, t->txt, sc, 15); text(d, GLCD_FONT_NORMAL, 62-w, ty, t->txt, sc, 15); }
+  if( t->vmax ){
+    int w = (t->v1 * 56) / t->vmax; if( w > 56 ) w = 56;
+    for(int x=0; x<56; ++x){ px(d, 4+x, 28, 3); px(d, 4+x, 38, 3); }
+    if( t->pan ){
+      rect(d, 4+28, 25, 1, 17, 5);
+      rect(d, 4 + (t->v1 * 52) / t->vmax, 27, 4, 12, 15);
+    } else {
+      rect(d, 4, 29, w, 9, 12);
+    }
+  } else {
+    hline(d, 20, 33, 24, 3, 2);
+  }
+  { int w = tw(GLCD_FONT_SMALL, t->pname, 1);
+    text(d, GLCD_FONT_SMALL, 32 - w/2, 53, t->pname, 1, 8); }
   tile_pack(out, tmp);
 }
 

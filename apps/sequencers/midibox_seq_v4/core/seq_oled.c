@@ -21,6 +21,7 @@
 #include "seq_mixer.h"
 #include "seq_cc.h"
 #include "seq_pattern.h"
+#include "seq_midi_port.h"
 #include "seq_file.h"
 
 #include "oled_gui2.h"
@@ -205,11 +206,37 @@ static void collect_tiles(u8 mode)
 	  tl->gates |= (1 << i);
       }
     } else {
+      static const char pname[16][8] = {"PORT","CHN","PRG","VOLUME","PAN","REVERB","CHORUS","MOD","CC1","CC2","CC3","CC4","CC1#","CC2#","CC3#","CC4#"};
+      u8 par = SEQ_UI_MIXER_ParGet();
       s32 v;
+      if( par > 15 ) par = 0;
       sprintf(tl->label, "CH%02d", t + 1);
-      v = SEQ_MIXER_Get(t, SEQ_MIXER_PAR_VOLUME);   tl->v1 = (v < 0) ? 0 : (v & 0x7f);
-      v = SEQ_MIXER_Get(t, SEQ_MIXER_PAR_PANORAMA); tl->v2 = (v < 0) ? 64 : (v & 0x7f);
-      v = SEQ_MIXER_Get(t, SEQ_MIXER_PAR_PRG);      tl->v3 = (v < 0) ? 0 : (v & 0x7f);
+      tl->flags = (ui_selected_item == t) ? 1 : 0;
+      v = SEQ_MIXER_Get(t, par); if( v < 0 ) v = 0;
+      tl->v1 = v & 0x7f;
+      strcpy(tl->pname, pname[par]);
+      if( par == SEQ_MIXER_PAR_PORT ) {
+	const char *nm = SEQ_MIDI_PORT_OutNameGet(SEQ_MIDI_PORT_OutIxGet((mios32_midi_port_t)v));
+	int k;
+	for(k=0; k<4 && nm && nm[k]; ++k) tl->txt[k] = nm[k];
+	tl->txt[k] = 0;
+	tl->vmax = 0;
+      } else if( par == SEQ_MIXER_PAR_CHANNEL ) {
+	sprintf(tl->txt, "%d", (int)(v & 0x0f) + 1);
+	tl->vmax = 15;
+      } else if( par == SEQ_MIXER_PAR_PANORAMA ) {
+	int p = (int)(v & 0x7f) - 64;
+	if( v == 0 ) strcpy(tl->txt, "---");
+	else if( p == 0 ) strcpy(tl->txt, "C");
+	else sprintf(tl->txt, "%c%d", p < 0 ? 'L' : 'R', p < 0 ? -p : p);
+	tl->vmax = 127; tl->pan = 1;
+      } else {
+	if( v == 0 && par >= SEQ_MIXER_PAR_PRG )
+	  strcpy(tl->txt, "---");            // 0 = niet gebruikt (zoals op het LCD)
+	else
+	  sprintf(tl->txt, "%d", (int)(v & 0x7f));
+	tl->vmax = 127;
+      }
     }
   }
 }
