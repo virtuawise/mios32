@@ -21,6 +21,7 @@
 #include "seq_mixer.h"
 #include "seq_cc.h"
 #include "seq_pattern.h"
+#include "seq_lcd.h"
 #include "seq_midi_port.h"
 #include "seq_file.h"
 
@@ -38,6 +39,7 @@ static og2_kind_t cur_kind = OG2_K_NOTE;
 static u8 cur_mode = 0;                 // 0 = stapweergave, 1 = track-overzicht (MUTE), 2 = mixer (MIXER), 3 = dashboard (BPM/PATTERN/SONG/SAVE)
 static og2_tile_t tiles[16];
 static og2_dash_t dash;
+static og2_text_t texts[16];
 static char cur_layer_name[8] = "VEL";
 static u32 sent_hash[OLED_NUM_CELLS];
 static u8 sent_valid[OLED_NUM_CELLS];
@@ -272,6 +274,20 @@ static void collect_dash(void)
       ++dash.muted_cnt;
 }
 
+// tekst-weergave: de LCD-tekst van de SEQ, 5 tekens per GP-kolom (80 kolommen / 16 knoppen)
+static void collect_text(void)
+{
+  int c, i;
+  for(c=0; c<16; ++c) {
+    for(i=0; i<5; ++i) {
+      texts[c].l1[i] = SEQ_LCD_BufferCharGet(c*5 + i, 0);
+      texts[c].l2[i] = SEQ_LCD_BufferCharGet(c*5 + i, 1);
+    }
+    texts[c].l1[5] = 0;
+    texts[c].l2[5] = 0;
+  }
+}
+
 // run-length (PackBits): 0..127 = kopieer c+1 bytes; 128..255 = herhaal volgende byte (c-126) keer
 static int rle_encode(const u8 *in, int n, u8 *out)
 {
@@ -308,11 +324,14 @@ s32 SEQ_OLED_Handler(void)
   if( (ctr % OLED_PERIOD_MS) == 0 ) {
     int c;
     cur_mode = (ui_page == SEQ_UI_PAGE_MUTE) ? 1 : ((ui_page == SEQ_UI_PAGE_MIXER) ? 2 :
-	       ((ui_page == SEQ_UI_PAGE_BPM || ui_page == SEQ_UI_PAGE_PATTERN || ui_page == SEQ_UI_PAGE_SONG || ui_page == SEQ_UI_PAGE_SAVE) ? 3 : 0));
+	       ((ui_page == SEQ_UI_PAGE_BPM || ui_page == SEQ_UI_PAGE_PATTERN || ui_page == SEQ_UI_PAGE_SONG || ui_page == SEQ_UI_PAGE_SAVE) ? 3 :
+		((ui_page == SEQ_UI_PAGE_EDIT) ? 0 : 4)));    // overige pagina's (Mode, Direction, Divider, ...): LCD-tekst groot
     if( cur_mode == 0 )
       collect_steps();
     else if( cur_mode == 3 )
       collect_dash();
+    else if( cur_mode == 4 )
+      collect_text();
     else
       collect_tiles(cur_mode);
     if( resend_ctr >= OLED_RESEND_MS ) {
@@ -325,6 +344,8 @@ s32 SEQ_OLED_Handler(void)
       h = fnv(h, &cur_mode, 1);
       if( cur_mode == 0 )
 	h = fnv(h, (const u8 *)&steps[c], sizeof(og2_step_t));
+      else if( cur_mode == 4 )
+	h = fnv(h, (const u8 *)&texts[c], sizeof(og2_text_t));
       else if( cur_mode == 3 ) {
 	// alleen de velden die dit scherm (c/4) tekent: voorkomt dat alle cellen bij elke zestiende opnieuw gestuurd worden
 	switch( c / 4 ) {
@@ -353,7 +374,9 @@ s32 SEQ_OLED_Handler(void)
       u8 c = next_cell;
       next_cell = (next_cell + 1) % OLED_NUM_CELLS;
       if( dirty[c] ) {
-	if( cur_mode == 3 )
+	if( cur_mode == 4 )
+	  OG2_RenderTextCell(cell_buf, c, &texts[c]);
+	else if( cur_mode == 3 )
 	  OG2_RenderDashCell(cell_buf, c, &dash);
 	else if( cur_mode == 1 )
 	  OG2_RenderTrackTile(cell_buf, c, &tiles[c]);

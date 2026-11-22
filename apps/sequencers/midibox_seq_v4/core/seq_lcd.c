@@ -1245,3 +1245,14 @@ s32 SEQ_LCD_PrintList(char *list, u8 item_width, u8 num_items, u8 max_items_on_s
 
   return 0; // no error
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Returns one character of the LCD buffer (used by the OLED text view); 0x20 if out of range
+/////////////////////////////////////////////////////////////////////////////
+u8 SEQ_LCD_BufferCharGet(u8 x, u8 y)
+{
+  if( x >= LCD_MAX_COLUMNS || y >= LCD_MAX_LINES )
+    return 0x20;
+  return lcd_buffer[y][x] & 0x7f;
+}

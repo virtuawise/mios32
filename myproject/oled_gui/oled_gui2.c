@@ -301,6 +301,34 @@ void OG2_RenderMixerTile(u8 *out, int num, const og2_tile_t *t)
 }
 
 
+// ---- tekstcel: 5 tekens per regel, 2x, voor alle pagina's die geen eigen weergave hebben ----
+static void textcell_line(u8 (*d)[CW], int y, const char *s)
+{
+  for(int i=0; i<5; ++i){
+    unsigned char c = (unsigned char)s[i];
+    int x = 2 + i*12;
+    if( c == ' ' || c == 0 ) continue;
+    if( c < 32 ){ for(int yy=0; yy<12; ++yy) for(int xx=0; xx<8; ++xx) if( ((xx+yy)&1) == 0 ) px(d, x+xx+1, y+2+yy, 9); continue; }   // eigen tekens
+    if( c == 0x7e ) c = '>';
+    if( c == 0x7f ) c = '<';
+    if( c > 0x7e ) c = '?';
+    chr(d, GLCD_FONT_NORMAL, x, y, c, 2, 15);
+    chr(d, GLCD_FONT_NORMAL, x+1, y, c, 2, 15);
+  }
+}
+
+void OG2_RenderTextCell(u8 *out, int cell, const og2_text_t *t)
+{
+  static u8 tmp[OG2_H][CW];
+  for(int y=0; y<OG2_H; ++y) for(int x=0; x<CW; ++x) tmp[y][x] = 0;
+  u8 (*d)[CW] = tmp;
+  if( (cell & 3) != 0 ) for(int y=0; y<64; y+=4) px(d, 0, y, 2);
+  textcell_line(d, 6, t->l1);
+  hline(d, 4, 31, 56, 2, 3);
+  textcell_line(d, 38, t->l2);
+  tile_pack(out, tmp);
+}
+
 // ---- dashboard ----
 static void numtxt(char *o, int v, int width)       // rechts uitgelijnd getal
 {

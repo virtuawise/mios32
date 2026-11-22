@@ -13,6 +13,17 @@ static void dump(const char *name, void (*fn)(u8*,int,const og2_tile_t*), og2_ti
 }
 int main(int argc, char **argv)
 {
+  if( argc>1 && !strcmp(argv[1],"text") ){
+    const char *L1 = " Forward  >PingPong< Rand.Dir  Rand.D+S Fwd. Back Replay  Repeat Skip Itv. SyncM          ";
+    const char *L2 = "G1T1  Backward  Pendulum  Rand.Step       1     0    x1       0    0    4   no            ";
+    og2_text_t tx[16]; for(int c=0;c<16;++c){ memcpy(tx[c].l1, L1+c*5, 5); tx[c].l1[5]=0; memcpy(tx[c].l2, L2+c*5, 5); tx[c].l2[5]=0; }
+    static og2_frame_t f; static u8 cb[2048];
+    for(int n=0;n<16;++n){ OG2_RenderTextCell(cb, n, &tx[n]);
+      for(int y=0;y<OG2_H;++y) for(int x=0;x<64;++x) f.gray[n/4][y][(n%4)*64+x] = (x&1)?(cb[y*32+x/2]&15):(cb[y*32+x/2]>>4); }
+    FILE *o = fopen("text.pgm","wb"); fprintf(o,"P5\n%d %d\n15\n", OG2_W*OG2_DISPLAYS, OG2_H);
+    for(int y=0;y<OG2_H;++y) for(int d=0;d<OG2_DISPLAYS;++d) for(int x=0;x<OG2_W;++x) fputc(f.gray[d][y][x], o);
+    fclose(o); return 0;
+  }
   if( argc>1 && !strcmp(argv[1],"dash") ){
     og2_dash_t dh; memset(&dh,0,sizeof(dh)); dh.bpm10=1320; dh.running=1; dh.master=1; dh.bar=12; dh.beat=2; dh.sixt=9; strcpy(dh.session,"GEN1");
     for(int g=0;g<4;++g){ dh.pat_group[g]=g; dh.pat_num[g]=g==2?3:0; dh.pat_req[g]=(g==3); strcpy(dh.pat_name[g], g==0?"GEN1 lanes":(g==1?"GEN1 pad":"Init")); }

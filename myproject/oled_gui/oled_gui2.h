@@ -54,6 +54,9 @@ typedef struct {
   u8 sel_track;       // 0..15
   u8 muted_cnt;
 } og2_dash_t;
+// ---- tekst-weergave (alle overige pagina's): de LCD-tekst van de SEQ, 5 tekens per GP-kolom, 2x vergroot
+typedef struct { char l1[6]; char l2[6]; } og2_text_t;
+extern void OG2_RenderTextCell(u8 *out2048, int cell, const og2_text_t *t);
 extern void OG2_RenderDashCell(u8 *out2048, int cell, const og2_dash_t *d);
 extern void OG2_RenderTrackTile(u8 *out2048, int num, const og2_tile_t *t);
 extern void OG2_RenderMixerTile(u8 *out2048, int num, const og2_tile_t *t);

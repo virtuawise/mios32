@@ -45,6 +45,7 @@ typedef enum {
 extern s32 SEQ_LCD_Init(u32 mode);
 
 extern s32 SEQ_LCD_Clear(void);
+extern u8  SEQ_LCD_BufferCharGet(u8 x, u8 y);
 extern s32 SEQ_LCD_PrintChar(char c);
 extern s32 SEQ_LCD_CursorSet(u16 column, u16 line);
 extern s32 SEQ_LCD_Update(u8 force);
