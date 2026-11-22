@@ -15,7 +15,9 @@ typedef struct {
   u8 prob;      // 0..100
   s8 delay;     // -? .. +: verschuiving in % van de stap (0..99)
   u8 on, acc, sld, roll, skip;
-  u8 glide_to;  // noot waar de glide naartoe loopt (volgende getriggerde stap), 0xff = onbekend
+  u8 glide_to;  // (oud) noot waar de glide naartoe loopt, 0xff = onbekend
+  u8 gl_kind;   // 0 geen, 1 = bron van een glide, 2 = stap waar de glide doorheen loopt (lege stap tussen bron en doel)
+  s16 gl_a, gl_b; // toonhoogte*16 van de glide-lijn aan de linker (alleen kind 2) / rechterrand van de cel
   u8 value;     // waarde van de actieve laag (0..127) onderin (alleen NOTE-weergave)
   u8 lval;      // ruwe waarde van de gekozen parameterlaag (0..127)
   char txt[6];  // tekst van die waarde, bv "75%", "Gld.", "3U05" (max 4 tekens + 0)

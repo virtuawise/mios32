@@ -138,13 +138,29 @@ static void collect_steps(void)
     }
   }
 
-  // glide: naar welke noot loopt de glide? (volgende getriggerde stap op deze pagina)
+  // glide: loopt van een stap met Gld. naar de volgende getriggerde stap op de pagina, ook door lege stappen heen
   for(i=0; i<16; ++i) {
     steps[i].glide_to = 0xff;
-    if( steps[i].sld && steps[i].on ) {
-      int j;
+    steps[i].gl_kind = 0;
+  }
+  for(i=0; i<16; ++i) {
+    if( steps[i].sld && steps[i].on && steps[i].note != 0xff ) {
+      int j, m;
       for(j=i+1; j<16; ++j)
-	if( steps[j].on && steps[j].note != 0xff ) { steps[i].glide_to = steps[j].note; break; }
+	if( steps[j].on && steps[j].note != 0xff ) break;
+      if( j < 16 ) {
+	int p0 = steps[i].note * 16, p1 = steps[j].note * 16;
+	int D = (64 - 46) + 64 * (j - i - 1) + 4;           // horizontale afstand van balk-einde tot balk-begin (px)
+	steps[i].gl_kind = 1;
+	steps[i].glide_to = steps[j].note;
+	steps[i].gl_b = p0 + ((p1 - p0) * 15) / D;            // helling bij de rechterrand van de bronstap (x 46 -> 61)
+	for(m=i+1; m<j; ++m) {
+	  int a0 = (64 - 46) + 64 * (m - i - 1);
+	  steps[m].gl_kind = 2;
+	  steps[m].gl_a = p0 + ((p1 - p0) * a0) / D;
+	  steps[m].gl_b = p0 + ((p1 - p0) * (a0 + 63)) / D;
+	}
+      }
     }
   }
 

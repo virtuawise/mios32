@@ -91,15 +91,22 @@ static void cell_note(u8 (*d)[CW], int divider, int num, const og2_step_t *s, in
     }
     rect(d, gx, y-1, 3, 6, 15);                                         // kop van de noot (gate-start)
     if( s->acc ){ hline(d, gx-1, y-3, 5, 15, 0); hline(d, gx-1, y-4, 5, 15, 0); }                      // accentstreepje
-    if( ramp ){                                                        // glide: schuine lijn naar de volgende noot (rechts in de cel)
-      int y2 = (s->glide_to != 0xff) ? ROLL_BOT - ((s->glide_to-lo)*(ROLL_BOT-ROLL_TOP-3))/span : y - 4;
+    if( ramp ){                                                        // glide: schuine lijn naar de volgende noot (loopt desnoods door lege stappen heen)
+      int y2 = (s->gl_kind == 1) ? ROLL_BOT - (((int)s->gl_b - lo*16) * (ROLL_BOT-ROLL_TOP-3)) / (span*16)
+             : (s->glide_to != 0xff) ? ROLL_BOT - ((s->glide_to-lo)*(ROLL_BOT-ROLL_TOP-3))/span : y - 4;
       int x1 = gx + len, x2 = 61;
       for(int x=x1; x<=x2; ++x){
         int yy = y + ((y2 - y) * (x - x1)) / (x2 - x1 > 0 ? x2 - x1 : 1);
         for(int t=0; t<4; ++t) px(d, x, yy+t, 14);
       }
-      rect(d, x2-1, y2-1, 3, 6, 15);                                   // pijlkop-blokje bij de volgende toonhoogte
-    }// glide-staartje
+    }
+  } else if( s->gl_kind == 2 ){                                          // glide loopt door deze (lege) stap
+    int ya = ROLL_BOT - (((int)s->gl_a - lo*16) * (ROLL_BOT-ROLL_TOP-3)) / (span*16);
+    int yb = ROLL_BOT - (((int)s->gl_b - lo*16) * (ROLL_BOT-ROLL_TOP-3)) / (span*16);
+    for(int x=1; x<=62; ++x){
+      int yy = ya + ((yb - ya) * (x - 1)) / 61;
+      for(int t=0; t<4; ++t) px(d, x, yy+t, 14);
+    }
   } else {
     hline(d, x0+22, (ROLL_TOP+ROLL_BOT)/2, 20, 3, 2);                    // lege stap: stippellijn
   }
