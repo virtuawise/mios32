@@ -7,6 +7,7 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
 .abs{position:absolute}
 .btn{position:absolute;width:50px;height:40px;border-radius:8px;background:#2b2e33;border:1px solid #4d5158;box-sizing:border-box;box-shadow:inset 0 -4px 0 #44484e,0 2px 4px #000a;cursor:pointer;touch-action:none}
 .btn.on{background:#34363b;border-color:var(--c,#FFB547);box-shadow:inset 0 -5px 0 var(--c,#FFB547),0 0 16px var(--c,#FFB547)}
+.btn.page{background:#3a2a10;border-color:#FFB547;box-shadow:inset 0 -5px 0 #FFB547,0 0 12px #FFB54788}
 .btn.down{transform:translateY(2px)}.btn.latched{outline:2px solid #ffc400}.btn.na{opacity:.4;cursor:not-allowed}
 .lbl{position:absolute;width:70px;text-align:center;font-size:10px;font-weight:600;letter-spacing:.05em;color:#f0f0f0;white-space:nowrap}
 .side{position:absolute;font-size:9px;color:#aaa}
@@ -147,7 +148,9 @@ async function drawReal(d){   // 4-bit grijs framebuffer uit de firmware: 256x64
 }
 function update(s){
   const row0=s.lcd[0].map(c=>c>=32&&c<127?String.fromCharCode(c):' ').join('');
-  const inEdit=/^G\dT\d .*P[A-P]:/.test(row0);        // stap-/laagpagina herkend aan de kop 'G1T1 ... PA:Note'
+  const inEdit=/^G\dT\d .*P[A-P]:/.test(row0);
+  const mb=(s.menu_btn===undefined)?127:s.menu_btn, ownLayout=(mb===1);   // pages with their own OLED layout: no LED mirroring on the GP buttons (the screens show the selection)
+  for(let i=0;i<16;i++){const b=btnEls['GP'+(i+1)];if(b)b.classList.toggle('page',i===mb);}        // stap-/laagpagina herkend aan de kop 'G1T1 ... PA:Note'
   // stapnoten staan op de tweede LCD-regel: 8 stappen per LCD, 5 tekens per stap
   for(let i=0;i<16;i++){const lcd=i<8?0:1,off=lcd*40+(i%8)*5;
     stepNote[i]=s.lcd[1].slice(off,off+4).map(ch).join('');}
@@ -160,7 +163,7 @@ function update(s){
     else if(!oledReal[d]) drawOled(d);
   }
   for(const[n,[g,r]]of Object.entries(s.leds)){
-    if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!!(g||r));continue;}   // GP-knoppen lopen mee met de sequencer in alle pagina's (de OLED's tonen geen afspeelstap meer)
+    if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!ownLayout&&!!(g||r));continue;}   // GP-knoppen lopen mee met de sequencer in alle pagina's (de OLED's tonen geen afspeelstap meer)
     const b=btnEls[n];if(b)b.classList.toggle('on',!!g);}
   beat.classList.toggle('on',!!(s.leds.BEAT&&s.leds.BEAT[0]));
 }

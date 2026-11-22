@@ -808,3 +808,28 @@ s32 SEQ_MIDI_SYSEX_REMOTE_Server_SendOLEDCell(u8 display, u8 cell, const u8 *dat
   MUTEX_MIDIOUT_GIVE;
   return status;
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Tells the client which menu button (GP1..GP16 = 0..15, 0x7f = none) belongs to the current UI page
+// Format: F0 <hdr> <id> 09 08 <button> F7
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_MIDI_SYSEX_REMOTE_Server_SendMenuButton(u8 button)
+{
+  u8 sysex_buffer[16];
+  u8 *p = &sysex_buffer[0];
+  int i;
+
+  for(i=0; i<sizeof(seq_midi_sysex_header); ++i)
+    *p++ = seq_midi_sysex_header[i];
+  *p++ = seq_midi_sysex_remote_id;
+  *p++ = 0x09;
+  *p++ = 0x08;
+  *p++ = button & 0x7f;
+  *p++ = 0xf7;
+
+  MUTEX_MIDIOUT_TAKE;
+  s32 status = MIOS32_MIDI_SendSysEx(seq_midi_sysex_remote_port, sysex_buffer, (u32)p - (u32)&sysex_buffer[0]);
+  MUTEX_MIDIOUT_GIVE;
+  return status;
+}

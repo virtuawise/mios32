@@ -51,6 +51,7 @@ static u8 dirty[OLED_NUM_CELLS];
 static u32 cur_hash[OLED_NUM_CELLS];
 static u32 ctr = 0, resend_ctr = 0;
 static u8 next_cell = 0;
+static u8 last_menu_button = 0xff;
 static u8 cell_buf[2048];
 static u8 rle_buf[2112];
 
@@ -357,6 +358,38 @@ static int rle_encode(const u8 *in, int n, u8 *out)
   return o;
 }
 
+// menu button (GP1..GP16 = 0..15) that belongs to the current UI page, 0x7f = none
+static u8 menu_button_for_page(void)
+{
+  switch( ui_page ) {
+    case SEQ_UI_PAGE_MIXER:        return 0;
+    case SEQ_UI_PAGE_TRKEVNT:      return 1;
+    case SEQ_UI_PAGE_TRKMODE:      return 2;
+    case SEQ_UI_PAGE_TRKDIR:       return 3;
+    case SEQ_UI_PAGE_TRKDIV:       return 4;
+    case SEQ_UI_PAGE_TRKLEN:       return 5;
+    case SEQ_UI_PAGE_TRKTRAN:      return 6;
+    case SEQ_UI_PAGE_TRKGRV:       return 7;
+    case SEQ_UI_PAGE_TRGASG:       return 8;
+    case SEQ_UI_PAGE_FX:
+    case SEQ_UI_PAGE_FX_ECHO:
+    case SEQ_UI_PAGE_FX_HUMANIZE:
+    case SEQ_UI_PAGE_FX_ROBOTIZE:
+    case SEQ_UI_PAGE_FX_LIMIT:
+    case SEQ_UI_PAGE_FX_LFO:
+    case SEQ_UI_PAGE_FX_DUPL:
+    case SEQ_UI_PAGE_FX_LOOP:
+    case SEQ_UI_PAGE_FX_SCALE:     return 9;
+    case SEQ_UI_PAGE_MANUAL:       return 10;
+    case SEQ_UI_PAGE_TRKMORPH:     return 11;
+    case SEQ_UI_PAGE_BPM:          return 12;
+    case SEQ_UI_PAGE_SAVE:         return 13;
+    case SEQ_UI_PAGE_MIDI:         return 14;
+    case SEQ_UI_PAGE_SYSEX:        return 15;
+    default:                       return 0x7f;
+  }
+}
+
 s32 SEQ_OLED_Handler(void)
 {
   // alleen in remote-servermodus (virtueel paneel); echte OLED-hardware volgt later
@@ -415,6 +448,15 @@ s32 SEQ_OLED_Handler(void)
       h = fnv(h, (const u8 *)cur_layer_name, 4);
       cur_hash[c] = h;
       dirty[c] = !sent_valid[c] || sent_hash[c] != h;
+    }
+  }
+
+  // tell the client which menu button belongs to the current page (on change and with every full resend)
+  if( (ctr % OLED_PERIOD_MS) == 7 ) {
+    u8 mb = menu_button_for_page();
+    if( mb != last_menu_button || resend_ctr >= OLED_RESEND_MS - 100 ) {
+      if( SEQ_MIDI_SYSEX_REMOTE_Server_SendMenuButton(mb) >= 0 )
+	last_menu_button = mb;
     }
   }
 
