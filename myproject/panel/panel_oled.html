@@ -1,4 +1,4 @@
-<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>MIDIbox SEQ – 4x OLED paneel (ontwerp)</title>
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>MIDIbox SEQ – 4x OLED panel (design)</title>
 <style>
 :root{--amber:#FFB547;--bg:#16181b;--btn:#1b1d20;--btn2:#202226}
 body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;align-items:center}
@@ -26,8 +26,8 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
 #st.on{color:#7cff8a}#st.off{color:#f66}
 .foot{position:absolute;left:30px;bottom:12px;font-size:12px;letter-spacing:.1em;color:#ddd;font-weight:700}.foot b{color:var(--amber)}
 </style></head><body>
-<div class="top">Ontwerp 4x OLED (256x64) · SEQ: <b id="st" class="off">offline</b> · <a href="#" id="sync">scherm verversen</a> · <a href="/">oud paneel</a>
- · klik = knop, rechtsklik = vastzetten, encoder: scrollen/slepen</div>
+<div class="top">4x OLED (256x64) design · SEQ: <b id="st" class="off">offline</b> · <a href="#" id="sync">refresh screen</a> · <a href="/">old panel</a>
+ · click = button, right-click = latch, encoder: scroll/drag</div>
 <div id="wrap"></div>
 <script>
 const W=document.getElementById('wrap');
@@ -171,5 +171,5 @@ document.getElementById('sync').onclick=e=>{e.preventDefault();api('/api/sync');
 for(let d=0;d<4;d++)drawOled(d);
 const es=new EventSource('/events');
 es.onmessage=ev=>{const s=JSON.parse(ev.data);update(s);const st=document.getElementById('st');st.textContent=s.online?'online':'offline';st.className=s.online?'on':'off';};
-es.onerror=()=>{const st=document.getElementById('st');st.textContent='server weg';st.className='off';};
+es.onerror=()=>{const st=document.getElementById('st');st.textContent='server gone';st.className='off';};
 </script></body></html>

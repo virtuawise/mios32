@@ -58,6 +58,7 @@ typedef struct {
   char ltype[6];        // type van de gekozen laag (of het nog niet bevestigde nieuwe type)
   u8 ltype_pending;     // 1 = nieuw type nog niet bevestigd (knop indrukken)
   char param[6];        // CC-nummer ("#074") of "---"
+  u8 init_pct;          // 0-100: voortgang van het vasthouden van INIT (2 s)
   u8 init_needed;       // 1 = configuratie gewijzigd: INIT nodig
   u8 sel;               // laatst aangeraakte kolom 0-15 (nieuwe indeling)
 } og2_event_t;

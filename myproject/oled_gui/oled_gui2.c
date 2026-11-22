@@ -511,31 +511,31 @@ void OG2_RenderEventCell(u8 *out, int cell, const og2_event_t *e)
     evbox(d, 3, "STEPS", b, e->size_n > 1 ? (e->size_idx * 100) / (e->size_n - 1) : 0, SELK(3), 0);
   } break;
   case 1: {
-    eheader(d, 1, "UITGANG");
+    eheader(d, 1, "OUTPUT");
     evbox(d, 4, "PORT", e->port, -1, SELK(4), 0);
     num2str(b, e->chn + 1);
-    evbox(d, 5, "KANAAL", b, (e->chn * 100) / 15, SELK(5), 0);
+    evbox(d, 5, "CHANNEL", b, (e->chn * 100) / 15, SELK(5), 0);
     ebox(d, 6, 1, SELK(6)); elabel(d, 6, "INSTR.", SELK(6));
-    if( e->instruments > 1 ){ num2str(b, e->instruments); evalue(d, 6, 1, b, 15); } else { ecbtext(d, ebx(6)+ebw(1)/2, 29, "--", 2, 5); ecsmall(d, ebx(6)+ebw(1)/2, 52, "alleen drum", 4); }
-    ebox(d, 7, 1, 0); elabel(d, 7, "LAGEN", 0);
+    if( e->instruments > 1 ){ num2str(b, e->instruments); evalue(d, 6, 1, b, 15); } else { ecbtext(d, ebx(6)+ebw(1)/2, 29, "--", 2, 5); ecsmall(d, ebx(6)+ebw(1)/2, 52, "drum only", 4); }
+    ebox(d, 7, 1, 0); elabel(d, 7, "LAYERS", 0);
     text(d, GLCD_FONT_SMALL, ebx(7)+6, 27, "PAR", 1, 8); num2str(b, e->par_layers); text(d, GLCD_FONT_NORMAL, ebx(7)+ebw(1)-6-tw(GLCD_FONT_NORMAL, b, 2), 24, b, 2, 15);
     text(d, GLCD_FONT_SMALL, ebx(7)+6, 45, "TRG", 1, 8); num2str(b, e->trg_layers); text(d, GLCD_FONT_NORMAL, ebx(7)+ebw(1)-6-tw(GLCD_FONT_NORMAL, b, 2), 42, b, 2, 15);
   } break;
   case 2: {
-    eheader(d, 2, "PARAMETERLAGEN");
+    eheader(d, 2, "PARAMETER LAYERS");
     static const char *ly[16] = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P"};
-    epicker(d, 8, 2, "LAAG", ly, 16, 8, e->layer_sel, SELK(8) || SELK(9), e->par_layers);
+    epicker(d, 8, 2, "LAYER", ly, 16, 8, e->layer_sel, SELK(8) || SELK(9), e->par_layers);
     evbox(d, 10, "TYPE", e->ltype, -1, SELK(10) || e->ltype_pending, 0);
     ebox(d, 11, 1, SELK(11)); elabel(d, 11, "PARAM", SELK(11)); ecbtext(d, ebx(11)+ebw(1)/2, 33, e->param, 1, e->param[0] == '#' ? 15 : 5);
   } break;
   default: {
-    eheader(d, 3, "ACTIES");
+    eheader(d, 3, "ACTIONS");
     ebox(d, 12, 2, SELK(12) || SELK(13)); elabel(d, 12, "PRESETS", SELK(12) || SELK(13));
-    { int cx = ebx(12)+ebw(2)/2, w = tw(GLCD_FONT_NORMAL, "KIES", 1) + 14; frame_box(d, cx-w/2, 32, w, 15, 9); ecbtext(d, cx, 36, "KIES", 1, 15); }
+    { int cx = ebx(12)+ebw(2)/2, w = tw(GLCD_FONT_NORMAL, "SELECT", 1) + 14; frame_box(d, cx-w/2, 32, w, 15, 9); ecbtext(d, cx, 36, "SELECT", 1, 15); }
     int hot = e->init_needed || SELK(14) || SELK(15);
     ebox(d, 14, 2, hot); elabel(d, 14, "INIT", hot);
-    { int cx = ebx(14)+ebw(2)/2; ecbtext(d, cx, 29, e->init_needed ? "HOUD 2 SEC!" : "HOUD 2 SEC", 1, e->init_needed ? 15 : 8); }
-    { int x = ebx(14)+5, w = ebw(2)-10; for(int i=0; i<w; ++i) px(d, x+i, 52, 3); }
+    { int cx = ebx(14)+ebw(2)/2; ecbtext(d, cx, 29, e->init_needed ? "HOLD 2 SEC!" : "HOLD 2 SEC", 1, e->init_needed ? 15 : 8); }
+    { int x = ebx(14)+5, w = ebw(2)-10; for(int i=0; i<w; ++i) px(d, x+i, 52, 3); if( e->init_pct ) rect(d, x, 50, (w * e->init_pct) / 100, 5, 15); }
   } break;
   }
   ox_shift = 0;

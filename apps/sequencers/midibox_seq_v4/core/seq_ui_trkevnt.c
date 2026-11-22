@@ -1424,6 +1424,8 @@ static s32 MIDI_IN_Handler(mios32_midi_port_t port, mios32_midi_package_t p)
 //   8,9 LAAG->GP9 | 10 LAAGTYPE->GP10 | 11 PARAM->GP11 | 12,13 PRESETS->GP15 | 14,15 INIT->GP16
 /////////////////////////////////////////////////////////////////////////////
 static u8 evt_sel = 0;
+static u8 evt_init_held = 0;      // INIT-knop wordt vastgehouden (voor de voortgangsbalk op de OLED's)
+static u32 evt_init_t0 = 0;
 static const s8 evt_map[16] = { 0, 1, 1, 2, 5, 6, 7, -1, 8, 8, 9, 10, 14, 14, 15, 15 };
 
 static u8 EvtMapActive(void)
@@ -1493,6 +1495,10 @@ static s32 Button_HandlerMap(seq_ui_button_t button, s32 depressed)
     return Button_Handler(button, depressed);
   int k = (int)button;
   if( !depressed ) evt_sel = k;
+  if( k == 14 || k == 15 ) {
+    if( !depressed ) { evt_init_held = 1; evt_init_t0 = MIOS32_TIMESTAMP_Get(); }
+    else evt_init_held = 0;
+  }
   switch( k ) {
     case 1: case 2: case 3: case 7: return 0;
   }
@@ -1565,6 +1571,10 @@ s32 SEQ_UI_TRKEVNT_OledGet(og2_event_t *e)
     } else {
       strcpy(e->param, "---");
     }
+  }
+  if( evt_init_held ) {
+    u32 dt = MIOS32_TIMESTAMP_Get() - evt_init_t0;
+    e->init_pct = (dt >= 2000) ? 100 : (u8)(dt / 20);
   }
   e->init_needed = (selected_layer_config != GetLayerConfig(track)) ? 1 : 0;
   e->sel = evt_sel;
