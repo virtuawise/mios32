@@ -457,29 +457,18 @@ void OG2_RenderCellBoxed(u8 *out, int num, const og2_step_t *s, int lo, int hi, 
   if( kind == OG2_K_NOTE ){
     if( on && s->note != 0xff ){
       if( s->arp ) { int k; for(k=0; k<5 && s->txt[k]; ++k) b[k] = s->txt[k]; b[k] = 0; } else note_name(s->note, b);
-      int w = tw(GLCD_FONT_NORMAL, b, 2), cx = bx + (bw - 11) / 2;        // gecentreerd links van het velocity-balkje
+      int w = tw(GLCD_FONT_NORMAL, b, 2), cx = bx + bw / 2;
       text(d, GLCD_FONT_NORMAL, cx - w/2 - 1, by+14, b, 2, 15); text(d, GLCD_FONT_NORMAL, cx - w/2, by+14, b, 2, 15);
-      // lengte: horizontaal balkje onderin; glide = balk loopt door tot de rand van het vak
-      int len = 2 + (s->len > 100 ? 100 : s->len) * 44 / 100;
-      for(int x=0; x<46; ++x) px(d, bx+6+x, by+bh-6, 3);                       // spoor
-      int th = (og2_vel_style == 4) ? 2 + (s->vel * 6) / 127 : 3;                 // stijl 4: dikte van het lengte-balkje = velocity
-      rect(d, bx+6, by+bh-4-th, len, th, 13);
-      if( s->sld ) rect(d, bx+6+len, by+bh-4-th, 46-len+3, th, 15);
-      // velocity: verschillende stijlen (voorbeeld)
-      int vh = (s->vel * 22) / 127;
-      if( og2_vel_style == 0 ){
-        for(int y=0; y<24; ++y) px(d, bx+bw-8, by+bh-10-y, 3);
-        rect(d, bx+bw-9, by+bh-10-vh, 3, vh + 1, 14);
-      } else if( og2_vel_style == 1 ){            // segmenten (zoals een LED-meter) linksboven in het vak
-        int seg = (s->vel * 6 + 126) / 127;
-        for(int i=0; i<6; ++i) rect(d, bx+bw-9, by+bh-12-i*4, 5, 3, i < seg ? (i > 4 ? 15 : 13) : 3);
-      } else if( og2_vel_style == 3 ){            // boog van 9 puntjes rechtsonder
-        static const s8 AX[9] = {0,1,3,5,7,8,9,9,9}, AY[9] = {-9,-6,-4,-2,-1,0,0,0,0};
-        int lit = (s->vel * 9 + 126) / 127;
-        for(int i=0; i<9; ++i){ int x = bx+bw-14 + (i<5 ? i*2 : 8), y = by+bh-9 - (i<5 ? 8-i*2 + (i==0?0:0) : (8-i)*2+0); (void)AX; (void)AY;
-          rect(d, bx+bw-6, by+bh-10-i*2-1, 2, 1, 0); (void)x; (void)y; }
-        for(int i=0; i<9; ++i){ int ang = i; int px_ = bx+bw-8 - (int)(7 - (i*i*7)/64); int py_ = by+bh-9 - i*2; rect(d, px_, py_, 2, 2, i < lit ? 15 : 3); }
-      }
+      // onderin het vak: links lengte (horizontaal balkje; glide = loopt door), rechts velocity als blokje met getal (0-127)
+      int len = 2 + (s->len > 100 ? 100 : s->len) * 26 / 100;
+      for(int x=0; x<29; ++x) px(d, bx+5+x, by+bh-8, 3);                       // spoor
+      rect(d, bx+5, by+bh-9, len, 3, 13);
+      if( s->sld ) rect(d, bx+5+len, by+bh-9, 29-len, 3, 15);
+      char vb[4]; int v = s->vel;
+      vb[0] = v >= 100 ? '0'+v/100 : ' '; vb[1] = v >= 10 ? '0'+(v/10)%10 : ' '; vb[2] = '0'+v%10; vb[3] = 0;
+      int vx = bx + bw - 26, vy = by + bh - 14;
+      rect(d, vx, vy, 22, 11, 11);                                              // blokje
+      text(d, GLCD_FONT_NORMAL, vx+2, vy+2, vb, 1, 0);                          // getal, donker op het blokje
     } else {
       hline(d, bx+16, by+bh/2+2, 24, 3, 2);
     }
