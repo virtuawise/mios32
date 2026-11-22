@@ -4,6 +4,7 @@ import sys, zlib, struct
 src, dst = sys.argv[1], sys.argv[2]; sc = int(sys.argv[3]) if len(sys.argv) > 3 else 2
 data = open(src, 'rb').read()
 parts = data.split(b'\n', 3); w, h = map(int, parts[1].split()); px = parts[3]
+maxv = int(parts[2]) if False else 255
 rows = []
 for y in range(h):
     r = bytearray()
