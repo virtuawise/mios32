@@ -68,6 +68,7 @@ u8 seq_midi_sysex_remote_force_led_update;
 #define SYSEX_REMOTE_CMD_CHARSET   0x03
 #define SYSEX_REMOTE_CMD_LED       0x04
 #define SYSEX_REMOTE_CMD_OLED      0x05   // eigen uitbreiding: framebuffer van 1 OLED (256x64, 1 bit) naar de client
+#define SYSEX_REMOTE_CMD_OLED_CELL 0x06   // eigen uitbreiding: 1 stap-kolom (64x64 px = 512 bytes) van 1 OLED
 
 #define SYSEX_REMOTE_CMD_ALLOCATED  0x7c
 #define SYSEX_REMOTE_CMD_INCOMPLETE 0x7d
@@ -785,6 +786,47 @@ s32 SEQ_MIDI_SYSEX_REMOTE_Server_SendOLED(u8 display, const u8 *data, u16 len)
   *p++ = 0x09;
   *p++ = SYSEX_REMOTE_CMD_OLED;
   *p++ = display;
+
+  u16 pos = 0;
+  while( pos < len ) {
+    u8 n = (len - pos) > 7 ? 7 : (len - pos);
+    u8 msb = 0;
+    u8 *msb_ptr = p++;
+    for(i=0; i<n; ++i) {
+      u8 b = data[pos+i];
+      if( b & 0x80 ) msb |= (1 << i);
+      *p++ = b & 0x7f;
+    }
+    *msb_ptr = msb;
+    pos += n;
+  }
+  *p++ = 0xf7;
+
+  MUTEX_MIDIOUT_TAKE;
+  s32 status = MIOS32_MIDI_SendSysEx(seq_midi_sysex_remote_port, sysex_buffer, (u32)p - (u32)&sysex_buffer[0]);
+  MUTEX_MIDIOUT_GIVE;
+  return status;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Sends one 64x64 pixel cell (one step column, 512 bytes: 64 rows of 8 bytes) of a OLED to the client
+// Format: F0 <hdr> <id> 09 06 <display 0..3> <cell 0..3> <7-bit packed data> F7   (packing as for SendOLED)
+// 512 bytes instead of 2048 bytes: USB MIDI is slow (~50 kB/s), so only changed cells are sent
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_MIDI_SYSEX_REMOTE_Server_SendOLEDCell(u8 display, u8 cell, const u8 *data, u16 len)
+{
+  static u8 sysex_buffer[16 + (512/7 + 2)*8];
+  u8 *p = &sysex_buffer[0];
+  int i;
+
+  for(i=0; i<sizeof(seq_midi_sysex_header); ++i)
+    *p++ = seq_midi_sysex_header[i];
+  *p++ = seq_midi_sysex_remote_id;
+  *p++ = 0x09;
+  *p++ = SYSEX_REMOTE_CMD_OLED_CELL;
+  *p++ = display;
+  *p++ = cell;
 
   u16 pos = 0;
   while( pos < len ) {

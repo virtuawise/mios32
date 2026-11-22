@@ -18,21 +18,32 @@
 
 #include "oled_gui.h"
 
-#define OLED_PERIOD_MS      80     // maximaal ~12 updates per seconde
-#define OLED_RESEND_MS    2000     // alles opnieuw sturen (client kan later binnenkomen)
+#define OLED_PERIOD_MS      20     // beeld opbouwen/vergelijken: max 50x per seconde
+#define OLED_RESEND_MS    3000     // alles opnieuw sturen (client kan later binnenkomen)
+#define OLED_SEND_TICK_MS    4     // hooguit 1 cel per 4 ms versturen (USB MIDI is langzaam)
+#define OLED_NUM_CELLS      (OLEDGUI_NUM_DISPLAYS*4)
 
 static oledgui_frame_t frame;
 static u8 sent_frame[OLEDGUI_NUM_DISPLAYS][OLEDGUI_DISPLAY_BYTES];
 static u32 ctr = 0;
 static u32 resend_ctr = 0;
-static u8 next_display = 0;
-static u8 dirty[OLEDGUI_NUM_DISPLAYS];
+static u8 next_cell = 0;
+static u8 dirty[OLED_NUM_CELLS];
+static u8 cell_buf[64*8];
+
+// cel c: scherm c/4, kolom c%4; 64 rijen van 8 bytes
+static void cell_extract(const u8 *fb, u8 col, u8 *out)
+{
+  int y;
+  for(y=0; y<OLEDGUI_H; ++y)
+    memcpy(&out[y*8], &fb[y*OLEDGUI_ROW_BYTES + col*8], 8);
+}
 
 s32 SEQ_OLED_Init(u32 mode)
 {
-  int d;
-  for(d=0; d<OLEDGUI_NUM_DISPLAYS; ++d)
-    dirty[d] = 1;
+  int c;
+  for(c=0; c<OLED_NUM_CELLS; ++c)
+    dirty[c] = 1;
   return 0;
 }
 
@@ -87,24 +98,34 @@ s32 SEQ_OLED_Handler(void)
 
     if( resend_ctr >= OLED_RESEND_MS ) {
       resend_ctr = 0;
-      for(d=0; d<OLEDGUI_NUM_DISPLAYS; ++d)
+      for(d=0; d<OLED_NUM_CELLS; ++d)
 	dirty[d] = 1;
     }
-    for(d=0; d<OLEDGUI_NUM_DISPLAYS; ++d)
-      if( memcmp(frame.fb[d], sent_frame[d], OLEDGUI_DISPLAY_BYTES) != 0 )
-	dirty[d] = 1;
+    for(d=0; d<OLEDGUI_NUM_DISPLAYS; ++d) {
+      int col, y;
+      for(col=0; col<4; ++col)
+	for(y=0; y<OLEDGUI_H; ++y)
+	  if( memcmp(&frame.fb[d][y*OLEDGUI_ROW_BYTES + col*8], &sent_frame[d][y*OLEDGUI_ROW_BYTES + col*8], 8) != 0 ) {
+	    dirty[d*4 + col] = 1;
+	    break;
+	  }
+    }
   }
 
-  // verstuur om de 8 ms hooguit 1 vervuild scherm (houdt de USB-buffer leeg)
-  if( (ctr % 8) == 3 ) {
+  // verstuur hooguit 1 gewijzigde cel per OLED_SEND_TICK_MS
+  if( (ctr % OLED_SEND_TICK_MS) == 1 ) {
     int tries;
-    for(tries=0; tries<OLEDGUI_NUM_DISPLAYS; ++tries) {
-      u8 d = next_display;
-      next_display = (next_display + 1) % OLEDGUI_NUM_DISPLAYS;
-      if( dirty[d] ) {
-	if( SEQ_MIDI_SYSEX_REMOTE_Server_SendOLED(d, frame.fb[d], OLEDGUI_DISPLAY_BYTES) >= 0 ) {
-	  memcpy(sent_frame[d], frame.fb[d], OLEDGUI_DISPLAY_BYTES);
-	  dirty[d] = 0;
+    for(tries=0; tries<OLED_NUM_CELLS; ++tries) {
+      u8 c = next_cell;
+      next_cell = (next_cell + 1) % OLED_NUM_CELLS;
+      if( dirty[c] ) {
+	u8 d = c / 4, col = c % 4;
+	cell_extract(frame.fb[d], col, cell_buf);
+	if( SEQ_MIDI_SYSEX_REMOTE_Server_SendOLEDCell(d, col, cell_buf, sizeof(cell_buf)) >= 0 ) {
+	  int y;
+	  for(y=0; y<OLEDGUI_H; ++y)
+	    memcpy(&sent_frame[d][y*OLEDGUI_ROW_BYTES + col*8], &frame.fb[d][y*OLEDGUI_ROW_BYTES + col*8], 8);
+	  dirty[c] = 0;
 	}
 	break;
       }
