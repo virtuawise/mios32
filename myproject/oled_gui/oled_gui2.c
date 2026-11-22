@@ -491,7 +491,7 @@ static void evbox(u8 (*d)[CW], int k, const char *l, const char *v, int frac, in
 static void epicker(u8 (*d)[CW], int k, int n, const char *l, const char **it, int cnt, int cols, int sel, int sel_box, int active_cnt)
 {
   ebox(d, k, n, sel_box); elabel(d, k, l, sel_box);
-  int rows = (cnt + cols - 1) / cols, ix = ebx(k)+5, iw = ebw(n)-10, iy = EBY+17, ih = EBH-22, gap = 2;
+  int rows = (cnt + cols - 1) / cols, ix = ebx(k)+5, iw = ebw(n)-10, iy = EBY+16, ih = EBH-24, gap = 2;     // >= 6 px free below the chips
   int cw = (iw - (cols-1)*gap) / cols, ch = (ih - (rows-1)*gap) / rows;
   for(int i=0; i<cnt; ++i){
     int cx = ix + (i % cols)*(cw+gap), cy = iy + (i / cols)*(ch+gap), s = (i == sel), act = i < active_cnt;
