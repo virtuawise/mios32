@@ -212,9 +212,35 @@ es.onerror=()=>{const st=document.getElementById('st');st.textContent='server go
 </script><script>
 if(new URLSearchParams(location.search).get('caps')==='round')document.body.classList.add('roundcaps');
 const capBtn=document.createElement('button');
-capBtn.style.cssText='position:fixed;right:12px;top:8px;z-index:9;font:600 11px sans-serif;letter-spacing:.05em;padding:5px 10px;border-radius:5px;border:1px solid #555;background:#26282c;color:#eee;cursor:pointer';
+capBtn.style.cssText='font:600 11px sans-serif;letter-spacing:.05em;padding:5px 10px;border-radius:5px;border:1px solid #555;background:#26282c;color:#eee;cursor:pointer';
 const capLbl=()=>{capBtn.textContent='KLEINE KAPJES: '+(document.body.classList.contains('roundcaps')?'ROND (1U16)':'VIERKANT (1T16)');};
 capBtn.onclick=()=>{document.body.classList.toggle('roundcaps');capLbl();};
-document.body.appendChild(capBtn);capLbl();
+const ctl=document.createElement('div');ctl.style.cssText='margin:0 18px 18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center';
+document.body.appendChild(ctl);ctl.appendChild(capBtn);capLbl();
+/* LED colours to try out. Small keys: one-colour 2x3x4 mm LED in the 3FTH9 (the colour is chosen by buying that LED);
+   big keys: SK6812 RGB (any colour; the firmware palette in seq_rgbled.c must follow what is chosen here). Kept in localStorage. */
+const LEDOPT={'warm wit':'#FFF0DA','koel wit':'#E8F0FF','geel':'#FFD84A','amber':'#FFB547','oranje':'#FF8A3D','rood':'#FF5A4E','groen':'#7EE07E','blauw':'#5AA9FF'};
+const LEDGRP={sel:['STEP_VIEW','TRACK_SEL','PAR_SEL','TRG_SEL','INS_SEL','MUTE','PHRASE','BOOKMARK'],amb:['SOLO','METRONOME','LOOP','LIVE'],rec:['RECORD']};
+const ledCfg=Object.assign({sel:'warm wit',amb:'amber',rec:'rood',rgbA:PAL.amber,rgbW:PAL.white},JSON.parse(localStorage.getItem('ledCfg')||'{}'));
+function applyLed(){
+  for(const g in LEDGRP)LEDGRP[g].forEach(n=>{const b=btnEls[n];if(b)b.style.setProperty('--c',LEDOPT[ledCfg[g]]);});
+  PAL.amber=ledCfg.rgbA;PAL.white=ledCfg.rgbW;
+  for(const n in btnEls){if(/^(GP\d|COPY|PASTE|CLEAR|MOVE|SCROLL|FAST|ALL|SELECT|DOWN|UP|EXIT|MENU|EDIT|PATTERN|SONG|UTILITY)/.test(n)&&!/^TRK/.test(n))btnEls[n].style.setProperty('--c',PAL.amber);
+    if(/^TRK/.test(n))btnEls[n].style.setProperty('--c',PAL.amber);
+    if(['REW','FWD','STOP','PAUSE'].includes(n))btnEls[n].style.setProperty('--c',PAL.white);}
+  localStorage.setItem('ledCfg',JSON.stringify(ledCfg));
+}
+const ledBox=document.createElement('div');
+ledBox.style.cssText='font:600 11px sans-serif;color:#ddd;background:#1d1f22;border:1px solid #444;border-radius:5px;padding:5px 8px;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center';
+const mkSel=(lbl,key)=>{const l=document.createElement('span');l.textContent=lbl;const sel=document.createElement('select');
+  for(const k in LEDOPT){const o=document.createElement('option');o.value=k;o.textContent=k;sel.appendChild(o);}sel.value=ledCfg[key];
+  sel.onchange=()=>{ledCfg[key]=sel.value;applyLed();};ledBox.append(l,sel);};
+const mkCol=(lbl,key)=>{const l=document.createElement('span');l.textContent=lbl;const c=document.createElement('input');c.type='color';c.value=ledCfg[key];
+  c.oninput=()=>{ledCfg[key]=c.value;applyLed();};ledBox.append(l,c);};
+mkSel('LED select mode','sel');mkSel('LED Solo/Metr./Loop/Live','amb');mkSel('LED Rec.','rec');
+mkCol('RGB actief (GP, select, functie)','rgbA');mkCol('RGB huidige track / transport','rgbW');
+const rst=document.createElement('button');rst.textContent='standaard';rst.style.cssText='font:600 10px sans-serif;cursor:pointer';
+rst.onclick=()=>{localStorage.removeItem('ledCfg');location.reload();};ledBox.append(rst);
+ctl.appendChild(ledBox);applyLed();
 addEventListener('keydown',e=>{if((e.key==='c'||e.key==='C')&&!e.ctrlKey&&!e.metaKey){document.body.classList.toggle('roundcaps');capLbl();}});
 </script></body></html>
