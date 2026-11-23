@@ -2852,6 +2852,41 @@ s32 SEQ_UI_REMOTE_MIDI_Receive(mios32_midi_port_t port, mios32_midi_package_t mi
 /////////////////////////////////////////////////////////////////////////////
 s32 SEQ_UI_REMOTE_MIDI_Keyboard(u8 key, u8 depressed)
 {
+  // 4 x OLED / virtual midiphy panel (myproject): extra buttons on notes below C-2 and above C-7.
+  // A release is only forwarded when the button was pressed: on remote deactivation all 128 notes get a release,
+  // and for some buttons (Copy, Move, Scroll, Phrase, ...) a release alone would trigger an action.
+  {
+    static u8 extra_pressed[16];
+    u8 extra = (key <= 0x20) || (key >= 0x61 && key <= 0x6e);
+    if( extra ) {
+      u8 bit = 1 << (key & 7);
+      if( depressed ) {
+	if( !(extra_pressed[key >> 3] & bit) ) return 0;
+	extra_pressed[key >> 3] &= ~bit;
+      } else
+	extra_pressed[key >> 3] |= bit;
+      if( key <= 0x0f ) return SEQ_UI_Button_DirectTrack(depressed, key);          // 16 track buttons
+      if( key <= 0x20 ) return SEQ_UI_Button_Enc(depressed, key - 0x10);         // encoder push: 0x10 datawheel, 0x11-0x20 GP1-16
+      switch( key ) {
+	case 0x61: return SEQ_UI_Button_Copy(depressed);
+	case 0x62: return SEQ_UI_Button_Paste(depressed);
+	case 0x63: return SEQ_UI_Button_Clear(depressed);
+	case 0x64: return SEQ_UI_Button_Move(depressed);
+	case 0x65: return SEQ_UI_Button_Scroll(depressed);
+	case 0x66: return SEQ_UI_Button_Undo(depressed);
+	case 0x67: return SEQ_UI_Button_Live(depressed);
+	case 0x68: return SEQ_UI_Button_Record(depressed);
+	case 0x69: return SEQ_UI_Button_Phrase(depressed);
+	case 0x6a: return SEQ_UI_Button_Loop(depressed);
+	case 0x6b: return SEQ_UI_Button_Bookmark(depressed);
+	case 0x6c: return SEQ_UI_Button_TrgLayerSel(depressed);
+	case 0x6d: return SEQ_UI_Button_InsSel(depressed);
+	case 0x6e: return SEQ_UI_Button_Follow(depressed);
+      }
+      return 0;
+    }
+  }
+
 #if 0
   MIOS32_MIDI_SendDebugMessage("SEQ_MIDI_SYSEX_REMOTE_MIDI_Keyboard(%d, %d)\n", key, depressed);
 #endif
