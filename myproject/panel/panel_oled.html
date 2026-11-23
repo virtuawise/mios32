@@ -2,9 +2,11 @@
 <style>
 :root{--amber:#FFB547;--bg:#16181b;--btn:#1b1d20;--btn2:#202226}
 body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;align-items:center}
-#wrap{position:relative;width:1500px;height:470px;margin:18px;background:linear-gradient(#1f2125,#17191c);border-radius:12px;
+#wrap{position:relative;width:1340px;height:420px;margin:18px;background:linear-gradient(#1f2125,#17191c);border-radius:12px;
       box-shadow:0 24px 60px #000a,0 0 0 1px #000;transform-origin:top center}
 .abs{position:absolute}
+.btn.round{border-radius:50%}
+.grp2{position:absolute;font-size:9px;color:#9a9a9a;letter-spacing:.06em;text-align:center}
 .btn{position:absolute;width:50px;height:40px;border-radius:8px;background:#2b2e33;border:1px solid #4d5158;box-sizing:border-box;box-shadow:inset 0 -4px 0 #44484e,0 2px 4px #000a;cursor:pointer;touch-action:none}
 .btn.on{background:#34363b;border-color:var(--c,#FFB547);box-shadow:inset 0 -5px 0 var(--c,#FFB547),0 0 16px var(--c,#FFB547)}
 .btn.page{background:#3a2a10;border-color:#FFB547;box-shadow:inset 0 -5px 0 #FFB547,0 0 12px #FFB54788}
@@ -40,7 +42,7 @@ const latched=new Set(), btnEls={};
 /* knop: name (API), x,y = linkerbovenhoek, label, kleur, w,h */
 function button(name,x,y,label,color,o={}){
   const w=o.w||50,h=o.h||40;
-  const b=el('btn'+(NA.has(name)?' na':''),`left:${x}px;top:${y}px;width:${w}px;height:${h}px;--c:${color||'#FFB547'}`);
+  const b=el('btn'+(NA.has(name)?' na':'')+(o.round?' round':''),`left:${x}px;top:${y}px;width:${w}px;height:${h}px;--c:${color||'#FFB547'}`);
   b.title=name;btnEls[name]=b;
   if(label!=null)el('lbl',`left:${x+w/2-35}px;top:${y+h+4}px`,label);
   if(o.side)el('side',`left:${x-12}px;top:${y+h/2-6}px`,o.side);
@@ -72,9 +74,22 @@ function encoder(name,x,y,size,cls,o={}){
   e.addEventListener('pointerup',()=>{dragY=null;if(push){e.classList.remove('pushed');api('/api/up?b='+push);}});
   return e;
 }
-/* ---------- midiphy-style layout: OLEDs, push encoders, GP buttons, 16 track buttons, function rows, datawheel block ---------- */
-el('foot','','').innerHTML='MIDIBOX <b>SEQ</b> V4+ · 4x OLED';
-const OX=[40,330,620,910],OY=34;
+/* ---------- midiphy SEQ v4+ layout (left-handed, as on the photo), with 4 OLEDs instead of 2 LCDs ---------- */
+el('foot','left:auto;right:30px','').innerHTML='MIDIBOX <b>SEQ</b> V4+ · 4x OLED';
+/* left block: beat LED (instead of the LED matrix), datawheel with the 8 select-mode buttons, solo row, transport */
+const beat=el('beat','');beat.style.left='128px';beat.style.top='34px';el('lbl','left:102px;top:56px','BEAT');
+const dw=encoder('DATAWHEEL',88,122,100,'dw',{push:'PUSH_DW'});
+const RB={w:30,h:30,round:true};
+el('grp2','left:103px;top:76px;width:70px','┌ LAYER ┐');
+button('PAR_SEL',100,90,'PARAM.','#4FE3F0',RB);button('TRG_SEL',148,90,'TRIGGER','#4FE3F0',RB);
+button('TRACK_SEL',46,118,'TRACK','#4FE3F0',RB);button('INS_SEL',202,118,'INSTR.','#4FE3F0',RB);
+button('STEP_VIEW',30,168,'STEP','#4FE3F0',RB);button('MUTE',218,168,'MUTE','#4FE3F0',RB);
+button('BOOKMARK',46,218,'BOOKM.','#4FE3F0',RB);button('PHRASE',202,218,'PHRASE','#4FE3F0',RB);
+el('grp2','left:93px;top:262px;width:90px','└ SELECT MODE ┘');
+[['SOLO','SOLO'],['METRONOME','METR.'],['LOOP','LOOP'],['RECORD','REC.'],['LIVE','LIVE']].forEach(([n,l],k)=>button(n,30+k*48,284,l,n==='RECORD'?'#ff5a5a':'#FFB547',RB));
+[['REW','◀◀'],['FWD','▶▶'],['STOP','■'],['PLAY','▶'],['PAUSE','❚❚']].forEach(([n,l],k)=>button(n,30+k*48,340,l,n==='PLAY'?'#7CFF8A':'#ffffff',RB));
+/* right part: 4 OLEDs, 16 push encoders, 16 GP buttons, 16 select buttons, 16 round function buttons */
+const OX=[290,550,810,1070],OY=30;
 const CX=[];for(let d=0;d<4;d++)for(let k=0;k<4;k++)CX.push(OX[d]+31+k*62);   // centre of each GP column
 const GPL=['MIXER','EVENT','MODE','DIRECTION','DIVIDER','LENGTH','TRANSPOSE','GROOVE','TRIGGER','FX','MANUAL','MORPH','BPM','SAVE','MIDI','SYS EX'];
 const canv=[], OS=4;   // OLED canvas oversampling
@@ -85,39 +100,21 @@ for(let d=0;d<4;d++){
 const trkEls=[];
 for(let i=0;i<16;i++){
   const cx=CX[i];
-  encoder('GP'+(i+1),cx-17,108,0,null,{push:'PUSH'+(i+1)});
-  button('GP'+(i+1),cx-25,152,GPL[i],'#FFB547',{h:32});
-  trkEls.push(button('TRK'+(i+1),cx-25,206,'G'+(Math.floor(i/4)+1)+'T'+(i%4+1),'#7CFF8A',{h:28}));
+  encoder('GP'+(i+1),cx-17,104,0,null,{push:'PUSH'+(i+1)});
+  button('GP'+(i+1),cx-26,148,GPL[i],'#FFB547',{w:52,h:38});
+  trkEls.push(button('TRK'+(i+1),cx-26,206,'G'+(Math.floor(i/4)+1)+'T'+(i%4+1),'#4FE3F0',{w:52,h:38}));
 }
-// labels of the 16 track buttons follow the selection view (what the buttons select at this moment)
+const BOT=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SELECT','DOWN','UP','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
+const BOTL=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SHIFT','<','>','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
+BOT.forEach((n,i)=>button(n,CX[i]-15,276,BOTL[i],'#FFB547',RB));
+// labels of the 16 select buttons follow the selection view (what the buttons select at this moment)
 const trkLbl=trkEls.map(b=>b.nextSibling);
-const selName=el('grp','left:0px;top:212px;color:#7CFF8A;width:42px;text-align:right','TRACK');
+const selName=el('grp2','left:236px;top:220px;width:48px;text-align:right;color:#4FE3F0','TRACK');
 const VIEWS={1:['BOOKMRK',i=>'BM'+(i+1)],2:['STEPS',i=>''],3:['TRACK',i=>'G'+(Math.floor(i/4)+1)+'T'+(i%4+1)],
   4:['LAYER',i=>'PAR '+String.fromCharCode(65+i)],5:['TRIGGER',i=>'TRG '+String.fromCharCode(65+i)],6:['INSTR.',i=>'INS '+(i+1)],
   7:['MUTE',i=>'G'+(Math.floor(i/4)+1)+'T'+(i%4+1)],8:['PHRASE',i=>String.fromCharCode(65+i)]};
 let lastView=-1;
 function selLabels(v){ if(v===lastView||!VIEWS[v])return; lastView=v; const [n,f]=VIEWS[v]; selName.textContent=n; trkLbl.forEach((l,i)=>l.textContent=f(i)); }
-/* function rows (aligned with the GP columns) */
-const F1=[[0,'EDIT','EDIT'],[1,'MUTE','MUTE'],[2,'PATTERN','PATTERN'],[3,'SONG','SONG'],
-          [4,'PHRASE','PHRASE'],[5,'STEP_VIEW','STEP VIEW'],[6,'TRACK_SEL','TRACK SEL'],[7,'PAR_SEL','PAR SEL'],
-          [8,'TRG_SEL','TRG SEL'],[9,'INS_SEL','INS SEL'],[10,'BOOKMARK','BOOKMARK'],[11,'UTILITY','UTILITY'],
-          [12,'SOLO','SOLO'],[13,'FAST','FAST'],[14,'ALL','ALL'],[15,'SAVE_ALL','SAVE ALL']];
-F1.forEach(([i,n,l])=>button(n,CX[i]-25,268,l,'#FFB547',{h:30}));
-const F2=[[0,'COPY','COPY'],[1,'PASTE','PASTE'],[2,'CLEAR','CLEAR'],[3,'MOVE','MOVE'],
-          [4,'SCROLL','SCROLL'],[5,'UNDO','UNDO'],
-          [8,'LIVE','LIVE'],[9,'RECORD','RECORD'],[10,'LOOP','LOOP'],[11,'FOLLOW','FOLLOW'],
-          [12,'METRONOME','METRONOME'],[13,'LEFT','◀'],[14,'RIGHT','▶']];
-F2.forEach(([i,n,l])=>button(n,CX[i]-25,330,l,n==='RECORD'?'#ff5a5a':'#FFB547',{h:30}));
-el('grp','left:12px;top:276px;color:#888;width:30px;text-align:right','PAGE');
-el('grp','left:12px;top:338px;color:#888;width:30px;text-align:right','EDIT');
-/* right block: datawheel (push), navigation, transport */
-const RX=1230;
-const dw=encoder('DATAWHEEL',RX+30,34,110,'dw',{push:'PUSH_DW'});el('lbl',`left:${RX+50}px;top:148px;width:70px`,'DATA');
-const beat=el('beat','');beat.style.left=(RX+190)+'px';beat.style.top='44px';el('lbl',`left:${RX+170}px;top:66px`,'BEAT');
-button('MENU',RX,180,'MENU','#FFB547',{h:30});button('SELECT',RX+60,180,'SELECT','#FFB547',{h:30});button('EXIT',RX+120,180,'EXIT','#FFB547',{h:30});
-button('UP',RX+190,150,'▲','#FFB547',{h:30});button('DOWN',RX+190,206,'▼','#FFB547',{h:30});
-[['REW','◀◀'],['STOP','■'],['PAUSE','❚❚'],['PLAY','▶'],['FWD','▶▶']].forEach(([n,l],k)=>
-  button(n,RX-20+k*52,268,l,n==='PLAY'?'#7CFF8A':'#ffffff',{w:46,h:30}));
 /* ---------- OLED-inhoud (benadering uit de huidige LCD-tekst) ---------- */
 const stepNote=Array(16).fill('----'),stepOn=Array(16).fill(false),stepCur=Array(16).fill(false);
 function drawOled(d){
@@ -176,10 +173,13 @@ function update(s){
   if(s.sel_view!==undefined) selLabels(s.sel_view);
   if(s.sel_g!==undefined){ for(let i=0;i<16;i++){const g=(s.sel_g>>i)&1,r=(s.sel_r>>i)&1,b=trkEls[i];
     b.classList.toggle('on',!!(g||r)); b.style.setProperty('--c', g&&r ? '#FFB547' : (r ? '#ff5a5a' : '#7CFF8A')); } }
+  // select-mode button of the current view lights up (as on the midiphy panel)
+  if(s.sel_view!==undefined){ const SM={1:'BOOKMARK',2:'STEP_VIEW',3:'TRACK_SEL',4:'PAR_SEL',5:'TRG_SEL',6:'INS_SEL',7:'MUTE',8:'PHRASE'};
+    for(const [v,n] of Object.entries(SM)){ const b=btnEls[n]; if(b) b.classList.toggle('on', +v===s.sel_view); } }
   if(s.beat_seq!==undefined&&s.beat_seq!==lastBeatSeq){ if(lastBeatSeq!==null){ beat.classList.add('on'); beat.style.opacity=(s.beat_n===0)?'1':'0.7'; clearTimeout(beatTimer); beatTimer=setTimeout(()=>beat.classList.remove('on'),90); } lastBeatSeq=s.beat_seq; }
 }
 /* ---------- schalen + live ---------- */
-function fit(){const s=Math.min(1,(innerWidth-40)/1536);W.style.transform=`scale(${s})`;W.style.marginBottom=(470*s-470+18)+'px';}
+function fit(){const s=Math.min(1,(innerWidth-40)/1376);W.style.transform=`scale(${s})`;W.style.marginBottom=(420*s-420+18)+'px';}
 addEventListener('resize',fit);fit();
 document.getElementById('sync').onclick=e=>{e.preventDefault();api('/api/sync');};
 for(let d=0;d<4;d++)drawOled(d);
