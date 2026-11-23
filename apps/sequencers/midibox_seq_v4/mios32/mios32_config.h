@@ -216,6 +216,9 @@ extern void TASKS_MUTEX_MIDIOUT_Give(void);
 // currently this option cannot be enabled in the MBSEQ_HW.V4 file - this will be possible later
 #if 0
 #define LCD_NUM_DEVICES          4
+
+// SK6812 key LEDs of the 4-OLED front panel: 5 transport + 4 x 12 (seq_rgbled.c)
+#define WS2812_NUM_LEDS 53
 #define LCD_COLUMNS_PER_DEVICE  20
 #define MIOS32_BOARD_LCD_E3_PORT GPIOB       // J15C.A10
 #define MIOS32_BOARD_LCD_E3_PIN  GPIO_Pin_0

@@ -22,6 +22,7 @@
 #include "seq_ui.h"
 #include "seq_lcd.h"
 #include "seq_lcd_logo.h"
+#include "seq_oled_hw.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -91,6 +92,8 @@ static s32 SEQ_LCD_LOGO_Copy(u8 device, u8 logo_x_offset, u8 first_special_char)
   }
 
   // transfer to LCD
+  if( seq_oled_hw_active )
+    return 0;   // no character LCDs on J15
   MUTEX_LCD_TAKE;
 
 #if LCD_NUM_DEVICES < 2

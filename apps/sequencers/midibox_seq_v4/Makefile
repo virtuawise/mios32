@@ -112,6 +112,8 @@ THUMB_SOURCE    = core/app.c \
 		core/seq_label.c \
 		core/seq_lcd.c \
 		core/seq_oled.c \
+		core/seq_oled_hw.c \
+		core/seq_rgbled.c \
 		$(MIOS32_PATH)/myproject/oled_gui/oled_gui2.c \
 		core/seq_lcd_logo.c \
 		core/seq_ui_fx_loop.c \
@@ -186,6 +188,9 @@ include $(MIOS32_PATH)/modules/file/file.mk
 
 # Portable randomize module
 include $(MIOS32_PATH)/modules/random/random.mk
+
+# SK6812 / WS2812 key LEDs (4-OLED front panel)
+include $(MIOS32_PATH)/modules/ws2812/ws2812.mk
 
 # For performance measurings
 include $(MIOS32_PATH)/modules/freertos_utils/freertos_utils.mk

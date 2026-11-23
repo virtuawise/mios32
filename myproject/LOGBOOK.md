@@ -21,3 +21,10 @@ Goal: SEQ V4+ with 4 x SSD1322 (256x64) instead of two 2x40 LCDs; develop and te
 - **Every page in the box style**: Menu, Utility, Save, BPM, Options, Info, Disk, Track Instrument, Euclid, MIDI monitor, Live Play (message) got their own description; all other pages and dialogs go through a generic LCD converter (columns joined only where a word crosses a border, a row of GP buttons under one title becomes a ROW box, blinking value = selection, stable copy of LCD row 2). Old views (tiles, dashboard, plain text) removed (RAM). Walk-through script over all 42 pages of the Page Menu.
 - Virtual panel in midiphy style: 16 track buttons (selection views as on midiphy), push encoders, Copy/Paste/Clear/Move/Scroll/Undo/Live/Record/Phrase/Loop/Bookmark/Trg Sel/Ins Sel/Follow via new remote keyboard notes; track button LEDs via SysEx 09 0A. SD card config files backed up.
 - Next (small points): Transpose, Generate, FX, Live/Manual, Global pages (see `oled_gui/UI_ANALYSIS.md`); real SSD1322 driver hookup.
+
+## 2026-11-23 – hardware and firmware for the real panel
+- Column PCB routed (GND planes both layers, stitching, no ground loops), left PCB built + routed (interface to the core,
+  small keys, transport, datawheel), both verified pad by pad against the datasheets (`hardware/route.sh <board>`).
+- Newhaven datasheet: use jumper option #1 (boost converter from 5 V on pin 3) – 3.3 V only for the logic.
+- Firmware: `seq_oled_hw.c` (4 x SSD1322 on J15, host-tested with an emulator), `seq_rgbled.c` (SK6812 chain), new hwcfg
+  keywords, `hardware/MBSEQ_HW.V4` for the new panel. Off by default – the current Wilba unit is unchanged (flashed, checked).

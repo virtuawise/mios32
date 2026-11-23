@@ -507,6 +507,9 @@ u8 seq_hwcfg_cv_gate_sr[SEQ_HWCFG_NUM_SR_CV_GATES];
 u8 seq_hwcfg_clk_sr = 0;
 #if !defined(MIOS32_DONT_USE_BOARD_J5)
 u8 seq_hwcfg_j5_enabled = 0;
+
+seq_hwcfg_oled_t seq_hwcfg_oled = { .ssd1322_num = 0, .contrast = 0x9f };
+seq_hwcfg_rgbled_t seq_hwcfg_rgbled = { .enabled = 0, .brightness = 64 };
 #endif
 
 

@@ -38,6 +38,7 @@
 #include "app.h"
 #include "seq_lcd.h"
 #include "seq_oled.h"
+#include "seq_rgbled.h"
 #include "seq_lcd_logo.h"
 
 #include "seq_hwcfg.h"
@@ -557,8 +558,17 @@ void SEQ_TASK_Period1mS_LowPrio(void)
   // call LCD Handler
   SEQ_UI_LCD_Handler();
 
-  // 4x OLED-beeld naar de client (remote server)
+  // 4x OLED-beeld naar de client (remote server) en/of de echte SSD1322's (hwcfg OLED_SSD1322)
   SEQ_OLED_Handler();
+
+  // SK6812 key LEDs (hwcfg RGBLED_ENABLED), initialised once the hardware config has been read
+  {
+    static u8 rgb_state = 0;
+    if( rgb_state == 0 && seq_hwcfg_rgbled.enabled && SEQ_FILE_HW_Valid() )
+      rgb_state = (SEQ_RGBLED_Init(seq_hwcfg_rgbled.brightness) >= 0) ? 1 : 2;
+    if( rgb_state == 1 )
+      SEQ_RGBLED_Handler();
+  }
 
   // update LEDs
   SEQ_UI_LED_Handler();

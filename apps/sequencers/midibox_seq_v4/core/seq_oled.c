@@ -24,6 +24,9 @@
 #include "seq_lcd.h"
 #include "seq_midi_port.h"
 #include "seq_file.h"
+#include "seq_file_hw.h"
+#include "seq_hwcfg.h"
+#include "seq_oled_hw.h"
 
 #include "oled_gui2.h"
 
@@ -589,6 +592,10 @@ static char cur_layer_name[8] = "VEL";
 static u32 sent_hash[OLED_NUM_CELLS];
 static u8 sent_valid[OLED_NUM_CELLS];
 static u8 dirty[OLED_NUM_CELLS];
+static u32 hw_hash[OLED_NUM_CELLS];      // real SSD1322 OLEDs on J15 (seq_oled_hw.c)
+static u8 hw_valid[OLED_NUM_CELLS];
+static u8 hw_dirty[OLED_NUM_CELLS];
+static u8 hw_state = 0;                  // 0 not initialised, 1 running, 2 failed
 static u32 cur_hash[OLED_NUM_CELLS];
 static u32 ctr = 0, resend_ctr = 0;
 static u8 next_cell = 0;
@@ -811,9 +818,17 @@ u8 SEQ_OLED_MenuButtonGet(void)
 
 s32 SEQ_OLED_Handler(void)
 {
-  // alleen in remote-servermodus (virtueel paneel); echte OLED-hardware volgt later
-  if( !(seq_midi_sysex_remote_mode == SEQ_MIDI_SYSEX_REMOTE_MODE_SERVER ||
-        seq_midi_sysex_remote_active_mode == SEQ_MIDI_SYSEX_REMOTE_MODE_SERVER) )
+  // targets: the virtual panel (remote server mode, USB) and/or the real SSD1322 OLEDs (hwcfg OLED_SSD1322)
+  u8 remote_on = (seq_midi_sysex_remote_mode == SEQ_MIDI_SYSEX_REMOTE_MODE_SERVER ||
+                  seq_midi_sysex_remote_active_mode == SEQ_MIDI_SYSEX_REMOTE_MODE_SERVER);
+  if( hw_state == 0 && seq_hwcfg_oled.ssd1322_num && SEQ_FILE_HW_Valid() ) {
+    int c;
+    hw_state = (SEQ_OLED_HW_Init(seq_hwcfg_oled.ssd1322_num, seq_hwcfg_oled.contrast) >= 0) ? 1 : 2;
+    for(c=0; c<OLED_NUM_CELLS; ++c)
+      hw_valid[c] = 0;
+  }
+  u8 hw_on = (hw_state == 1);
+  if( !remote_on && !hw_on )
     return 0;
 
   ++ctr;
@@ -877,12 +892,15 @@ s32 SEQ_OLED_Handler(void)
       h = fnv(h, flags, 3);
       h = fnv(h, (const u8 *)cur_layer_name, 4);
       cur_hash[c] = h;
-      dirty[c] = !sent_valid[c] || sent_hash[c] != h;
+      dirty[c] = remote_on && (!sent_valid[c] || sent_hash[c] != h);
+      hw_dirty[c] = hw_on && (c / 4) < seq_hwcfg_oled.ssd1322_num && (!hw_valid[c] || hw_hash[c] != h);
     }
   }
 
   // beat pulse (one per quarter note, from the sequencer clock) for the BEAT LED of the client
-  if( SEQ_BPM_IsRunning() ) {
+  if( !remote_on ) {
+    last_beat_no = 0xffffffff;
+  } else if( SEQ_BPM_IsRunning() ) {
     u32 ppqn = SEQ_BPM_PPQN_Get();
     if( ppqn < 4 ) ppqn = 96;
     u32 beat_no = SEQ_BPM_TickGet() / ppqn;
@@ -895,7 +913,7 @@ s32 SEQ_OLED_Handler(void)
   }
 
   // LEDs of the 16 track buttons (virtual midiphy panel): on change and with every full resend
-  if( (ctr % OLED_PERIOD_MS) == 13 ) {
+  if( remote_on && (ctr % OLED_PERIOD_MS) == 13 ) {
     static u32 last_sel = 0xffffffff;
     u16 g, r;
     SEQ_UI_SelLedsGet(&g, &r);
@@ -908,7 +926,7 @@ s32 SEQ_OLED_Handler(void)
   }
 
   // tell the client which menu button belongs to the current page (on change and with every full resend)
-  if( (ctr % OLED_PERIOD_MS) == 7 ) {
+  if( remote_on && (ctr % OLED_PERIOD_MS) == 7 ) {
     u8 mb = SEQ_OLED_MenuButtonGet();
     if( mb != last_menu_button || resend_ctr >= OLED_RESEND_MS - 100 ) {
       if( SEQ_MIDI_SYSEX_REMOTE_Server_SendMenuButton(mb) >= 0 )
@@ -922,7 +940,7 @@ s32 SEQ_OLED_Handler(void)
     for(tries=0; tries<OLED_NUM_CELLS; ++tries) {
       u8 c = next_cell;
       next_cell = (next_cell + 1) % OLED_NUM_CELLS;
-      if( dirty[c] ) {
+      if( dirty[c] || hw_dirty[c] ) {
 	if( cur_mode == 6 )
 	  OG2_RenderEventCell(cell_buf, c, &evt);
 	else if( cur_mode == 7 )
@@ -933,11 +951,18 @@ s32 SEQ_OLED_Handler(void)
 	  OG2_RenderPageCell(cell_buf, c, &pg);
 	else
 	  OG2_RenderCell(cell_buf, c, &steps[c], range_lo, range_hi, play_step == c, trail_step == c, cur_layer_name, cur_kind);
-	int n = rle_encode(cell_buf, sizeof(cell_buf), rle_buf);
-	if( SEQ_MIDI_SYSEX_REMOTE_Server_SendOLEDCell(c / 4, c % 4, rle_buf, n) >= 0 ) {
-	  sent_hash[c] = cur_hash[c];
-	  sent_valid[c] = 1;
-	  dirty[c] = 0;
+	if( hw_dirty[c] && SEQ_OLED_HW_WriteCell(c / 4, c % 4, cell_buf) >= 0 ) {
+	  hw_hash[c] = cur_hash[c];
+	  hw_valid[c] = 1;
+	  hw_dirty[c] = 0;
+	}
+	if( dirty[c] ) {
+	  int n = rle_encode(cell_buf, sizeof(cell_buf), rle_buf);
+	  if( SEQ_MIDI_SYSEX_REMOTE_Server_SendOLEDCell(c / 4, c % 4, rle_buf, n) >= 0 ) {
+	    sent_hash[c] = cur_hash[c];
+	    sent_valid[c] = 1;
+	    dirty[c] = 0;
+	  }
 	}
 	break;
       }

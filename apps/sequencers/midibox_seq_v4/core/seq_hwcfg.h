@@ -328,4 +328,16 @@ extern u8 seq_hwcfg_cv_gate_sr[SEQ_HWCFG_NUM_SR_CV_GATES];
 extern u8 seq_hwcfg_clk_sr;
 extern u8 seq_hwcfg_j5_enabled;
 
+// 4-OLED front panel (branch four-screens-usb)
+typedef struct {
+  u8 ssd1322_num;    // 0 = off (character LCDs on J15), 1..4 = SSD1322 OLEDs on J15
+  u8 contrast;
+} seq_hwcfg_oled_t;
+typedef struct {
+  u8 enabled;        // SK6812/WS2812 key LEDs on J4B.SC
+  u8 brightness;     // 1..255
+} seq_hwcfg_rgbled_t;
+extern seq_hwcfg_oled_t seq_hwcfg_oled;
+extern seq_hwcfg_rgbled_t seq_hwcfg_rgbled;
+
 #endif /* _SEQ_HWCFG_H */

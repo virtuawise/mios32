@@ -38,6 +38,7 @@
 #include "tasks.h"
 
 #include "seq_lcd.h"
+#include "seq_oled_hw.h"
 #include "seq_ui.h"
 #include "seq_midi_port.h"
 #include "seq_midi_sysex.h"
@@ -261,6 +262,12 @@ s32 SEQ_LCD_Update(u8 force)
 	  remote_first_x[y] = x;
 	remote_last_x[y] = x;
 
+	if( seq_oled_hw_active ) {      // J15 belongs to the SSD1322 OLEDs: no character LCD output (same pins)
+	  *ptr |= 0x80;
+	  ++ptr;
+	  continue;
+	}
+
 	if( x != next_x || y != next_y ) {
 	  MIOS32_LCD_DeviceSet(x / LCD_COLUMNS_PER_DEVICE);
 	  MIOS32_LCD_CursorSet(x % LCD_COLUMNS_PER_DEVICE, y);
@@ -306,6 +313,8 @@ s32 SEQ_LCD_InitSpecialChars(seq_lcd_charset_t charset)
 
   if( charset != seq_lcd_current_charset ) {
     seq_lcd_current_charset = charset;
+    if( seq_oled_hw_active )
+      return 0;   // no character LCDs on J15
 
     MUTEX_LCD_TAKE;
     int dev;

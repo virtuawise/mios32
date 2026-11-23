@@ -1367,6 +1367,26 @@ s32 SEQ_FILE_HW_Read(void)
 
 	    seq_hwcfg_dout_gate_sr[hlp-1] = sr;
 
+	} else if( strcasecmp(parameter, "OLED_SSD1322") == 0 || strcasecmp(parameter, "OLED_CONTRAST") == 0 ||
+		    strcasecmp(parameter, "RGBLED_ENABLED") == 0 || strcasecmp(parameter, "RGBLED_BRIGHTNESS") == 0 ) {
+	  // 4-OLED front panel (branch four-screens-usb)
+	  char *word = strtok_r(NULL, separators, &brkt);
+	  s32 value = get_dec(word);
+	  if( value < 0 || value > 255 ) {
+#if DEBUG_VERBOSE_LEVEL >= 1
+	    DEBUG_MSG("[SEQ_FILE_HW] ERROR in %s definition: invalid value!", parameter);
+#endif
+	    continue;
+	  }
+	  if( strcasecmp(parameter, "OLED_SSD1322") == 0 )
+	    seq_hwcfg_oled.ssd1322_num = (value > 4) ? 4 : value;
+	  else if( strcasecmp(parameter, "OLED_CONTRAST") == 0 )
+	    seq_hwcfg_oled.contrast = value;
+	  else if( strcasecmp(parameter, "RGBLED_ENABLED") == 0 )
+	    seq_hwcfg_rgbled.enabled = value ? 1 : 0;
+	  else
+	    seq_hwcfg_rgbled.brightness = value ? value : 1;
+
 #if !defined(MIOS32_DONT_USE_BOARD_J5)
 	} else if( strcasecmp(parameter, "J5_ENABLED") == 0 ) {
 	  char *word = strtok_r(NULL, separators, &brkt);
