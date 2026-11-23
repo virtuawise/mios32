@@ -191,7 +191,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "44d44722-ac08-4d0a-b1a1-6e1d7ca6f7f0")
+		(uuid "b1cec5ca-7ad4-4e45-a155-3cea3f5ad081")
 	)
 	(gr_line
 		(start 100 244.41129)
@@ -201,7 +201,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "5902edd4-0f77-41af-8f45-70ebc8a0afc7")
+		(uuid "637e29f1-8139-4693-9dc8-975ca5c9b983")
 	)
 	(gr_arc
 		(start 105.670161 210.216129)
@@ -1409,7 +1409,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "3e3665e3-3f82-4f2f-bfb9-3419a4f7b8ca")
+		(uuid "1044b017-fa53-44c4-8896-4af3744ffe03")
 	)
 	(gr_line
 		(start 203.2 244.41129)
@@ -1419,7 +1419,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "33e5bfac-72c5-40f5-89c1-e48a6022e01e")
+		(uuid "639eddc2-77b6-4196-9c10-ef4d2c78e4d3")
 	)
 	(gr_text "BEAT"
 		(at 184.495967 127.244354 0)

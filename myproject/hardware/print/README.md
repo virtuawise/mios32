@@ -24,5 +24,6 @@ What to check with the real parts (the VERIFY items of `../README.md`):
    the window.
 5. Cap heights: how far the big caps stick out (expected ~8 mm with an 18 mm cap; lower profile if too high).
 
-FDM holes come out ~0.1-0.2 mm small: use the slicer's hole compensation (e.g. "XY hole compensation 0.15 mm") or the
+The PCB stand-ins have **enlarged holes** (every pin hole +0.6 mm, at least 1.8 mm; MX pegs 2.3 mm) so the pins can be
+pushed through by hand – the real PCBs keep the datasheet sizes. Other FDM holes come out ~0.1-0.2 mm small: use the slicer's hole compensation (e.g. "XY hole compensation 0.15 mm") or the
 fit is tighter than on the real FR4 parts.

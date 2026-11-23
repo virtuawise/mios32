@@ -11,6 +11,25 @@ MM = 62 / 19.05
 PW, PH = 1545 / MM, 470 / MM
 SECTIONS = {"left": (0.0, 103.2), "column1": (103.2, 194.2)}
 
+if len(sys.argv) == 4 and sys.argv[1] == "holes":         # worker: enlarge the holes of a PCB for printing
+    import pcbnew
+    b = pcbnew.LoadBoard(sys.argv[2])
+    for f in b.GetFootprints():
+        for pd in f.Pads():
+            d = pd.GetDrillSize()
+            if d.x <= 0:
+                continue
+            if pd.GetAttribute() == pcbnew.PAD_ATTRIB_NPTH and min(d.x, d.y) >= pcbnew.FromMM(3.0):
+                continue                                  # big unplated holes (MX centre peg 4 mm) stay as they are
+            nx = max(d.x + pcbnew.FromMM(0.6), pcbnew.FromMM(1.8))
+            ny = max(d.y + pcbnew.FromMM(0.6), pcbnew.FromMM(1.8))
+            pd.SetDrillSize(pcbnew.VECTOR2I(nx, ny))
+    for t in [t for t in b.GetTracks()]:
+        if t.Type() == pcbnew.PCB_VIA_T:
+            b.Remove(t)                                   # vias would print as tiny holes
+    b.Save(sys.argv[3])
+    sys.exit(0)
+
 if len(sys.argv) == 5:                                   # worker: section <src> <dst> <x0> <x1>
     import pcbnew
     sys.path.insert(0, H)
@@ -45,5 +64,9 @@ for name, (x0, x1) in SECTIONS.items():
         dst = os.path.join(D, "%s_%s.kicad_pcb" % (part, name))
         subprocess.run([PY, __file__, os.path.join(H, "panel", part + ".kicad_pcb"), dst, str(x0), str(x1)], capture_output=True)
         stl(dst, dst.replace(".kicad_pcb", ".stl"))
-stl(os.path.join(H, "left", "left.kicad_pcb"), os.path.join(D, "pcb_left.stl"))
-stl(os.path.join(H, "column", "column.kicad_pcb"), os.path.join(D, "pcb_column.stl"))
+# PCB stand-ins: every plated hole enlarged for FDM (holes print ~0.2-0.4 mm small and 1 mm holes close up):
+# + 0.6 mm, at least 1.8 mm, so the pins of switches, encoders, LEDs and headers can be pushed through by hand.
+for name in ("left", "column"):
+    dst = os.path.join(D, "pcb_%s_print.kicad_pcb" % name)
+    subprocess.run([PY, __file__, "holes", os.path.join(H, name, name + ".kicad_pcb"), dst], capture_output=True)
+    stl(dst, os.path.join(D, "pcb_%s.stl" % name))
