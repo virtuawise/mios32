@@ -103,7 +103,7 @@
 				)
 			)
 		)
-		(property "Value" "3FTH965"
+		(property "Value" "3FTH9+LED234 warm white"
 			(at 0 6.6 0)
 			(layer "F.Fab")
 			(uuid "f7e15587-ea7d-44f0-9b8f-cfda1921846c")
@@ -2363,7 +2363,7 @@
 				)
 			)
 		)
-		(property "Value" "3FTH965"
+		(property "Value" "3FTH9+LED234 warm white"
 			(at 0 6.6 0)
 			(layer "F.Fab")
 			(uuid "43cca703-0240-4c38-a20a-f050a6769bb8")
@@ -3210,7 +3210,7 @@
 				)
 			)
 		)
-		(property "Value" "3FTH965"
+		(property "Value" "3FTH9+LED234 warm white"
 			(at 0 6.6 0)
 			(layer "F.Fab")
 			(uuid "4922dbc3-98db-4f1f-938d-a5f3be284f6a")
@@ -7432,7 +7432,7 @@
 				)
 			)
 		)
-		(property "Value" "3FTH980"
+		(property "Value" "3FTH9+LED234 red"
 			(at 0 6.6 0)
 			(layer "F.Fab")
 			(uuid "e2044f8f-4bec-430b-a4f3-f9fb276553d3")
@@ -8399,7 +8399,7 @@
 				)
 			)
 		)
-		(property "Value" "3FTH965"
+		(property "Value" "3FTH9+LED234 warm white"
 			(at 0 6.6 0)
 			(layer "F.Fab")
 			(uuid "3e222452-1c0e-4266-a368-01faee9fd14a")
@@ -9060,7 +9060,7 @@
 				)
 			)
 		)
-		(property "Value" "3FTH965"
+		(property "Value" "3FTH9+LED234 warm white"
 			(at 0 6.6 0)
 			(layer "F.Fab")
 			(uuid "a3bfeb8a-f12a-4355-a083-1464dafc1e02")
@@ -11645,7 +11645,7 @@
 				)
 			)
 		)
-		(property "Value" "3FTH940"
+		(property "Value" "3FTH9+LED234 yellow"
 			(at 0 6.6 0)
 			(layer "F.Fab")
 			(uuid "abac852a-f9e9-4b08-b153-d7d86407bf5e")
@@ -12326,7 +12326,7 @@
 				)
 			)
 		)
-		(property "Value" "3FTH940"
+		(property "Value" "3FTH9+LED234 yellow"
 			(at 0 6.6 0)
 			(layer "F.Fab")
 			(uuid "e50cea93-a8da-4e37-b04e-af3848ab850d")
@@ -13117,7 +13117,7 @@
 				)
 			)
 		)
-		(property "Value" "3FTH965"
+		(property "Value" "3FTH9+LED234 warm white"
 			(at 0 6.6 0)
 			(layer "F.Fab")
 			(uuid "882a8e88-8485-4feb-8df0-97af5ac70b6b")
@@ -13526,7 +13526,7 @@
 				)
 			)
 		)
-		(property "Value" "3FTH940"
+		(property "Value" "3FTH9+LED234 yellow"
 			(at 0 6.6 0)
 			(layer "F.Fab")
 			(uuid "0dbd4cbc-76c6-4ee0-a356-16cd2add6e24")
@@ -15948,7 +15948,7 @@
 				)
 			)
 		)
-		(property "Value" "3FTH965"
+		(property "Value" "3FTH9+LED234 warm white"
 			(at 0 6.6 0)
 			(layer "F.Fab")
 			(uuid "29153ac5-bb81-439d-bb52-e4f4a4cf7412")
@@ -17789,7 +17789,7 @@
 				)
 			)
 		)
-		(property "Value" "3FTH940"
+		(property "Value" "3FTH9+LED234 yellow"
 			(at 0 6.6 0)
 			(layer "F.Fab")
 			(uuid "663bcb6d-c6e2-46ad-9cd4-cbdca50c32a2")
@@ -18344,7 +18344,7 @@
 				)
 			)
 		)
-		(property "Value" "3FTH965"
+		(property "Value" "3FTH9+LED234 warm white"
 			(at 0 6.6 0)
 			(layer "F.Fab")
 			(uuid "a169ab03-ec6c-4f5b-8786-9f9642c214fa")

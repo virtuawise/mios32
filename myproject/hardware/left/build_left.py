@@ -19,14 +19,17 @@ P = B.place
 
 # ---- small keys: MEC 3FTH9xx with LED. pads 1/2 = contact A (-> DIN input), 3/4 = contact B (GND), 5 = LED K, 6 = LED A ----
 small = [["STEP", "TRACK", "PARAM", "TRIGGER", "INSTR"], ["MUTE", "PHRASE", "BOOKM", "SOLO", "METRO"], ["LOOP", "REC", "LIVE"]]
-colour = {"SOLO": "3FTH940", "METRO": "3FTH940", "LOOP": "3FTH940", "LIVE": "3FTH940", "REC": "3FTH980"}   # amber ~ yellow 40, red 80, else white 65
+# plain APEM 3FTH9 (the factory-lit 3FTH965/940/980 are not stocked: MOQ 100, 20 weeks) with a standard 2x3x4 mm
+# rectangular LED pushed into the switch before soldering, as midiphy does; long leg (anode) into the round pad 6.
+colour = {"SOLO": "3FTH9+LED234 yellow", "METRO": "3FTH9+LED234 yellow", "LOOP": "3FTH9+LED234 yellow",
+          "LIVE": "3FTH9+LED234 yellow", "REC": "3FTH9+LED234 red"}
 k = 0
 for r, row in enumerate(small):
     for c, name in enumerate(row):
         k += 1
         P("seq4oled", "SW_MEC_3FTH9_LED", "S%d" % k, KX[c], Y_S[r],
           padnets={"1": "KEY_" + name, "2": "KEY_" + name, "3": "GND", "4": "GND", "5": "GND", "6": "LEDA_" + name},
-          value=colour.get(name, "3FTH965"))
+          value=colour.get(name, "3FTH9+LED234 warm white"))
 
 # ---- transport keys: MX + SK6812MINI-E (1 VDD, 2 DOUT, 3 GND, 4 DIN - datasheet REV02), chain LED_IN -> D1..D5 -> LED_OUT ----
 trans = ["REW", "FWD", "STOP", "PLAY", "PAUSE"]

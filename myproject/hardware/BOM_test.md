@@ -9,9 +9,8 @@ Quantities counted from the board files (`column/column.kicad_pcb`, `left/left.k
 | A1 | Key switch, MX type | silent tactile, opaque housing with LED window, 5-pin PCB mount – order 2-3 kinds to compare the feel | 3 x 5 | plate fit, feel, LED window |
 | A2 | Key cap 1U | 18 x 18 mm smoked translucent ("transparent black"), e.g. Elacgap XDA | 10 | height above the panel (VERIFY), light through the cap |
 | A3 | RGB LED | SK6812MINI-E reverse mount (e.g. Adafruit 4960, 10 pcs) | 10 | fits the cut-out under the switch |
-| A4 | Small key, white LED | APEM Multimec **3FTH965** | 3 | LED pin positions (VERIFY), feel |
-| A5 | Small key, yellow LED (amber keys) | APEM **3FTH940** | 2 | colour check |
-| A6 | Small key, red LED (Rec.) | APEM **3FTH980** | 1 | colour check |
+| A4 | Small key (no LED) | APEM Multimec **3FTH9** | 6 | feel; LED legs reach the PCB LED holes (VERIFY) |
+| A5 | LED for the small key | 2x3x4 mm rectangular THT LED, warm white / yellow / red, pushed into the 3FTH9 (as midiphy) | 5 each | colour, brightness |
 | A7 | Cap for 3F | APEM **1T**, 10.6 x 10.6 mm, transparent frosted white | 6 | 11 x 11 mm hole, 3.3 mm out (VERIFY) |
 | A8 | Encoder | Alps **EC11E** with push switch, vertical, 20 mm shaft (H20) | 2 | shaft in the 7.5 mm hole, knob height |
 | A9 | Encoder knob | for 6 mm shaft (D or knurled, matching the EC11E chosen) | 2 | look / height |
@@ -81,3 +80,31 @@ DigiKey's BOM Manager / "Bulk add" accepts the manufacturer part numbers (MPN) b
 | Box header 2x5 / 2x8 | Würth 61201021621 / 61201621621 | MPN | |
 | Pin header 1x3 | Würth 61300311121 | MPN | |
 | JST VH | B2P-VH(LF)(SN) + VHR-2N + SVH-21T-P1.1 | MPN | |
+
+## Small keys: plain 3FTH9 + inserted LED (decided 2026-11-23)
+The factory-lit 3FTH965/940/980 are not stocked anywhere (Mouser 642-3FTH965: MOQ 100, 20 weeks). midiphy uses the plain
+**3FTH9** with a standard **2x3x4 mm rectangular LED** pushed into the switch before soldering (long leg into the round
+hole; check the switch still clicks). The PCB footprint stays the same (LED holes of the illuminated 3F layout) – **VERIFY**
+with the test print that the legs of the inserted LED come out at those two holes.
+LEDs: warm white 2x3x4 mm clear, e.g. Component Shop UK RL234U-WW; yellow and red 2x3x4 mm are standard parts (eBay/
+AliExpress/Component Shop). With 680 R: white ~2.7 mA, red ~4.4 mA – match brightness by changing the resistor later.
+
+## Where to order (snapshot 2026-11-23, check live stock)
+| Part | DigiKey | Mouser | TME (PL, EU) | LCSC (CN) |
+|---|---|---|---|---|
+| OLED NHD-3.12-25664UCY2 | yes, ~$38 | yes, 234 pcs, $42.59 | not found | not found |
+| Encoder EC11E15244G1 | listed (stock varies, 0-491) | yes, 753 pcs, $5.02 | yes, ~1291 pcs | yes, ~1676 pcs, ~$1.31 |
+| SK6812MINI-E | Adafruit 4960 10-pack (1528-4960-ND) ~$0.30/LED | not found | not found | **C5149201**, ~$0.05-0.08/LED |
+| APEM 3FTH9 | yes (large stock) | yes, ~1467 pcs, $3.41 | not found | not found |
+| APEM 1T16 cap | not confirmed | not confirmed | listed, stock unknown | – |
+| Würth 97730506330R | yes, ~$0.88 | not found | not found | – (Bürklin 18H8953, €0.98) |
+| ICs / passives / headers | yes | yes | yes | yes, cheapest |
+| 2x3x4 mm LEDs | – | – | – | generic (also eBay / Component Shop UK) |
+
+**Advice**
+- **Test order (samples): DigiKey** – has the most parts in one order (OLED, 3FTH9, SK6812MINI-E, Würth standoff, all
+  ICs/passives, EC11E when in stock). Shipping to NL is free above a minimum order value, prices include import duties.
+- **Full build: LCSC + JLCPCB** for the PCBs, SMD assembly and the cheap parts (SK6812MINI-E ~6x cheaper, EC11E ~4x),
+  DigiKey or Mouser only for the OLEDs, 3FTH9 and the Würth standoffs.
+- **Open problem: the 1T16 cap** (0 stock, MOQ 100 at Newark/Sager). Ask TME/Mouser, or choose another 3F cap that is
+  in stock (the PCB and the 11 x 11 mm hole only fit the 10.6 mm square 1T).
