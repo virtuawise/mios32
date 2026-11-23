@@ -13,8 +13,6 @@ Quantity,Manufacturer Part Number,Manufacturer,Digi-Key Part Number,Customer Ref
 5,CL21A226MAQNNNE,Samsung,,C VLED,22uF 0805
 2,EEE-FK1A221P,Panasonic,,C11 (left),220uF 10V 6.3x7.7 SMD
 15,3FTH9,MEC Switches (APEM),,S1-S13 (left),Multimec 3F without LED
-15,1T16,MEC Switches (APEM),679-2121-ND,S1-S13 caps,1T cap frosted white
-5,EC11E15244G1,Alps Alpine,4809-EC11E15244G1-ND,EN (4 column + datawheel),Encoder with push
 3,4960,Adafruit,1528-4960-ND,D (17 LEDs),SK6812MINI-E 10-pack (LCSC C5149201 is much cheaper)
 8,61201021621,Wurth Elektronik,,J1-J4 column / J1 J2 J4 J5 left,Box header 2x5 2.54mm vertical
 1,61201621621,Wurth Elektronik,,J3 left (core J15A),Box header 2x8 2.54mm vertical

@@ -133,3 +133,9 @@ DigiKey stays the one shop with everything for the test order.
 | NHD-3.12-25664UCY2 | 909-2023 | stock unknown, price on request |
 | Würth 97730506330R | 185-4146 | page outdated (backorder), reel of 1300 |
 -> RS has the small keys **and** the 1T16 caps; for the OLED and the standoffs DigiKey/Mouser/Farnell are better.
+
+### Live check DigiKey 2026-11-23
+- **1T16 (679-2121-ND): 0 in stock**, 100 expected 12-Apr-2027 -> order the 1T16 at **RS 495-2501** (pack of 10), or use
+  the round **1U16 (679-2125-ND, 2,255 in stock, $1.02)** – then the panel hole becomes round (cap 10.6 mm).
+- **EC11E15244G1 (4809-EC11E15244G1-ND): 0 in stock**, 616 expected 08-Dec-2026 -> order at Mouser 688-EC11E15244G1,
+  Farnell 2064986, TME or LCSC.
