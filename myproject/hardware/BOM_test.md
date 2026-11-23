@@ -139,3 +139,9 @@ DigiKey stays the one shop with everything for the test order.
   the round **1U16 (679-2125-ND, 2,255 in stock, $1.02)** – then the panel hole becomes round (cap 10.6 mm).
 - **EC11E15244G1 (4809-EC11E15244G1-ND): 0 in stock**, 616 expected 08-Dec-2026 -> order at Mouser 688-EC11E15244G1,
   Farnell 2064986, TME or LCSC.
+
+### Cap choice 2026-11-23: black square caps, red for Rec.
+- Small keys: **1T09 black** (DigiKey 679-2120-ND, live 540 pcs, $0.83) and **1T08 red** for Rec. (679-2119-ND, live 596,
+  $1.02). Both are opaque: the 2x3x4 mm LEDs are not needed (leave them out). The 595s stay (U5 drives the beat LED, U4
+  is in the DOUT chain before U5); the 13 small-key LED resistors may stay empty.
+- Play is a big MX key: it is green through its RGB LED (sage green, seq_rgbled.c). A green 1T (1T02) was not found at DigiKey.

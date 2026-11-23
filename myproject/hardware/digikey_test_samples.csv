@@ -1,5 +1,7 @@
 Quantity,Manufacturer Part Number,Manufacturer,Digi-Key Part Number,Customer Reference,Description
 1,NHD-3.12-25664UCY2,Newhaven Display,NHD-3.12-25664UCY2-ND,OLED,OLED 3.12in 256x64 yellow SSD1322
 6,3FTH9,MEC Switches (APEM),,SMALLKEY,Multimec 3F tactile switch without LED (LED 2x3x4mm inserted)
+5,1T09,MEC Switches (APEM),679-2120-ND,SMALLCAP,1T cap square 10.6mm black (opaque)
+2,1T08,MEC Switches (APEM),679-2119-ND,SMALLCAP REC,"1T cap square 10.6mm red (opaque), Rec."
 1,4960,Adafruit,1528-4960-ND,RGBLED,SK6812MINI-E reverse mount 10-pack
 10,97730506330R,Wurth Elektronik,,STANDOFF,WA-SMSI M1.6 bottom closed 5mm SMT spacer
