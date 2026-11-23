@@ -100,3 +100,19 @@ KiCad's reverse-mount footprint has only 0.17 mm pad-to-cut-out -> own footprint
 (0.30 mm; **VERIFY** the manufacturer's inner router radius <= 0.5 mm). Renders: `column/render_top.png`, `column/render_bottom.png`.
 Input mapping (for MBSEQ_HW.V4): U1 D0-3 GP keys 1-4, D4-7 select keys 1-4; U2 D0-3 function keys 1-4, D4-7 encoder pushes 1-4;
 U3 D0/D1 encoder 1 A/B ... D6/D7 encoder 4 A/B. CS select: solder one of JP1..JP4 per board position.
+
+## Grounding (no ground loops)
+- **On the column PCB:** one GND net, poured on both layers (F.Cu + B.Cu, 0.3 mm clearance, islands removed), tied together
+  by a 7.5 mm grid of stitching vias plus extra vias in every plane piece that had fewer than 2 links (64 stitching vias).
+  Pieces that still hang on one point are small slivers between tracks. Connector and encoder GND pins have a full
+  (not thermal) connection, so return current between boards sees low impedance. A plane is one node, so a loop *on* the board does not exist.
+- **Between boards:** star from the core, no ring. Each module gets GND only through its own SRIO cable (2 GND pins),
+  the OLED cable (GND next to every clock) and the LED cable (GND next to VLED, as a twisted pair from the LED supply). The
+  module-to-module chaining cables (J2 -> next J1) also carry GND: that is a loop between modules, but its area is the
+  cable itself (GND runs right next to the signals), so no field can couple into it – this is the normal MIDIbox DINX4 practice.
+  **Do not** add extra ground wires between modules or to the case beyond the cables.
+- **LED supply:** separate 5 V for the SK6812 rail; its GND joins the logic GND at **one point** (the core / power input), so
+  the ~3 A LED current does not flow through the SRIO ribbons.
+- **Case:** FR4 front panel and switch plate are insulators (their standoffs tie nothing). With a metal case: connect the case to
+  GND at one point only, at the power inlet. MIDI IN is opto-isolated (no ground connection to other gear); USB brings the
+  computer's ground – if hum appears through audio gear, use a USB isolator, not a ground lift.

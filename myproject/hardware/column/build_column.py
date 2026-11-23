@@ -79,7 +79,7 @@ for i, (ref, x, y) in enumerate(leds):
 for c in range(4):
     # footprint origin is pad A; shaft centre at (+7.5, +2.5)
     place("Rotary_Encoder", "RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm", "EN%d" % (c + 1), KX[c] - 7.5, Y_ENC - 2.5,
-          padnets={"A": "ENC%d_A" % (c + 1), "B": "ENC%d_B" % (c + 1), "C": "GND", "S1": "ENC%d_P" % (c + 1), "S2": "GND"},
+          padnets={"A": "ENC%d_A" % (c + 1), "B": "ENC%d_B" % (c + 1), "C": "GND", "S1": "ENC%d_P" % (c + 1), "S2": "GND", "MP": "GND"},
           value="EC11E")
 
 # ---- 74HC165 x 3 (SOIC-16): 1 /PL, 2 CP, 3-6 D4-D7, 7 /Q7, 8 GND, 9 Q7, 10 DS, 11-14 D0-D3, 15 /CE, 16 VCC ----
@@ -144,6 +144,50 @@ for rot in (0, 90, 180, 270):            # orientation: pin 1 at the right, pins
 for i, (x, y) in enumerate(OLED_HOLES + STACK_HOLES):
     lib, nm = ("MountingHole", "MountingHole_2.7mm_M2.5") if i < 4 else ("MountingHole", "MountingHole_3.2mm_M3")
     place(lib, nm, "H%d" % (i + 1), x, y)
+
+# ---- keep tracks 0.3 mm away from the LED cut-outs (Freerouting does not treat footprint cut-outs as board edge) ----
+for i, (ref, x, y) in enumerate(leds):
+    z = pcbnew.ZONE(board)
+    z.SetIsRuleArea(True); z.SetDoNotAllowTracks(True); z.SetDoNotAllowVias(True)
+    z.SetDoNotAllowZoneFills(False); z.SetDoNotAllowPads(False); z.SetDoNotAllowFootprints(False)
+    z.SetLayerSet(pcbnew.LSET.AllCuMask())
+    ol = z.Outline(); ol.NewOutline()
+    for dx, dy in ((-2.05, -1.85), (2.05, -1.85), (2.05, 1.85), (-2.05, 1.85)):
+        ol.Append(pcbnew.FromMM(OX + x + dx), pcbnew.FromMM(OY + y + dy))
+    board.Add(z)
+
+# ---- GND fan-out: every SMD GND pad gets its own short track + via to the GND planes (decoupling best practice) ----
+def pad_free(pt, r, own):
+    for f in board.GetFootprints():
+        for pd in f.Pads():
+            if pd is own: continue
+            if pd.HitTest(pt, pcbnew.FromMM(r)) or (pd.GetAttribute() == pcbnew.PAD_ATTRIB_NPTH and pd.GetBoundingBox().Inflate(pcbnew.FromMM(r)).Contains(pt)):
+                return False
+        for g in f.GraphicalItems():
+            if g.GetLayer() == pcbnew.Edge_Cuts and g.GetBoundingBox().Inflate(pcbnew.FromMM(r + 0.3)).Contains(pt):
+                return False
+    for t in board.GetTracks():
+        if t.HitTest(pt, pcbnew.FromMM(r + 0.25)):
+            return False
+    return True
+gnd = nets["GND"]
+fan = 0
+for f in board.GetFootprints():
+    for pd in f.Pads():
+        if pd.GetNetname() != "GND" or pd.GetAttribute() != pcbnew.PAD_ATTRIB_SMD:
+            continue
+        c = pd.GetPosition()
+        for dx, dy in ((0, 1.3), (0, -1.3), (1.3, 0), (-1.3, 0), (1.0, 1.0), (-1.0, 1.0), (1.0, -1.0), (-1.0, -1.0), (0, 1.8), (0, -1.8), (1.8, 0), (-1.8, 0)):
+            pt = pcbnew.VECTOR2I(c.x + pcbnew.FromMM(dx), c.y + pcbnew.FromMM(dy))
+            if pad_free(pt, 0.55, pd):
+                t = pcbnew.PCB_TRACK(board); t.SetStart(c); t.SetEnd(pt); t.SetWidth(pcbnew.FromMM(0.4))
+                t.SetLayer(pd.GetLayerSet().Seq()[0] if pd.IsOnLayer(pcbnew.F_Cu) is False else pcbnew.F_Cu); t.SetNet(gnd); t.SetLocked(True); board.Add(t)
+                v = pcbnew.PCB_VIA(board); v.SetPosition(pt); v.SetWidth(pcbnew.FromMM(0.6)); v.SetDrill(pcbnew.FromMM(0.3)); v.SetNet(gnd); v.SetLocked(True)
+                board.Add(v); fan += 1
+                break
+        else:
+            print("no room for a GND via at", f.GetReference(), pd.GetNumber())
+print("GND fan-out vias", fan)
 
 ds = board.GetDesignSettings()
 ds.m_CopperEdgeClearance = pcbnew.FromMM(0.3)
