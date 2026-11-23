@@ -10,7 +10,7 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
    Off: almost black. On: the whole cap glows in the LED colour (light stays in the cap: no pudding skirt). */
 .btn{position:absolute;width:50px;height:40px;border-radius:6px;background:radial-gradient(ellipse at 50% 40%,#2a2c30 0%,#1a1b1e 70%,#141517 100%);border:1px solid #0a0a0b;box-sizing:border-box;box-shadow:0 2px 3px #000c,inset 0 1px 0 #3a3c41;cursor:pointer;touch-action:none}
 .btn.on{background:radial-gradient(ellipse at 50% 45%,color-mix(in srgb,var(--c,#FFB547) 80%,#fff) 0%,color-mix(in srgb,var(--c,#FFB547) 55%,#111) 55%,color-mix(in srgb,var(--c,#FFB547) 30%,#0b0b0c) 100%);box-shadow:0 0 10px color-mix(in srgb,var(--c,#FFB547) 60%,transparent),inset 0 1px 0 #ffffff40}
-.btn.page{background:radial-gradient(ellipse at 50% 45%,#ffe2b0 0%,#a8742a 55%,#4a3312 100%);box-shadow:0 0 10px #FFB54799}
+.btn.page{background:radial-gradient(ellipse at 50% 45%,#fffaf2 0%,#bfb3a0 55%,#4d473f 100%);box-shadow:0 0 10px #FFF0DA88}
 /* front plate: one cutout per row of keys (panel material only between rows and groups) */
 .btn.small{border-radius:3px;border-color:#2a2c30;box-shadow:0 1px 2px #000c,inset 0 0 0 1px #ffffff14}
 .cut{position:absolute;background:#08090a;border-radius:4px;box-shadow:inset 0 2px 4px #000}
@@ -32,7 +32,7 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
 .dw{position:absolute;left:781px;top:297px;width:100px;height:100px;border-radius:50%;background:#111214;box-shadow:inset 0 0 0 2px #2c2f34,0 6px 14px #000a;cursor:ns-resize}
 .dw i{position:absolute;left:62%;top:16%;width:18%;height:18%;border-radius:50%;background:#2a2d31;box-shadow:inset 0 0 0 1px #44484e}
 .beat{position:absolute;left:822px;top:223px;width:18px;height:18px;border-radius:50%;background:#3a1c1c}
-.beat.on{background:#ff5a5a;box-shadow:0 0 14px #ff5a5a}
+.beat.on{background:#FFB547;box-shadow:0 0 14px #FFB547}
 .top{font-size:11px;color:#888;margin-bottom:6px}.top a{color:#9cf}
 #st.on{color:#7cff8a}#st.off{color:#f66}
 .foot{position:absolute;left:30px;bottom:12px;font-size:12px;letter-spacing:.1em;color:#ddd;font-weight:700}.foot b{color:var(--amber)}
@@ -42,6 +42,8 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
 <div id="wrap"></div>
 <script>
 const W=document.getElementById('wrap');
+// LED palette: warm, matches the amber OLEDs. Small keys use standard one-colour 3 mm LEDs (warm white, amber, red).
+const PAL={amber:'#FFB547', white:'#FFF0DA', rec:'#FF5A4E', play:'#9FD89A'};
 const api=p=>fetch(p).catch(()=>{});
 const NA=new Set(['SCRUB']);
 const el=(c,css,t,p)=>{const e=document.createElement('div');if(c)e.className=c;if(css)e.style.cssText=css;if(t!=null)e.textContent=t;(p||W).appendChild(e);return e;};
@@ -98,11 +100,11 @@ const dw=encoder('DATAWHEEL',130,28,96,'dw',{push:'PUSH_DW'});el('lbl','left:143
 const beat=el('beat','');beat.style.left='266px';beat.style.top='66px';el('lbl','left:240px;top:88px','BEAT');
 el('grp2','left:26px;top:166px;width:298px','SELECT MODE');
 cut(LX(0),LX(4)+CAP.w,359);                          // transport row: big keys in one cutout, aligned with the Copy..Utility row
-[['STEP_VIEW','STEP'],['TRACK_SEL','TRACK'],['PAR_SEL','PARAM.'],['TRG_SEL','TRIGGER'],['INS_SEL','INSTR.']].forEach(([n,l],k)=>sbutton(n,k,SROW[0],l,'#4FE3F0'));
-[['MUTE','MUTE'],['PHRASE','PHRASE'],['BOOKMARK','BOOKM.']].forEach(([n,l],k)=>sbutton(n,k,SROW[1],l,'#4FE3F0'));
+[['STEP_VIEW','STEP'],['TRACK_SEL','TRACK'],['PAR_SEL','PARAM.'],['TRG_SEL','TRIGGER'],['INS_SEL','INSTR.']].forEach(([n,l],k)=>sbutton(n,k,SROW[0],l,PAL.white));
+[['MUTE','MUTE'],['PHRASE','PHRASE'],['BOOKMARK','BOOKM.']].forEach(([n,l],k)=>sbutton(n,k,SROW[1],l,PAL.white));
 [['SOLO','SOLO'],['METRONOME','METR.']].forEach(([n,l],k)=>sbutton(n,3+k,SROW[1],l,'#FFB547'));
-[['LOOP','LOOP'],['RECORD','REC.'],['LIVE','LIVE']].forEach(([n,l],k)=>sbutton(n,k,SROW[2],l,n==='RECORD'?'#ff5a5a':'#FFB547'));
-[['REW','◀◀'],['FWD','▶▶'],['STOP','■'],['PLAY','▶'],['PAUSE','❚❚']].forEach(([n,l],k)=>button(n,LX(k),359,l,n==='PLAY'?'#7CFF8A':'#ffffff',CAP));
+[['LOOP','LOOP'],['RECORD','REC.'],['LIVE','LIVE']].forEach(([n,l],k)=>sbutton(n,k,SROW[2],l,n==='RECORD'?PAL.rec:PAL.amber));
+[['REW','◀◀'],['FWD','▶▶'],['STOP','■'],['PLAY','▶'],['PAUSE','❚❚']].forEach(([n,l],k)=>button(n,LX(k),359,l,n==='PLAY'?PAL.play:PAL.white,CAP));
 /* right part: 4 OLEDs, 16 push encoders, 16 GP buttons, 16 select buttons, 16 round function buttons */
 // Scale: 62 px = 19.05 mm (1U key pitch), MM = px per mm. OLED: Newhaven NHD-3.12-25664UC (datasheet rev. 7, 2024):
 // PCB 89.2 x 44.0 mm, bezel 89.0 x 29.6 mm (6.6 mm above PCB bottom), bezel opening 82.0 x 22.0 mm (11.0 mm above PCB bottom),
@@ -126,7 +128,7 @@ for(let i=0;i<16;i++){
   const cx=CX[i];
   encoder('GP'+(i+1),cx-17,160,0,null,{push:'PUSH'+(i+1)});
   button('GP'+(i+1),cx-29,203,null,'#FFB547',CAP);      // no printed labels: the OLEDs show what the keys do
-  trkEls.push(button('TRK'+(i+1),cx-29,281,null,'#4FE3F0',CAP));      // select buttons: no labels (as on the midiphy panel)
+  trkEls.push(button('TRK'+(i+1),cx-29,281,null,PAL.amber,CAP));      // select buttons: no labels (as on the midiphy panel)
 }
 const BOT=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SELECT','DOWN','UP','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
 const BOTL=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SHIFT','<','>','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
@@ -187,7 +189,7 @@ function update(s){
     if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!ownLayout&&!!(g||r));continue;}   // GP-knoppen lopen mee met de sequencer in alle pagina's (de OLED's tonen geen afspeelstap meer)
     const b=btnEls[n];if(b)b.classList.toggle('on',!!g);}
   if(s.sel_g!==undefined){ for(let i=0;i<16;i++){const g=(s.sel_g>>i)&1,r=(s.sel_r>>i)&1,b=trkEls[i];
-    b.classList.toggle('on',!!(g||r)); b.style.setProperty('--c', g&&r ? '#FFB547' : (r ? '#ff5a5a' : '#7CFF8A')); } }
+    b.classList.toggle('on',!!(g||r)); b.style.setProperty('--c', r ? PAL.white : PAL.amber); } }
   // select-mode button of the current view lights up (as on the midiphy panel)
   if(s.sel_view!==undefined){ const SM={1:'BOOKMARK',2:'STEP_VIEW',3:'TRACK_SEL',4:'PAR_SEL',5:'TRG_SEL',6:'INS_SEL',7:'MUTE',8:'PHRASE'};
     for(const [v,n] of Object.entries(SM)){ const b=btnEls[n]; if(b) b.classList.toggle('on', +v===s.sel_view); } }
