@@ -12,7 +12,8 @@ left block with the datawheel (push) on its own at the top and below it, in a gr
 buttons (Track, Param, Trigger, Instr. / Step, Mute, Phrase, Bookm.; the active one lights up), Solo/Metr./Loop/Rec./Live and transport.
 One switch type for every button: MX-style switch (silent tactile, opaque housing with LED window) + SK6812 RGB LED,
 smoked translucent 18 x 18 mm caps (whole cap glows in the LED colour), drawn at real size; front plate with one cutout
-per row of keys. Identical 1U caps on a 19.05 mm grid (62 px), drawn to scale (1 mm = 3.255 px).
+per row of keys. Left-block buttons above the transport row: small APEM/MEC Multimec 3F keys with 10.6 mm square clear caps
+(SK6812 below), each in its own hole, on the same columns. 1U caps on a 19.05 mm grid (62 px), drawn to scale (1 mm = 3.255 px).
 OLEDs: Newhaven NHD-3.12-25664UC (3.12" SSD1322 256x64): PCB 89.2 x 44 mm (dashed), bezel 89 x 29.6 mm, active area
 76.78 x 19.18 mm (almost exactly above the 4 keys of a group), groups 91 mm apart, encoders below the OLED PCB.
 Panel about 475 mm wide (desktop case). The left
