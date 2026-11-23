@@ -526,6 +526,31 @@ static s32 disk_fill(void)
   return 0;
 }
 
+// While MENU is held: every GP column shows the page its button opens (replaces printed labels on the GP keys)
+static s32 menu_hold_fill(void)
+{
+  static const struct { seq_ui_page_t page; const char *name; } nice[] = {
+    {SEQ_UI_PAGE_MIXER,"MIXER"},{SEQ_UI_PAGE_TRKEVNT,"EVENT"},{SEQ_UI_PAGE_TRKMODE,"MODE"},{SEQ_UI_PAGE_TRKDIR,"DIRECT."},
+    {SEQ_UI_PAGE_TRKDIV,"DIVIDER"},{SEQ_UI_PAGE_TRKLEN,"LENGTH"},{SEQ_UI_PAGE_TRKTRAN,"TRANSP."},{SEQ_UI_PAGE_TRKGRV,"GROOVE"},
+    {SEQ_UI_PAGE_TRGASG,"TRIGGER"},{SEQ_UI_PAGE_FX,"FX"},{SEQ_UI_PAGE_MANUAL,"MANUAL"},{SEQ_UI_PAGE_TRKMORPH,"MORPH"},
+    {SEQ_UI_PAGE_BPM,"BPM"},{SEQ_UI_PAGE_SAVE,"SAVE"},{SEQ_UI_PAGE_MIDI,"MIDI"},{SEQ_UI_PAGE_SYSEX,"SYSEX"},
+  };
+  int k, i;
+  OG2_PageInit(&pg);
+  strcpy(pg.head[0], "MENU - CHOOSE A PAGE");
+  for(k=0; k<16; ++k) {
+    seq_ui_page_t page = SEQ_UI_PAGES_MenuShortcutPageGet(k);
+    const char *nm = 0;
+    og2_col_t *c;
+    for(i=0; i<(int)(sizeof(nice)/sizeof(nice[0])); ++i) if( nice[i].page == page ) nm = nice[i].name;
+    c = OG2_PageCol(&pg, k, OG2_C_CHOICE, 1, "PAGE");
+    if( nm ) strcpy(c->value, nm);
+    else { strncpy(c->value, SEQ_UI_PAGES_MenuShortcutNameGet(k), 5); gen_trim_upper(c->value, NULL); }
+    c->on = (page == ui_page);
+  }
+  return 0;
+}
+
 // pages that describe themselves as a column page (og2_page_t); < 0 = not available (text view instead)
 static s32 page_fill(void)
 {
@@ -798,7 +823,8 @@ s32 SEQ_OLED_Handler(void)
     int c;
     lcd_snapshot();
     // 0 step view, 6 Event, 7 Divider/Length/Direction, 8 Mode: own layouts; 9 = column page (own description or LCD converter)
-    if( ui_page == SEQ_UI_PAGE_EDIT ) cur_mode = 0;
+    if( seq_ui_button_state.MENU_PRESSED ) { menu_hold_fill(); cur_mode = 9; }   // MENU held: page shortcuts on the screens
+    else if( ui_page == SEQ_UI_PAGE_EDIT ) cur_mode = 0;
     else if( ui_page == SEQ_UI_PAGE_TRKEVNT && SEQ_UI_TRKEVNT_OledGet(&evt) >= 0 ) cur_mode = 6;
     else if( ui_page == SEQ_UI_PAGE_TRKDIV || ui_page == SEQ_UI_PAGE_TRKLEN || ui_page == SEQ_UI_PAGE_TRKDIR ) cur_mode = 7;
     else if( ui_page == SEQ_UI_PAGE_TRKMODE ) cur_mode = 8;
