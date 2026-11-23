@@ -2,14 +2,16 @@
 <style>
 :root{--amber:#FFB547;--bg:#16181b;--btn:#1b1d20;--btn2:#202226}
 body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;align-items:center}
-#wrap{position:relative;width:1545px;height:495px;margin:18px;background:linear-gradient(#1f2125,#17191c);border-radius:12px;
+#wrap{position:relative;width:1545px;height:520px;margin:18px;background:linear-gradient(#1f2125,#17191c);border-radius:12px;
       box-shadow:0 24px 60px #000a,0 0 0 1px #000;transform-origin:top center}
 .abs{position:absolute}
 .grp2{position:absolute;font-size:9px;color:#9a9a9a;letter-spacing:.06em;text-align:center}
-.btn{position:absolute;width:50px;height:40px;border-radius:8px;background:#2b2e33;border:1px solid #4d5158;box-sizing:border-box;box-shadow:inset 0 -4px 0 #44484e,0 2px 4px #000a;cursor:pointer;touch-action:none}
-.btn.on{background:#34363b;border-color:var(--c,#FFB547);box-shadow:inset 0 -5px 0 var(--c,#FFB547),0 0 16px var(--c,#FFB547)}
-.btn.page{background:#3a2a10;border-color:#FFB547;box-shadow:inset 0 -5px 0 #FFB547,0 0 12px #FFB54788}
-.btn.down{transform:translateY(2px)}.btn.latched{outline:2px solid #ffc400}.btn.na{opacity:.4;cursor:not-allowed}
+.btn{position:absolute;width:50px;height:40px;border-radius:7px;background:radial-gradient(ellipse at 50% 38%,#fbfaf7 0%,#ece9e3 55%,#d9d5cc 100%);border:1px solid #b9b3a7;box-sizing:border-box;box-shadow:0 3px 4px #000b,inset 0 -3px 0 #cfc9bd;cursor:pointer;touch-action:none}
+/* L4 superellipse light band: dark when off, glows in the LED colour when on */
+.btn::after{content:'';position:absolute;left:31%;right:31%;bottom:27%;height:5px;border-radius:4px;background:#45484d;box-shadow:inset 0 1px 1px #0008}
+.btn.on::after{background:var(--c,#FFB547);box-shadow:0 0 6px var(--c,#FFB547),0 0 14px var(--c,#FFB547)}
+.btn.page::after{background:#FFB547;box-shadow:0 0 6px #FFB547,0 0 14px #FFB547}
+.btn.down{transform:translateY(2px);box-shadow:0 1px 2px #000b,inset 0 -2px 0 #cfc9bd}.btn.latched{outline:2px solid #ffc400}.btn.na{opacity:.4;cursor:not-allowed}
 .lbl{position:absolute;width:70px;text-align:center;font-size:10px;font-weight:600;letter-spacing:.05em;color:#f0f0f0;white-space:nowrap}
 .side{position:absolute;font-size:9px;color:#aaa}
 .enc.pushed{box-shadow:inset 0 0 0 2px #FFB547,0 0 10px #FFB547}
@@ -79,17 +81,17 @@ function encoder(name,x,y,size,cls,o={}){
 /* ---------- midiphy SEQ v4+ layout (left-handed, as on the photo), with 4 OLEDs instead of 2 LCDs ---------- */
 el('foot','left:auto;right:30px','').innerHTML='MIDIBOX <b>SEQ</b> V4+ · 4x OLED';
 /* One switch type for every button: identical square 1U caps on the 19.05 mm grid (62 px = 19.05 mm, 4 columns = one OLED).
-   Rows: encoders 160, GP 203, select 271, function 339, (left only) transport 407. */
-const CAP={w:50,h:50};
-const LX=k=>26+k*62;                                  // left block: 5 columns on the same grid
+   Rows: encoders 160, GP 203, select 277, function 351, (left only) transport 425 (74 px apart: cap + label). */
+const CAP={w:56,h:56};          // DSA 1U cap on a Matias switch (~17.2 mm visible)
+const LX=k=>23+k*62;                                  // left block: 5 columns on the same grid
 const dw=encoder('DATAWHEEL',126,44,104,'dw',{push:'PUSH_DW'});el('lbl','left:143px;top:152px','DATA');
 const beat=el('beat','');beat.style.left='266px';beat.style.top='86px';el('lbl','left:240px;top:108px','BEAT');
 el('grp2','left:26px;top:189px;width:298px','SELECT MODE');
 [['STEP_VIEW','STEP'],['TRACK_SEL','TRACK'],['PAR_SEL','PARAM.'],['TRG_SEL','TRIGGER'],['INS_SEL','INSTR.']].forEach(([n,l],k)=>button(n,LX(k),203,l,'#4FE3F0',CAP));
-[['MUTE','MUTE'],['PHRASE','PHRASE'],['BOOKMARK','BOOKM.']].forEach(([n,l],k)=>button(n,LX(k),271,l,'#4FE3F0',CAP));
-[['SOLO','SOLO'],['METRONOME','METR.']].forEach(([n,l],k)=>button(n,LX(3+k),271,l,'#FFB547',CAP));
-[['LOOP','LOOP'],['RECORD','REC.'],['LIVE','LIVE']].forEach(([n,l],k)=>button(n,LX(k),339,l,n==='RECORD'?'#ff5a5a':'#FFB547',CAP));
-[['REW','◀◀'],['FWD','▶▶'],['STOP','■'],['PLAY','▶'],['PAUSE','❚❚']].forEach(([n,l],k)=>button(n,LX(k),407,l,n==='PLAY'?'#7CFF8A':'#ffffff',CAP));
+[['MUTE','MUTE'],['PHRASE','PHRASE'],['BOOKMARK','BOOKM.']].forEach(([n,l],k)=>button(n,LX(k),277,l,'#4FE3F0',CAP));
+[['SOLO','SOLO'],['METRONOME','METR.']].forEach(([n,l],k)=>button(n,LX(3+k),277,l,'#FFB547',CAP));
+[['LOOP','LOOP'],['RECORD','REC.'],['LIVE','LIVE']].forEach(([n,l],k)=>button(n,LX(k),351,l,n==='RECORD'?'#ff5a5a':'#FFB547',CAP));
+[['REW','◀◀'],['FWD','▶▶'],['STOP','■'],['PLAY','▶'],['PAUSE','❚❚']].forEach(([n,l],k)=>button(n,LX(k),425,l,n==='PLAY'?'#7CFF8A':'#ffffff',CAP));
 /* right part: 4 OLEDs, 16 push encoders, 16 GP buttons, 16 select buttons, 16 round function buttons */
 // Scale: 62 px = 19.05 mm (1U key pitch), MM = px per mm. OLED: Newhaven NHD-3.12-25664UC (datasheet rev. 7, 2024):
 // PCB 89.2 x 44.0 mm, bezel 89.0 x 29.6 mm (6.6 mm above PCB bottom), bezel opening 82.0 x 22.0 mm (11.0 mm above PCB bottom),
@@ -111,12 +113,12 @@ const trkEls=[];
 for(let i=0;i<16;i++){
   const cx=CX[i];
   encoder('GP'+(i+1),cx-17,160,0,null,{push:'PUSH'+(i+1)});
-  button('GP'+(i+1),cx-25,203,GPL[i],'#FFB547',CAP);
-  trkEls.push(button('TRK'+(i+1),cx-25,271,null,'#4FE3F0',CAP));      // select buttons: no labels (as on the midiphy panel)
+  button('GP'+(i+1),cx-28,203,GPL[i],'#FFB547',CAP);
+  trkEls.push(button('TRK'+(i+1),cx-28,277,null,'#4FE3F0',CAP));      // select buttons: no labels (as on the midiphy panel)
 }
 const BOT=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SELECT','DOWN','UP','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
 const BOTL=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SHIFT','<','>','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
-BOT.forEach((n,i)=>button(n,CX[i]-25,339,BOTL[i],'#FFB547',CAP));
+BOT.forEach((n,i)=>button(n,CX[i]-28,351,BOTL[i],'#FFB547',CAP));
 /* ---------- OLED-inhoud (benadering uit de huidige LCD-tekst) ---------- */
 const stepNote=Array(16).fill('----'),stepOn=Array(16).fill(false),stepCur=Array(16).fill(false);
 function drawOled(d){
@@ -180,7 +182,7 @@ function update(s){
   if(s.beat_seq!==undefined&&s.beat_seq!==lastBeatSeq){ if(lastBeatSeq!==null){ beat.classList.add('on'); beat.style.opacity=(s.beat_n===0)?'1':'0.7'; clearTimeout(beatTimer); beatTimer=setTimeout(()=>beat.classList.remove('on'),90); } lastBeatSeq=s.beat_seq; }
 }
 /* ---------- schalen + live ---------- */
-function fit(){const s=Math.min(1,(innerWidth-40)/1581);W.style.transform=`scale(${s})`;W.style.marginBottom=(495*s-495+18)+'px';}
+function fit(){const s=Math.min(1,(innerWidth-40)/1581);W.style.transform=`scale(${s})`;W.style.marginBottom=(520*s-520+18)+'px';}
 addEventListener('resize',fit);fit();
 document.getElementById('sync').onclick=e=>{e.preventDefault();api('/api/sync');};
 for(let d=0;d<4;d++)drawOled(d);

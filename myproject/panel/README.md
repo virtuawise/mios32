@@ -10,7 +10,8 @@ Stop it with Ctrl+C (SIGINT) so the SEQ leaves remote mode; it holds the MIDI po
 Arranged after a photo of the real (left-handed) midiphy SEQ v4+, with 4 OLEDs instead of its 2 LCDs:
 left block with the datawheel (push) on its own at the top and below it, in a grid aligned with the right rows, the 8 select-mode
 buttons (Track, Param, Trigger, Instr. / Step, Mute, Phrase, Bookm.; the active one lights up), Solo/Metr./Loop/Rec./Live and transport.
-One switch type for every button: identical square 1U caps on a 19.05 mm grid (62 px), drawn to scale (1 mm = 3.255 px).
+One switch type for every button: Matias Quiet Click + RGB LED with midiphy L4 Superellipse DSA caps (white cap, light band lit in
+the LED colour; drawn as such). Identical 1U caps on a 19.05 mm grid (62 px), drawn to scale (1 mm = 3.255 px).
 OLEDs: Newhaven NHD-3.12-25664UC (3.12" SSD1322 256x64): PCB 89.2 x 44 mm (dashed), bezel 89 x 29.6 mm, active area
 76.78 x 19.18 mm (almost exactly above the 4 keys of a group), groups 91 mm apart, encoders below the OLED PCB.
 Panel about 475 mm wide (desktop case). The left
