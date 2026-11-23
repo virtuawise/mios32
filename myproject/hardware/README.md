@@ -199,3 +199,22 @@ plate opening, every standoff >= 1 mm from cut-outs/holes/edge -> **OK**. DRC of
 Consequences already applied: the Newhaven is soldered directly (a 1x20 socket would put the glass at 14.5 mm, above the
 panel), the 220 uF capacitor of the left PCB is on the back (7.7 mm tall). If the big caps stick out too far with the chosen
 profile, use a lower profile (DSA/flat) rather than raising the panel – the small keys only have 3.3 mm.
+
+## Case with AOUT / DOUT modules (gates, CV) – how it fits in
+- **DOUT gate/trigger modules (MBHP_DOUTX4)**: in the same SRIO chain as the panel. The DOUT data (SO) runs core J8 ->
+  left PCB (DOUT SR 1-2) -> through all 4 column PCBs unchanged -> **column 4, J2** (same 2x5 pinout as core J8/J9: GND,
+  +5 V, SO, SC, RC1). A ribbon from there to the first DOUTX4 makes it DOUT SR 3, the next one SR 4, ...
+  In the hwcfg: `DOUT_GATE_SR1 3` etc. SR 3-16 are free: the virtual registers for the RGB key LEDs sit at SR 17-23
+  (`SRIO_NUM_SR 23`). Keep the whole chain short (< ~1 m of ribbon in total).
+- **AOUT (MBHP_AOUT / AOUT_NG / AOUT_LC)**: on the core's **J19** (own SPI port) – nothing to do with the panel PCBs.
+  Gates without a DOUT module: core **J5A/J5B** (`J5_ENABLED 1`). Both connectors stay free in this design.
+- **Core connectors used by the panel**: J8/J9 (SRIO), J15A (OLEDs), J4B (RGB LED data, PB6). Still free: J19 (AOUT),
+  J5A/B (gates), J4A (IIC), J11 (MIDI), J16 (SD), J10.
+- **Power**: 5 V for logic + LEDs + OLED boost (>= 4 A) and +-12 V for the AOUT op-amps, e.g. one triple-output supply.
+  Each rail gets its GND back to **one star point** (the 5 V LED input of the left PCB is that point for the panel).
+- **Ground loops with a modular/synth**: CV/gate jacks on the rear panel with plastic (isolated) sockets, their ground
+  only through the AOUT/DOUT module back to the star point; MIDI is opto-isolated; USB brings the computer's ground ->
+  if a loop hums, a USB isolator, never a lifted ground. Metal case: tied to GND at one point, at the power inlet.
+- **Mechanics**: everything hangs behind the front panel / switch plate; the PCBs have their IDC/power connectors on the
+  back (about 9 mm). Core, AOUT and DOUT modules go on the case floor or the rear panel, ribbons to the left PCB (core)
+  and to column 4 J2 (DOUT). Allow ~25 mm under the key PCBs for connectors and cables.
