@@ -119,7 +119,7 @@ for(let d=0;d<4;d++)[203,281,359].forEach(y=>cut(CX[d*4]-29,CX[d*4+3]+29,y));   
 for(let i=0;i<16;i++){
   const cx=CX[i];
   encoder('GP'+(i+1),cx-17,160,0,null,{push:'PUSH'+(i+1)});
-  button('GP'+(i+1),cx-29,203,GPL[i],'#FFB547',CAP);
+  button('GP'+(i+1),cx-29,203,null,'#FFB547',CAP);      // no printed labels: the OLEDs show what the keys do
   trkEls.push(button('TRK'+(i+1),cx-29,281,null,'#4FE3F0',CAP));      // select buttons: no labels (as on the midiphy panel)
 }
 const BOT=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SELECT','DOWN','UP','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
