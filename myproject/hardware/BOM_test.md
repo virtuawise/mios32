@@ -157,3 +157,11 @@ Black/red caps dropped again (opaque). **1T16 frosted white**: DigiKey 0 in stoc
 - **Solo, Metr., Loop, Rec., Live (S9-S13): frosted white 1T16 with LED** – these show on/off states. 1T16 at RS 495-2501
   (1 pack of 10). LEDs 2x3x4 mm: 4 yellow (Solo, Metr., Loop, Live) + 1 red (Rec.), plus spares.
 - Optional firmware idea: colour the 16 select keys per select mode, so the mode stays visible without the small LEDs.
+
+### Big keys at DigiKey (live check 2026-11-23)
+- **Cap: Adafruit 5008 "Translucent Smoke DSA Keycaps for MX" 10-pack = 1528-5008-ND**, 25 packs in stock, $5.95/pack.
+  DSA is a low, uniform profile (lower than XDA) -> the caps stick out less than the ~8 mm estimated for an 18 mm cap (VERIFY).
+- **Switch:** Cherry MX Silent (MX3A-11NW silent black, MX3A-L1NW silent red, PCB mount) are listed but **not stocked**
+  (factory order only). In stock: Adafruit **4954 = Kailh tactile brown 10-pack (1528-4954-ND, 10 packs)** and 4955 = Kailh
+  white clicky (1528-4955-ND, 52). Fine for the fit/feel test, but not silent - for the build buy Cherry MX Silent
+  (PCB mount, black housing) at a keyboard shop.
