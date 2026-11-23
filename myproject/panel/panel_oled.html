@@ -13,6 +13,11 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
 .btn.page{background:radial-gradient(ellipse at 50% 45%,#fffaf2 0%,#bfb3a0 55%,#4d473f 100%);box-shadow:0 0 10px #FFF0DA88}
 /* front plate: one cutout per row of keys (panel material only between rows and groups) */
 .btn.small{border-radius:3px;border-color:#2a2c30;box-shadow:0 1px 2px #000c,inset 0 0 0 1px #ffffff14}
+/* small keys: APEM 1T16 cap = frosted white (no smoked version exists): milky white when off, glows in the LED colour when on */
+.btn.small:not(.on){background:radial-gradient(ellipse at 50% 40%,#e4e1da 0%,#c9c5bd 60%,#a9a59d 100%);border-color:#6f6c66;box-shadow:0 1px 2px #000c,inset 0 1px 0 #ffffff80}
+.btn.small.on{border-color:#6f6c66;background:radial-gradient(ellipse at 50% 45%,#ffffff 0%,color-mix(in srgb,var(--c,#FFB547) 65%,#fff) 45%,color-mix(in srgb,var(--c,#FFB547) 90%,#c8c4bc) 100%);box-shadow:0 0 14px color-mix(in srgb,var(--c,#FFB547) 75%,transparent),inset 0 1px 0 #ffffffa0}
+/* compare: round 1U16 caps instead of the square 1T16 (key C, or ?caps=round) */
+body.roundcaps .btn.small,body.roundcaps .cut.scut{border-radius:50%}
 .cut{position:absolute;background:#08090a;border-radius:4px;box-shadow:inset 0 2px 4px #000}
 .btn.down{transform:translateY(2px);box-shadow:0 1px 1px #000c}.btn.latched{outline:2px solid #ffc400}.btn.na{opacity:.4;cursor:not-allowed}
 .lbl{position:absolute;width:70px;text-align:center;font-size:10px;font-weight:600;letter-spacing:.05em;color:#f0f0f0;white-space:nowrap}
@@ -93,7 +98,7 @@ const SCAP={w:35,h:35};          // small key: APEM MEC Multimec 3FTH9 (10 x 10 
 const SOFF=(58-35)/2;            // centred on the big-key grid
 const SROW=[174.5,228.5,282.5];  // small key rows (top of the 58 px slot): 54 px = 16.6 mm apart (cap + label)
 const SCUTM=0.2*62/19.05;          // small keys: 11.0 x 11.0 mm panel hole for the 10.6 mm 1T cap (APEM)
-function sbutton(n,k,y,l,c){ el('cut',`left:${LX(k)+SOFF-SCUTM}px;top:${y+SOFF-SCUTM}px;width:${SCAP.w+2*SCUTM}px;height:${SCAP.h+2*SCUTM}px`);
+function sbutton(n,k,y,l,c){ el('cut scut',`left:${LX(k)+SOFF-SCUTM}px;top:${y+SOFF-SCUTM}px;width:${SCAP.w+2*SCUTM}px;height:${SCAP.h+2*SCUTM}px`);
   const b=button(n,LX(k)+SOFF,y+SOFF,l,c,SCAP); b.classList.add('small'); return b; }
 function cut(x0,x1,y){el('cut',`left:${x0-CUTM}px;top:${y-CUTM}px;width:${x1-x0+2*CUTM}px;height:${CAP.h+2*CUTM}px`);}
 const LX=k=>22+k*62;                                  // left block: 5 columns on the same grid
@@ -204,4 +209,7 @@ for(let d=0;d<4;d++)drawOled(d);
 const es=new EventSource('/events');
 es.onmessage=ev=>{const s=JSON.parse(ev.data);update(s);const st=document.getElementById('st');st.textContent=s.online?'online':'offline';st.className=s.online?'on':'off';};
 es.onerror=()=>{const st=document.getElementById('st');st.textContent='server gone';st.className='off';};
+</script><script>
+if(new URLSearchParams(location.search).get('caps')==='round')document.body.classList.add('roundcaps');
+addEventListener('keydown',e=>{if(e.key==='c'||e.key==='C')document.body.classList.toggle('roundcaps');});
 </script></body></html>
