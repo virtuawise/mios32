@@ -102,19 +102,11 @@ for(let i=0;i<16;i++){
   const cx=CX[i];
   encoder('GP'+(i+1),cx-17,104,0,null,{push:'PUSH'+(i+1)});
   button('GP'+(i+1),cx-26,148,GPL[i],'#FFB547',{w:52,h:38});
-  trkEls.push(button('TRK'+(i+1),cx-26,206,'G'+(Math.floor(i/4)+1)+'T'+(i%4+1),'#4FE3F0',{w:52,h:38}));
+  trkEls.push(button('TRK'+(i+1),cx-26,206,null,'#4FE3F0',{w:52,h:38}));      // select buttons: no labels (as on the midiphy panel)
 }
 const BOT=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SELECT','DOWN','UP','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
 const BOTL=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SHIFT','<','>','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
 BOT.forEach((n,i)=>button(n,CX[i]-15,276,BOTL[i],'#FFB547',RB));
-// labels of the 16 select buttons follow the selection view (what the buttons select at this moment)
-const trkLbl=trkEls.map(b=>b.nextSibling);
-const selName=el('grp2','left:236px;top:220px;width:48px;text-align:right;color:#4FE3F0','TRACK');
-const VIEWS={1:['BOOKMRK',i=>'BM'+(i+1)],2:['STEPS',i=>''],3:['TRACK',i=>'G'+(Math.floor(i/4)+1)+'T'+(i%4+1)],
-  4:['LAYER',i=>'PAR '+String.fromCharCode(65+i)],5:['TRIGGER',i=>'TRG '+String.fromCharCode(65+i)],6:['INSTR.',i=>'INS '+(i+1)],
-  7:['MUTE',i=>'G'+(Math.floor(i/4)+1)+'T'+(i%4+1)],8:['PHRASE',i=>String.fromCharCode(65+i)]};
-let lastView=-1;
-function selLabels(v){ if(v===lastView||!VIEWS[v])return; lastView=v; const [n,f]=VIEWS[v]; selName.textContent=n; trkLbl.forEach((l,i)=>l.textContent=f(i)); }
 /* ---------- OLED-inhoud (benadering uit de huidige LCD-tekst) ---------- */
 const stepNote=Array(16).fill('----'),stepOn=Array(16).fill(false),stepCur=Array(16).fill(false);
 function drawOled(d){
@@ -170,7 +162,6 @@ function update(s){
   for(const[n,[g,r]]of Object.entries(s.leds)){
     if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!ownLayout&&!!(g||r));continue;}   // GP-knoppen lopen mee met de sequencer in alle pagina's (de OLED's tonen geen afspeelstap meer)
     const b=btnEls[n];if(b)b.classList.toggle('on',!!g);}
-  if(s.sel_view!==undefined) selLabels(s.sel_view);
   if(s.sel_g!==undefined){ for(let i=0;i<16;i++){const g=(s.sel_g>>i)&1,r=(s.sel_r>>i)&1,b=trkEls[i];
     b.classList.toggle('on',!!(g||r)); b.style.setProperty('--c', g&&r ? '#FFB547' : (r ? '#ff5a5a' : '#7CFF8A')); } }
   // select-mode button of the current view lights up (as on the midiphy panel)
