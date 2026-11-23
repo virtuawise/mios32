@@ -65,7 +65,7 @@ DigiKey's BOM Manager / "Bulk add" accepts the manufacturer part numbers (MPN) b
 | Encoder | Alps EC11E15244G1 (vertical, 20 mm flat shaft, 30 detents, push) | 4809-EC11E15244G1-ND | DigiKey 0 in stock (20 wk); **TME in stock** |
 | Standoff | Würth 97730506330R | (search the MPN; 3/4 mm siblings are 732-13681/13683) | |
 | Small key | APEM 3FTH965 / 3FTH940 / 3FTH980 | not at DigiKey | **Mouser 642-3FTH965: not stocked, MOQ 100, 20 weeks** |
-| Cap small key | APEM 1T16 (1T, frosted white) | – | Mouser pattern 642-1T16 |
+| Cap small key | APEM 1T16 (1T, frosted white) | 679-2121-ND | in stock |
 | 74HC165 | Nexperia 74HC165D,653 | MPN | |
 | 74HC595 | Nexperia 74HC595D,118 | MPN | |
 | Buffer | TI SN74AHCT1G125DBVR | MPN | |
@@ -96,7 +96,7 @@ AliExpress/Component Shop). With 680 R: white ~2.7 mA, red ~4.4 mA – match bri
 | Encoder EC11E15244G1 | listed (stock varies, 0-491) | yes, 753 pcs, $5.02 | yes, ~1291 pcs | yes, ~1676 pcs, ~$1.31 |
 | SK6812MINI-E | Adafruit 4960 10-pack (1528-4960-ND) ~$0.30/LED | not found | not found | **C5149201**, ~$0.05-0.08/LED |
 | APEM 3FTH9 | yes (large stock) | yes, ~1467 pcs, $3.41 | not found | not found |
-| APEM 1T16 cap | not confirmed | not confirmed | listed, stock unknown | – |
+| APEM 1T16 cap | **679-2121-ND**, ~439 pcs, ~$0.88 | not confirmed | listed, stock unknown | – |
 | Würth 97730506330R | yes, ~$0.88 | not found | not found | – (Bürklin 18H8953, €0.98) |
 | ICs / passives / headers | yes | yes | yes | yes, cheapest |
 | 2x3x4 mm LEDs | – | – | – | generic (also eBay / Component Shop UK) |
@@ -106,5 +106,6 @@ AliExpress/Component Shop). With 680 R: white ~2.7 mA, red ~4.4 mA – match bri
   ICs/passives, EC11E when in stock). Shipping to NL is free above a minimum order value, prices include import duties.
 - **Full build: LCSC + JLCPCB** for the PCBs, SMD assembly and the cheap parts (SK6812MINI-E ~6x cheaper, EC11E ~4x),
   DigiKey or Mouser only for the OLEDs, 3FTH9 and the Würth standoffs.
-- **Open problem: the 1T16 cap** (0 stock, MOQ 100 at Newark/Sager). Ask TME/Mouser, or choose another 3F cap that is
-  in stock (the PCB and the 11 x 11 mm hole only fit the 10.6 mm square 1T).
+- **1T16 cap: DigiKey 679-2121-ND** (in stock; Newark/Sager only MOQ 100). Fallbacks that fit the 3F, also frosted
+  white at DigiKey: 1U16 (round 10.6 mm, 679-2125-ND) or 1KS1116 (square 14.3 mm, 679-3950-ND) – both would need a
+  different panel hole.
