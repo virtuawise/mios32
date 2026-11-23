@@ -6,13 +6,13 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
       box-shadow:0 24px 60px #000a,0 0 0 1px #000;transform-origin:top center}
 .abs{position:absolute}
 .grp2{position:absolute;font-size:9px;color:#9a9a9a;letter-spacing:.06em;text-align:center}
-/* keycap colour: black (white: --cap1:#fbfaf7;--cap2:#ece9e3;--cap3:#d9d5cc;--capb:#b9b3a7;--caps:#cfc9bd) */
+/* keycap colour (black top of the pudding cap) */
 :root{--cap1:#3a3c40;--cap2:#26282b;--cap3:#18191b;--capb:#0c0d0e;--caps:#111214}
 .btn{position:absolute;width:50px;height:40px;border-radius:7px;background:radial-gradient(ellipse at 50% 38%,var(--cap1) 0%,var(--cap2) 55%,var(--cap3) 100%);border:1px solid var(--capb);box-sizing:border-box;box-shadow:0 3px 4px #000b,inset 0 -3px 0 var(--caps);cursor:pointer;touch-action:none}
-/* L4 superellipse light band: dark when off, glows in the LED colour when on */
-.btn::after{content:'';position:absolute;left:31%;right:31%;bottom:27%;height:5px;border-radius:4px;background:#4a4d52;box-shadow:inset 0 1px 1px #000a}
-.btn.on::after{background:var(--c,#FFB547);box-shadow:0 0 6px var(--c,#FFB547),0 0 14px var(--c,#FFB547)}
-.btn.page::after{background:#FFB547;box-shadow:0 0 6px #FFB547,0 0 14px #FFB547}
+/* MX switch + SK6812 RGB LED below, black "pudding" cap: black top, translucent skirt -> the LED shows as a glowing edge */
+.btn::after{content:'';position:absolute;inset:-3px;border-radius:9px;box-shadow:0 0 0 2px #2c2e31;pointer-events:none}
+.btn.on::after{box-shadow:0 0 0 2px var(--c,#FFB547),0 0 10px var(--c,#FFB547),0 0 18px var(--c,#FFB547)}
+.btn.page::after{box-shadow:0 0 0 2px #FFB547,0 0 10px #FFB547,0 0 18px #FFB547}
 .btn.down{transform:translateY(2px);box-shadow:0 1px 2px #000b,inset 0 -2px 0 var(--caps)}.btn.latched{outline:2px solid #ffc400}.btn.na{opacity:.4;cursor:not-allowed}
 .lbl{position:absolute;width:70px;text-align:center;font-size:10px;font-weight:600;letter-spacing:.05em;color:#f0f0f0;white-space:nowrap}
 .side{position:absolute;font-size:9px;color:#aaa}
@@ -84,7 +84,7 @@ function encoder(name,x,y,size,cls,o={}){
 el('foot','left:auto;right:30px','').innerHTML='MIDIBOX <b>SEQ</b> V4+ · 4x OLED';
 /* One switch type for every button: identical square 1U caps on the 19.05 mm grid (62 px = 19.05 mm, 4 columns = one OLED).
    Rows: encoders 160, GP 203, select 277, function 351, (left only) transport 425 (74 px apart: cap + label). */
-const CAP={w:56,h:56};          // DSA 1U cap on a Matias switch (~17.2 mm visible)
+const CAP={w:54,h:54};          // 1U cap on an MX switch (~16.6 mm top, skirt glows around it)
 const LX=k=>23+k*62;                                  // left block: 5 columns on the same grid
 const dw=encoder('DATAWHEEL',126,44,104,'dw',{push:'PUSH_DW'});el('lbl','left:143px;top:152px','DATA');
 const beat=el('beat','');beat.style.left='266px';beat.style.top='86px';el('lbl','left:240px;top:108px','BEAT');
