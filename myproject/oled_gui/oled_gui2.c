@@ -842,12 +842,23 @@ static void pg_box(u8 (*d)[CW], const og2_page_t *p, int j)
     frame_box(d, x0-1, y-1, w+2, h+2, 4); rect(d, x0, y, f, h, c->dim ? 5 : 12);
     for(int i=1; i<n; ++i) for(int yy=y+h+3; yy<y+h+6; ++yy) px(d, ebx(j+i)-3, yy, 6);   // column borders: the button below sets that position
   } break;
-  case OG2_C_KEYS: {
+  case OG2_C_KEYS: {          // keyboard as note blocks: naturals below, sharps above; lit = keys bit set, root = meter (0-11, 0xff none)
     if( c->value[0] ) elabel_right(d, j, n, c->value, 12);
     static const u8 white[7] = {0,2,4,5,7,9,11}, black[5] = {1,3,6,8,10}, bpos[5] = {1,2,4,5,6};
-    int x0 = ebx(j)+8, w = ebw(n)-16, kw = w / 7, y = 26, hh = 28;
-    for(int i=0; i<7; ++i){ int lit = (c->keys >> white[i]) & 1; if( lit ) rect(d, x0+i*kw+1, y+1, kw-1, hh-1, 13); frame_box(d, x0+i*kw, y, kw+1, hh+1, 7); }
-    for(int i=0; i<5; ++i){ int lit = (c->keys >> black[i]) & 1, bx = x0 + bpos[i]*kw - kw/3; rect(d, bx, y, (2*kw)/3, hh*6/10, lit ? 15 : 1); frame_box(d, bx, y, (2*kw)/3, hh*6/10, 7); }
+    static const char *nm[12] = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
+    int x0 = ebx(j)+6, w = ebw(n)-12, kw = w / 7;
+    for(int pass=0; pass<2; ++pass){
+      for(int i=0; i<(pass ? 5 : 7); ++i){
+        int key = pass ? black[i] : white[i];
+        int kx = pass ? x0 + bpos[i]*kw - kw/2 + 1 : x0 + i*kw + 1, ky = pass ? 25 : 41, kh = 13, kww = kw - 2;
+        int lit = (c->keys >> key) & 1, root = (c->meter == key);
+        if( lit ) rect(d, kx, ky, kww, kh, c->dim ? 6 : 13); else frame_box(d, kx, ky, kww, kh, 4);
+        if( root ) { frame_box(d, kx-1, ky-1, kww+2, kh+2, 15); }
+        int tx = kx + kww/2 - tw(LFONT, nm[key], 1)/2;
+        text(d, LFONT, tx, ky + 3, nm[key], 1, lit ? 0 : 6);
+        if( lit ) text(d, LFONT, tx+1, ky + 3, nm[key], 1, 0);
+      }
+    }
   } break;
   default: break;
   }

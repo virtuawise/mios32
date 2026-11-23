@@ -20,6 +20,9 @@
 
 #include "seq_lcd.h"
 #include "seq_ui.h"
+#include <string.h>
+#include <stdio.h>
+#include "oled_gui2.h"
 
 #include "seq_file.h"
 #include "seq_file_c.h"
@@ -282,6 +285,38 @@ static s32 EXIT_Handler(void)
   return status;
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED (myproject): GP3 root, GP4-8 scale, GP9-16 keyboard with the notes of the scale (display only)
+/////////////////////////////////////////////////////////////////////////////
+s32 SEQ_UI_FX_SCALE_OledGet(og2_page_t *p)
+{
+  static const char *nn[12] = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
+  u8 scale, root_selection, root;
+  og2_col_t *c;
+  int k;
+  SEQ_CORE_FTS_GetScaleAndRoot(SEQ_UI_VisibleTrackGet(), ui_selected_step, ui_selected_instrument, NULL, &scale, &root_selection, &root);
+  OG2_PageInit(p);
+  strcpy(p->head[0], "FX SCALE (GLOBAL)");
+  strcpy(p->head[2], "NOTES IN THE SCALE");
+  c = OG2_PageCol(p, 2, OG2_C_VALUE, 1, "ROOT");
+  strcpy(c->value, root_selection ? nn[(root_selection - 1) % 12] : "KEYB");
+  c = OG2_PageCol(p, 3, OG2_C_VALUE, 5, "SCALE");
+  sprintf(c->label, "SCALE %d", scale);
+  strncpy(c->value, SEQ_SCALE_NameGet(scale), sizeof(c->value)-1);
+  { int e = strlen(c->value); while( e > 0 && c->value[e-1] == ' ' ) c->value[--e] = 0; }
+  c = OG2_PageCol(p, 8, OG2_C_KEYS, 8, "KEYBOARD");
+  for(k=0; k<12; ++k)
+    if( (SEQ_SCALE_NoteValueGet(k, scale, root) % 12) == k )   // the key stays itself: it belongs to the scale
+      c->keys |= 1 << k;
+  c->meter = root % 12;
+  sprintf(c->value, "ROOT %s", nn[root % 12]);
+  switch( ui_selected_item ) {
+  case ITEM_SCALE_ROOT: p->sel = 0x0004; break;
+  case ITEM_SCALE: p->sel = 0x00f8; break;
+  }
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Initialisation

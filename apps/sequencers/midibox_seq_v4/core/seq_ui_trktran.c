@@ -413,6 +413,7 @@ s32 SEQ_UI_TRKTRAN_OledGet(og2_page_t *p)
   c = OG2_PageCol(p, 3, OG2_C_VALUE, 1, "TOTAL"); tran_sgn(c->value, total, " ST"); c->dim = (total == 0);
   c = OG2_PageCol(p, 4, OG2_C_KEYS, 4, "C BECOMES");
   c->keys = 1 << key;
+  c->meter = 0;              // C is where the transposition starts
   { int okt = (total - key) / 12; if( okt ) { char o[8]; tran_sgn(o, okt, " OCT"); sprintf(c->value, "%s, %s", tran_note[key], o); } else strcpy(c->value, tran_note[key]); }
   for(i=0; i<8; ++i) {
     u8 v = scaled_semitone_tab[i];

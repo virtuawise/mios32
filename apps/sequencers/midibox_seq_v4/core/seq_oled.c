@@ -58,6 +58,7 @@ extern s32 SEQ_UI_MENU_OledGet(og2_page_t *p);
 extern s32 SEQ_UI_BPM_OledGet(og2_page_t *p);
 extern s32 SEQ_UI_OPT_OledGet(og2_page_t *p);
 extern s32 SEQ_UI_INFO_OledGet(og2_page_t *p);
+extern s32 SEQ_UI_FX_SCALE_OledGet(og2_page_t *p);
 
 /////////////////////////////////////////////////////////////////////////////
 // Stable copy of LCD row 2: the cursor blinks the selected value away for a moment; such characters are kept for
@@ -108,7 +109,6 @@ static const lcd_item_t it_lfo[]  = { {0x0001,"TRACK"},{0x0002,"WAVE"},{0x0004,"
 static const lcd_item_t it_dup[]  = { {0x0001,"TRACK"},{0x0002,"ENABLE"},{0x001c,"CHANNELS"},{0x00e0,"FIRST CHANNEL"},{0x0100,"PORT"},
 				      {0x0600,"NON-NOTES"},{0xf800,"MODE"} };
 static const lcd_item_t it_loop[] = { {0x001f,"LOOP MODE"},{0x0020,"OFFSET"},{0x0040,"STEPS"},{0x0100,"LOOP"} };
-static const lcd_item_t it_scl[]  = { {0x0004,"ROOT"},{0x00f8,"SCALE"} };
 
 #define LP(pg, t, trk, h0, h1, h2, h3, arr) { pg, t, trk, { h0, h1, h2, h3 }, sizeof(arr)/sizeof(lcd_item_t), arr }
 static const lcd_page_t lcd_pages[] = {
@@ -119,7 +119,6 @@ static const lcd_page_t lcd_pages[] = {
   LP(SEQ_UI_PAGE_FX_LFO,      "FX LFO",       1, "", "", "TARGETS", "EXTRA CC", it_lfo),
   LP(SEQ_UI_PAGE_FX_DUPL,     "FX DUPLICATE", 1, "", "", "", "", it_dup),
   LP(SEQ_UI_PAGE_FX_LOOP,     "FX LOOP (GLOBAL)", 0, "", "", "", "", it_loop),
-  LP(SEQ_UI_PAGE_FX_SCALE,    "FX SCALE (GLOBAL)", 0, "", "", "", "", it_scl),
 };
 
 
@@ -541,6 +540,7 @@ static s32 page_fill(void)
     case SEQ_UI_PAGE_MIDIMON:  return midimon_fill();
     case SEQ_UI_PAGE_TRKLIVE:  return message_fill();
     case SEQ_UI_PAGE_INFO:     return SEQ_UI_INFO_OledGet(&pg);
+    case SEQ_UI_PAGE_FX_SCALE: return SEQ_UI_FX_SCALE_OledGet(&pg);
     case SEQ_UI_PAGE_DISK:     return disk_fill();
     default:                   return (lcd_page_fill() >= 0) ? 0 : lcd_generic_fill();
   }

@@ -112,7 +112,8 @@ typedef enum {
   OG2_C_TEXT,       // label + up to 3 lines of page.text, separated by '|'
   OG2_C_GRAPH,      // label + bar graph of page.graph[] (signed, centre line), value = text right in the label row
   OG2_C_METER,      // label + value + horizontal meter (meter = 0..100)
-  OG2_C_KEYS,       // label + one-octave keyboard: keys = bit mask of lit keys (bit 0 = C), value = text right in the label row
+  OG2_C_KEYS,       // label + one-octave keyboard as note blocks: keys = lit keys (bit 0 = C), meter = root key (0-11, 0xff = none),
+                    // value = text right in the label row
   OG2_C_ROW,        // label over several columns, value = one text per column separated by '|', centred above each GP button;
                     // a text starting with '>' is the marked choice (filled chip)
   OG2_C_SPAN        // continuation of the box that starts in a column to the left
@@ -122,7 +123,7 @@ typedef struct {
   u8 span;          // number of columns of the box (1-16), only in the first column
   u8 on;            // TOGGLE/CHOICE: active
   u8 dim;           // not applicable
-  u8 meter;         // METER: 0..100
+  u8 meter;         // METER: 0..100; KEYS: root key
   u16 keys;         // KEYS: lit keys
   char label[24];
   char value[28];
