@@ -94,7 +94,7 @@ AliExpress/Component Shop). With 680 R: white ~2.7 mA, red ~4.4 mA – match bri
 |---|---|---|---|---|
 | OLED NHD-3.12-25664UCY2 | yes, ~$38 | yes, 234 pcs, $42.59 | not found | not found |
 | Encoder EC11E15244G1 | listed (stock varies, 0-491) | yes, 753 pcs, $5.02 | yes, ~1291 pcs | yes, ~1676 pcs, ~$1.31 |
-| SK6812MINI-E | Adafruit 4960 10-pack (1528-4960-ND) ~$0.30/LED | not found | not found | **C5149201**, ~$0.05-0.08/LED |
+| SK6812MINI-E | Adafruit 4960 10-pack (1528-4960-ND) ~$0.30/LED | Adafruit 4960 = 485-4960 | not found | **C5149201**, ~$0.05-0.08/LED |
 | APEM 3FTH9 | yes (large stock) | yes, ~1467 pcs, $3.41 | not found | not found |
 | APEM 1T16 cap | **679-2121-ND**, ~439 pcs, ~$0.88 | not confirmed | listed, stock unknown | – |
 | Würth 97730506330R | yes, ~$0.88 | not found | not found | – (Bürklin 18H8953, €0.98) |
@@ -122,3 +122,14 @@ AliExpress/Component Shop). With 680 R: white ~2.7 mA, red ~4.4 mA – match bri
 | SK6812MINI-E | not found (Newark: Adafruit 4960) | |
 -> Farnell is good for 3FTH9, encoders, standoffs and the standard parts, but misses the OLED, the 1T16 and the RGB LEDs:
 DigiKey stays the one shop with everything for the test order.
+
+### RS Components, snapshot 2026-11-23
+| Part | RS stock no. | Stock / price |
+|---|---|---|
+| APEM/MEC 3FTH9 | **893-6976** (also 893-6985) | ~1165 / ~1600 ready |
+| Alps EC11E15244G1 | **729-5589** (172-7669 = tray of 120) | UK 13 + 55 elsewhere |
+| APEM 1T16 cap | **495-2501** | pack of 10, ~GBP 0.60 each |
+| Adafruit 4960 (SK6812MINI-E 10-pack) | 75631194 (RS Canada) – EU number not found | |
+| NHD-3.12-25664UCY2 | 909-2023 | stock unknown, price on request |
+| Würth 97730506330R | 185-4146 | page outdated (backorder), reel of 1300 |
+-> RS has the small keys **and** the 1T16 caps; for the OLED and the standoffs DigiKey/Mouser/Farnell are better.
