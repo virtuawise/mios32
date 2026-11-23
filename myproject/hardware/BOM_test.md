@@ -109,3 +109,16 @@ AliExpress/Component Shop). With 680 R: white ~2.7 mA, red ~4.4 mA – match bri
 - **1T16 cap: DigiKey 679-2121-ND** (in stock; Newark/Sager only MOQ 100). Fallbacks that fit the 3F, also frosted
   white at DigiKey: 1U16 (round 10.6 mm, 679-2125-ND) or 1KS1116 (square 14.3 mm, 679-3950-ND) – both would need a
   different panel hole.
+
+### Farnell (nl.farnell.com), snapshot 2026-11-23
+| Part | Farnell order code | Stock / price |
+|---|---|---|
+| APEM/Multimec 3FTH9 | **2473076** | ~15-22k, ~EUR 1.55 (cheapest found) |
+| Alps EC11E15244G1 | 2064986 | ~1400, EUR 6.13 (1) / 3.71 (100) |
+| Würth 97730506330R | 3105504 (cut tape) | ~264, ~GBP 0.74 |
+| ICs / passives / headers | standard range | |
+| NHD-3.12-25664UCY2 | not found (TME: 2 pcs, $43.50) | |
+| APEM 1T16 cap | not found (only 1TS16 = 5G series, does not fit the 3F); RS 495-2501 has 1T16 (pack of 10) | |
+| SK6812MINI-E | not found (Newark: Adafruit 4960) | |
+-> Farnell is good for 3FTH9, encoders, standoffs and the standard parts, but misses the OLED, the 1T16 and the RGB LEDs:
+DigiKey stays the one shop with everything for the test order.
