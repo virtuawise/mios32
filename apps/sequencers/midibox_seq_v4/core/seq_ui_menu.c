@@ -816,6 +816,36 @@ s32 SEQ_UI_MENU_OledGet(og2_page_t *p)
   static const char *act[8] = {"OPEN","SAVE","SAVE AS","NEW","DELETE",0,0,"INFO"};
   og2_col_t *c;
   int i, k;
+  if( menu_dialog == MENU_DIALOG_OPEN || menu_dialog == MENU_DIALOG_DELETE ) {
+    // session list: 4 sessions, each one box over its two GP buttons (press = open/delete), GP16 = EXIT
+    OG2_PageInit(p);
+    strcpy(p->head[0], (menu_dialog == MENU_DIALOG_OPEN) ? "OPEN SESSION" : "DELETE SESSION");
+    if( dir_num_items > 0 ) {
+      int last = dir_view_offset + SESSION_NUM_LIST_DISPLAYED_ITEMS;
+      if( last > dir_num_items ) last = dir_num_items;
+      sprintf(p->head[1], "%d-%d OF %d", dir_view_offset + 1, last, (int)dir_num_items);
+    }
+    sprintf(p->head[2], "CURRENT: %s", seq_file_session_name);
+    if( dir_num_items <= 0 ) {
+      c = OG2_PageCol(p, 0, OG2_C_TEXT, 4, "SD CARD");
+      if( dir_num_items == 0 ) strcpy(p->text, "No sessions found.");
+      else sprintf(p->text, "No session directory / SD card error %d.", (int)dir_num_items);
+    } else {
+      for(i=0; i<SESSION_NUM_LIST_DISPLAYED_ITEMS; ++i) {
+	char nm[SESSION_LIST_ENTRY_WIDTH+1];
+	int o = 0;
+	if( dir_view_offset + i >= dir_num_items ) break;
+	for(k=0; k<8; ++k) { char ch = ui_global_dir_list[SESSION_LIST_ENTRY_WIDTH*i + k]; if( ch != ' ' && ch != 0 ) nm[o++] = ch; }
+	nm[o] = 0;
+	c = OG2_PageCol(p, 2*i, OG2_C_CHOICE, 2, (menu_dialog == MENU_DIALOG_OPEN) ? "OPEN" : "DELETE");
+	strcpy(c->value, nm);
+	c->on = (i == ui_selected_item);
+	if( !strcmp(nm, seq_file_session_name) ) strcpy(c->label, "CURRENT");
+      }
+    }
+    c = OG2_PageCol(p, 15, OG2_C_ACTION, 1, "BACK"); strcpy(c->value, "EXIT");
+    return 0;
+  }
   if( menu_dialog != MENU_DIALOG_NONE )
     return -1;
   OG2_PageInit(p);
