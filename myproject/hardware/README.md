@@ -67,11 +67,15 @@ MP (mounting). As Wilba: A and B on two DIN inputs, C to GND, push on a third DI
 through the ribbon cables. OLEDs ~3.3 V, Newhaven module current per datasheet (**VERIFY**).
 
 ## Mechanics
-- **Front panel = PCB (FR4 1.6 mm), matte black solder mask with white silkscreen legends (printed, not engraved), and it is
-  the MX switch plate at the same time** (14 x 14 mm cut-outs, 5 mm above the key PCB = standard MX plate height).
-  **VERIFY** MX clips on 1.6 mm (made for 1.5 mm) with the chosen switch.
+- **Stack (bottom to top):** key PCB (switches, LEDs, encoders, ICs) -> **switch plate** 5 mm above it (plain FR4 1.5/1.6 mm,
+  not visible, holds the MX switches) -> **front panel** = printed FR4 PCB, matte black solder mask with white silkscreen
+  legends (printed, not engraved), at about the height of the top of the switch housings -> caps.
+  **Only the caps come through the front panel**: one cut-out per key row (caps move down into it when pressed), windows for
+  the OLEDs, holes for encoder shafts and the small MEC caps. **VERIFY** with the chosen switch: housing height above the plate
+  (~6.6 mm for Cherry MX), cap clearance over the 4 mm travel, encoder shaft length through the panel + knob, OLED glass
+  height behind the window.
 - **Fastening without visible screws:** SMD threaded standoffs (e.g. Würth SMSN, M2.5/M3) reflowed on the back of the front
-  panel PCB; screws from below through the key PCB into them; the case is fixed the same way. Spread around each screen group
+  panel PCB, spacers down to the switch plate and the key PCB, screws from below; the case is fixed the same way. Spread around each screen group
   and between the rows. Encoders without a nut on the front.
 - **No visible fasteners on the front.** The OLED displays (Newhaven, glass on its own small PCB) are plugged into and screwed to their column PCB; switches clip into the switch
   plate; encoders are held by the PCB/plate; the front plate is fixed from behind (press-in threaded studs / bushings).
