@@ -55,3 +55,29 @@ Notes:
 - Newhaven: move the 0 R on the display from **R14 to R15** (jumper option #1) before connecting it.
 - Core: **J15_S jumper on 3.3 V**.
 - JLC assembly: all SMD parts of B1-B14 are standard parts; THT parts (switches, encoders, headers) by hand.
+
+## Order numbers (checked 2026-11-23)
+DigiKey's BOM Manager / "Bulk add" accepts the manufacturer part numbers (MPN) below directly.
+
+| Item | MPN | DigiKey | Remark |
+|---|---|---|---|
+| OLED | Newhaven NHD-3.12-25664UCY2 | NHD-3.12-25664UCY2-ND | in stock |
+| RGB LED (10 pcs) | Adafruit 4960 (SK6812MINI-E reverse mount) | 1528-4960-ND | in stock |
+| Encoder | Alps EC11E15244G1 (vertical, 20 mm flat shaft, 30 detents, push) | 4809-EC11E15244G1-ND | DigiKey 0 in stock (20 wk); **TME in stock** |
+| Standoff | Würth 97730506330R | (search the MPN; 3/4 mm siblings are 732-13681/13683) | |
+| Small key | APEM 3FTH965 / 3FTH940 / 3FTH980 | not at DigiKey | **Mouser 642-3FTH965: not stocked, MOQ 100, 20 weeks** |
+| Cap small key | APEM 1T16 (1T, frosted white) | – | Mouser pattern 642-1T16 |
+| 74HC165 | Nexperia 74HC165D,653 | MPN | |
+| 74HC595 | Nexperia 74HC595D,118 | MPN | |
+| Buffer | TI SN74AHCT1G125DBVR | MPN | |
+| LDO | Diodes AP2112K-3.3TRG1 | MPN | |
+| Supervisor | Microchip MCP100T-300I/TT | MPN | |
+| 10k / 680 R / 33 R 0603 | Yageo RC0603FR-0710KL / RC0603FR-07680RL / RC0603FR-0733RL | MPN | |
+| 100 nF 0603 | Samsung CL10B104KB8NNNC | MPN | |
+| 1 uF 0603 | Samsung CL10A105KB8NNNC | MPN | |
+| 10 uF 0805 | Samsung CL21A106KAYNNNE | MPN | |
+| 22 uF 0805 | Samsung CL21A226MAQNNNE | MPN | |
+| 220 uF 10 V 6.3x7.7 | Panasonic EEE-FK1A221P | MPN | |
+| Box header 2x5 / 2x8 | Würth 61201021621 / 61201621621 | MPN | |
+| Pin header 1x3 | Würth 61300311121 | MPN | |
+| JST VH | B2P-VH(LF)(SN) + VHR-2N + SVH-21T-P1.1 | MPN | |
