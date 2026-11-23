@@ -92,7 +92,8 @@ const CUTM=3;                    // front plate cutout: 1 mm around the caps of 
 const SCAP={w:35,h:35};          // small key: APEM MEC Multimec 3FTH9 (10 x 10 mm) + 1T 10.6 x 10.6 mm frosted white cap, one-colour 3 mm LED in the switch
 const SOFF=(58-35)/2;            // centred on the big-key grid
 const SROW=[174.5,228.5,282.5];  // small key rows (top of the 58 px slot): 54 px = 16.6 mm apart (cap + label)
-function sbutton(n,k,y,l,c){ el('cut',`left:${LX(k)+SOFF-CUTM}px;top:${y+SOFF-CUTM}px;width:${SCAP.w+2*CUTM}px;height:${SCAP.h+2*CUTM}px`);
+const SCUTM=0.2*62/19.05;          // small keys: 11.0 x 11.0 mm panel hole for the 10.6 mm 1T cap (APEM)
+function sbutton(n,k,y,l,c){ el('cut',`left:${LX(k)+SOFF-SCUTM}px;top:${y+SOFF-SCUTM}px;width:${SCAP.w+2*SCUTM}px;height:${SCAP.h+2*SCUTM}px`);
   const b=button(n,LX(k)+SOFF,y+SOFF,l,c,SCAP); b.classList.add('small'); return b; }
 function cut(x0,x1,y){el('cut',`left:${x0-CUTM}px;top:${y-CUTM}px;width:${x1-x0+2*CUTM}px;height:${CAP.h+2*CUTM}px`);}
 const LX=k=>22+k*62;                                  // left block: 5 columns on the same grid
