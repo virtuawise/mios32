@@ -1,6 +1,6 @@
 ---
 name: oled-pages
-description: Rules and workflow for the 4 x OLED (256x64) page layouts of the MIDIbox SEQ V4+ fork (branch four-screens-usb). Use when creating or changing any OLED page, box layout, renderer (myproject/oled_gui/oled_gui2.c) or page fill function (SEQ_UI_*_OledGet, seq_oled.c), and when the user reports that a page "klopt niet" / looks wrong.
+description: Rules and workflow for the 4 x OLED (256x64) page layouts and the (virtual) front panel design of the MIDIbox SEQ V4+ fork (branch four-screens-usb). Use when creating or changing any OLED page, the panel layout (buttons, switches, caps, encoders), box layout, renderer (myproject/oled_gui/oled_gui2.c) or page fill function (SEQ_UI_*_OledGet, seq_oled.c), and when the user reports that a page "klopt niet" / looks wrong.
 ---
 
 # OLED pages – rules and workflow
@@ -17,6 +17,15 @@ The user (Dutch speaking, answers in Dutch) wants a calm, consistent UI and expe
 7. On / active choice = filled box; last touched / selected = double frame; not applicable = dimmed.
 8. Lists: a row of GP buttons under one title = ROW box (one text above each button, chosen one filled); separate options per column = separate boxes.
 9. Labels max. 8 characters in a 1-column box (abbreviate sensibly: "JMP BACK", "RND VAL."); avoid long info text blocks – one small box with the essential info is better.
+
+## Front panel (virtual panel `myproject/panel/panel_oled.html` = the hardware design)
+The virtual panel is the design for real hardware, so **buttons, switches and caps must be buildable and consistent**:
+1. **One switch type and one cap size for all buttons**: identical square 1U keycaps on key switches (with LED/light pipe). No round buttons, no mixed cap sizes – each size/shape means another part.
+2. **Everything on one grid**: 19.05 mm (= 62 px in the panel) horizontally, 4 columns per OLED (76.2 mm); the left block uses the same grid and the same row heights as the GP / select / function rows.
+3. Layout follows the midiphy SEQ v4+ (photo/hwcfg `hwcfg/midiphy_lh`): 16 push encoders, GP row, 16 select buttons directly below (no labels), function row Copy..Utility in hwcfg order; left block: datawheel on its own (nothing around it), select-mode buttons, Solo/Metr./Loop/Rec./Live, transport.
+4. Check real parts before claiming something fits: OLED module outline vs. the 76.2 mm column group, switch depth (key switches need their own PCB + front plate), encoder spacing. Say what is not verified.
+5. Every button in the panel must reach the SEQ (remote keyboard note in `SEQ_UI_REMOTE_MIDI_Keyboard` + `BUTTON_NOTES` in `mbseq_panel.py`); a release without a press must not trigger anything.
+6. Check the layout with a static headless-Chrome render (`file://` copy of the page; the live page keeps connections open) and tell the user to reload with Cmd+Shift+R.
 
 ## Box types (`og2_col_t.kind`)
 VALUE, TOGGLE, CHOICE, ACTION, TEXT (one per page, `pg.text`, lines with '|'), GRAPH, METER, KEYS (note blocks, `meter` = root), ROW, STEPS (track box: 16 gates + playing step, used on Mute), SPAN.
