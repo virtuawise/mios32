@@ -145,3 +145,7 @@ DigiKey stays the one shop with everything for the test order.
   $1.02). Both are opaque: the 2x3x4 mm LEDs are not needed (leave them out). The 595s stay (U5 drives the beat LED, U4
   is in the DOUT chain before U5); the 13 small-key LED resistors may stay empty.
 - Play is a big MX key: it is green through its RGB LED (sage green, seq_rgbled.c). A green 1T (1T02) was not found at DigiKey.
+
+### Cap choice final 2026-11-23: frosted white 1T16 (the original design)
+Black/red caps dropped again (opaque). **1T16 frosted white**: DigiKey 0 in stock until Apr 2027 -> order at **RS 495-2501**
+(pack of 10: 2 packs for the 13 small keys + spares). The 2x3x4 mm LEDs are needed again (warm white 8, yellow 4, red 1).

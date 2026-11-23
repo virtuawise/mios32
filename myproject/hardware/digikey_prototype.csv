@@ -12,9 +12,7 @@ Quantity,Manufacturer Part Number,Manufacturer,Digi-Key Part Number,Customer Ref
 10,CL21A106KAYNNNE,Samsung,,C bulk,10uF 0805
 5,CL21A226MAQNNNE,Samsung,,C VLED,22uF 0805
 2,EEE-FK1A221P,Panasonic,,C11 (left),220uF 10V 6.3x7.7 SMD
-15,3FTH9,MEC Switches (APEM),,S1-S13 (left),Multimec 3F without LED
-14,1T09,MEC Switches (APEM),679-2120-ND,S1-S13 caps (not REC),1T cap square black
-2,1T08,MEC Switches (APEM),679-2119-ND,S12 cap (REC),1T cap square red
+15,3FTH9,MEC Switches (APEM),,S1-S13 (left),Multimec 3F tactile switch without LED (2x3x4 mm LED inserted)
 3,4960,Adafruit,1528-4960-ND,D (17 LEDs),SK6812MINI-E 10-pack (LCSC C5149201 is much cheaper)
 8,61201021621,Wurth Elektronik,,J1-J4 column / J1 J2 J4 J5 left,Box header 2x5 2.54mm vertical
 1,61201621621,Wurth Elektronik,,J3 left (core J15A),Box header 2x8 2.54mm vertical
