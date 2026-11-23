@@ -5,7 +5,6 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
 #wrap{position:relative;width:1340px;height:420px;margin:18px;background:linear-gradient(#1f2125,#17191c);border-radius:12px;
       box-shadow:0 24px 60px #000a,0 0 0 1px #000;transform-origin:top center}
 .abs{position:absolute}
-.btn.round{border-radius:50%}
 .grp2{position:absolute;font-size:9px;color:#9a9a9a;letter-spacing:.06em;text-align:center}
 .btn{position:absolute;width:50px;height:40px;border-radius:8px;background:#2b2e33;border:1px solid #4d5158;box-sizing:border-box;box-shadow:inset 0 -4px 0 #44484e,0 2px 4px #000a;cursor:pointer;touch-action:none}
 .btn.on{background:#34363b;border-color:var(--c,#FFB547);box-shadow:inset 0 -5px 0 var(--c,#FFB547),0 0 16px var(--c,#FFB547)}
@@ -76,18 +75,15 @@ function encoder(name,x,y,size,cls,o={}){
 }
 /* ---------- midiphy SEQ v4+ layout (left-handed, as on the photo), with 4 OLEDs instead of 2 LCDs ---------- */
 el('foot','left:auto;right:30px','').innerHTML='MIDIBOX <b>SEQ</b> V4+ · 4x OLED';
-/* left block: beat LED (instead of the LED matrix), datawheel with the 8 select-mode buttons, solo row, transport */
-const beat=el('beat','');beat.style.left='128px';beat.style.top='34px';el('lbl','left:102px;top:56px','BEAT');
-const dw=encoder('DATAWHEEL',88,122,100,'dw',{push:'PUSH_DW'});
-const RB={w:30,h:30,round:true};
-el('grp2','left:103px;top:76px;width:70px','┌ LAYER ┐');
-button('PAR_SEL',100,90,'PARAM.','#4FE3F0',RB);button('TRG_SEL',148,90,'TRIGGER','#4FE3F0',RB);
-button('TRACK_SEL',46,118,'TRACK','#4FE3F0',RB);button('INS_SEL',202,118,'INSTR.','#4FE3F0',RB);
-button('STEP_VIEW',30,168,'STEP','#4FE3F0',RB);button('MUTE',218,168,'MUTE','#4FE3F0',RB);
-button('BOOKMARK',46,218,'BOOKM.','#4FE3F0',RB);button('PHRASE',202,218,'PHRASE','#4FE3F0',RB);
-el('grp2','left:93px;top:262px;width:90px','└ SELECT MODE ┘');
-[['SOLO','SOLO'],['METRONOME','METR.'],['LOOP','LOOP'],['RECORD','REC.'],['LIVE','LIVE']].forEach(([n,l],k)=>button(n,30+k*48,284,l,n==='RECORD'?'#ff5a5a':'#FFB547',RB));
-[['REW','◀◀'],['FWD','▶▶'],['STOP','■'],['PLAY','▶'],['PAUSE','❚❚']].forEach(([n,l],k)=>button(n,30+k*48,340,l,n==='PLAY'?'#7CFF8A':'#ffffff',RB));
+/* left block: datawheel on its own at the top, below it the buttons in a grid (same shape as the GP buttons):
+   2 rows of select-mode buttons, then Solo/Metr./Loop/Rec./Live and the transport */
+const dw=encoder('DATAWHEEL',94,16,90,'dw',{push:'PUSH_DW'});el('lbl','left:104px;top:108px','DATA');
+const beat=el('beat','');beat.style.left='212px';beat.style.top='52px';el('lbl','left:186px;top:74px','BEAT');
+el('grp2','left:24px;top:132px;width:230px','SELECT MODE');
+[['TRACK_SEL','TRACK'],['PAR_SEL','PARAM.'],['TRG_SEL','TRIGGER'],['INS_SEL','INSTR.']].forEach(([n,l],k)=>button(n,24+k*58,148,l,'#4FE3F0',{w:52,h:38}));
+[['STEP_VIEW','STEP'],['MUTE','MUTE'],['PHRASE','PHRASE'],['BOOKMARK','BOOKM.']].forEach(([n,l],k)=>button(n,24+k*58,206,l,'#4FE3F0',{w:52,h:38}));
+[['SOLO','SOLO'],['METRONOME','METR.'],['LOOP','LOOP'],['RECORD','REC.'],['LIVE','LIVE']].forEach(([n,l],k)=>button(n,24+k*46.5,266,l,n==='RECORD'?'#ff5a5a':'#FFB547',{w:42,h:28}));
+[['REW','◀◀'],['FWD','▶▶'],['STOP','■'],['PLAY','▶'],['PAUSE','❚❚']].forEach(([n,l],k)=>button(n,24+k*46.5,326,l,n==='PLAY'?'#7CFF8A':'#ffffff',{w:42,h:28}));
 /* right part: 4 OLEDs, 16 push encoders, 16 GP buttons, 16 select buttons, 16 round function buttons */
 const OX=[290,550,810,1070],OY=30;
 const CX=[];for(let d=0;d<4;d++)for(let k=0;k<4;k++)CX.push(OX[d]+31+k*62);   // centre of each GP column
@@ -106,7 +102,7 @@ for(let i=0;i<16;i++){
 }
 const BOT=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SELECT','DOWN','UP','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
 const BOTL=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SHIFT','<','>','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
-BOT.forEach((n,i)=>button(n,CX[i]-15,276,BOTL[i],'#FFB547',RB));
+BOT.forEach((n,i)=>button(n,CX[i]-26,266,BOTL[i],'#FFB547',{w:52,h:28}));
 /* ---------- OLED-inhoud (benadering uit de huidige LCD-tekst) ---------- */
 const stepNote=Array(16).fill('----'),stepOn=Array(16).fill(false),stepCur=Array(16).fill(false);
 function drawOled(d){
