@@ -2,7 +2,7 @@
 <style>
 :root{--amber:#FFB547;--bg:#16181b;--btn:#1b1d20;--btn2:#202226}
 body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;align-items:center}
-#wrap{position:relative;width:1400px;height:430px;margin:18px;background:linear-gradient(#1f2125,#17191c);border-radius:12px;
+#wrap{position:relative;width:1480px;height:450px;margin:18px;background:linear-gradient(#1f2125,#17191c);border-radius:12px;
       box-shadow:0 24px 60px #000a,0 0 0 1px #000;transform-origin:top center}
 .abs{position:absolute}
 .grp2{position:absolute;font-size:9px;color:#9a9a9a;letter-spacing:.06em;text-align:center}
@@ -16,7 +16,8 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
 .enc{position:absolute;width:34px;height:34px;border-radius:50%;background:#111214;box-shadow:inset 0 0 0 2px #2c2f34,0 3px 8px #000a;cursor:ns-resize}
 .enc i{position:absolute;left:calc(50% - 1.5px);top:3px;width:3px;height:11px;border-radius:2px;background:#d7dade;transform-origin:50% 14px;transform:rotate(var(--a,0deg))}
 .encn{position:absolute;width:34px;text-align:center;font-size:8px;color:#888}
-.oled{position:absolute;width:248px;height:62px;background:#000;border-radius:2px}   /* canvas is 4x internally and scaled down smoothly: pixelated downscaling dropped pixel rows (flat text) */
+.glass{position:absolute;width:273px;height:84px;background:#050506;border-radius:3px;box-shadow:inset 0 0 0 1px #2a2c30}
+.oled{position:absolute;width:225px;height:56px;background:#000;border-radius:2px}   /* canvas is 4x internally and scaled down smoothly: pixelated downscaling dropped pixel rows (flat text) */
 .brk{position:absolute;height:5px;border:1px solid #c78a2a;border-top:0;width:248px}
 .hdr{position:absolute;left:30px;top:22px;font-size:10px;letter-spacing:.1em;color:var(--amber)}
 .hdr b{color:#fff}
@@ -76,36 +77,39 @@ function encoder(name,x,y,size,cls,o={}){
 /* ---------- midiphy SEQ v4+ layout (left-handed, as on the photo), with 4 OLEDs instead of 2 LCDs ---------- */
 el('foot','left:auto;right:30px','').innerHTML='MIDIBOX <b>SEQ</b> V4+ · 4x OLED';
 /* One switch type for every button: identical square 1U caps on the 19.05 mm grid (62 px = 19.05 mm, 4 columns = one OLED).
-   Rows: GP 146, select 214, function 282, (left only) transport 350. */
+   Rows: GP 158, select 226, function 294, (left only) transport 362. */
 const CAP={w:50,h:50};
 const LX=k=>26+k*62;                                  // left block: 5 columns on the same grid
-const dw=encoder('DATAWHEEL',130,14,96,'dw',{push:'PUSH_DW'});el('lbl','left:143px;top:112px','DATA');
+const dw=encoder('DATAWHEEL',130,22,96,'dw',{push:'PUSH_DW'});el('lbl','left:143px;top:120px','DATA');
 const beat=el('beat','');beat.style.left='262px';beat.style.top='56px';el('lbl','left:236px;top:78px','BEAT');
-el('grp2','left:26px;top:132px;width:298px','SELECT MODE');
-[['STEP_VIEW','STEP'],['TRACK_SEL','TRACK'],['PAR_SEL','PARAM.'],['TRG_SEL','TRIGGER'],['INS_SEL','INSTR.']].forEach(([n,l],k)=>button(n,LX(k),146,l,'#4FE3F0',CAP));
-[['MUTE','MUTE'],['PHRASE','PHRASE'],['BOOKMARK','BOOKM.']].forEach(([n,l],k)=>button(n,LX(k),214,l,'#4FE3F0',CAP));
-[['SOLO','SOLO'],['METRONOME','METR.']].forEach(([n,l],k)=>button(n,LX(3+k),214,l,'#FFB547',CAP));
-[['LOOP','LOOP'],['RECORD','REC.'],['LIVE','LIVE']].forEach(([n,l],k)=>button(n,LX(k),282,l,n==='RECORD'?'#ff5a5a':'#FFB547',CAP));
-[['REW','◀◀'],['FWD','▶▶'],['STOP','■'],['PLAY','▶'],['PAUSE','❚❚']].forEach(([n,l],k)=>button(n,LX(k),350,l,n==='PLAY'?'#7CFF8A':'#ffffff',CAP));
+el('grp2','left:26px;top:144px;width:298px','SELECT MODE');
+[['STEP_VIEW','STEP'],['TRACK_SEL','TRACK'],['PAR_SEL','PARAM.'],['TRG_SEL','TRIGGER'],['INS_SEL','INSTR.']].forEach(([n,l],k)=>button(n,LX(k),158,l,'#4FE3F0',CAP));
+[['MUTE','MUTE'],['PHRASE','PHRASE'],['BOOKMARK','BOOKM.']].forEach(([n,l],k)=>button(n,LX(k),226,l,'#4FE3F0',CAP));
+[['SOLO','SOLO'],['METRONOME','METR.']].forEach(([n,l],k)=>button(n,LX(3+k),226,l,'#FFB547',CAP));
+[['LOOP','LOOP'],['RECORD','REC.'],['LIVE','LIVE']].forEach(([n,l],k)=>button(n,LX(k),294,l,n==='RECORD'?'#ff5a5a':'#FFB547',CAP));
+[['REW','◀◀'],['FWD','▶▶'],['STOP','■'],['PLAY','▶'],['PAUSE','❚❚']].forEach(([n,l],k)=>button(n,LX(k),362,l,n==='PLAY'?'#7CFF8A':'#ffffff',CAP));
 /* right part: 4 OLEDs, 16 push encoders, 16 GP buttons, 16 select buttons, 16 round function buttons */
-const OX=[350,598,846,1094],OY=30;    // 248 px = 4 x 62 px per OLED: the columns of all OLEDs form one 19.05 mm grid
+// Scale: 62 px = 19.05 mm (1U key pitch), 1 mm = 3.255 px. Keys: 19.05 mm apart within a group of 4 (76.2 mm = 248 px);
+// groups 86.2 mm (281 px) apart = 84 mm OLED glass (273 px) + 2.2 mm clearance. Visible area 69.1 x 17.26 mm (225 x 56 px).
+const GL=350, GP_=281, OX=[0,1,2,3].map(g=>GL+g*GP_), OY=34;
 const CX=[];for(let d=0;d<4;d++)for(let k=0;k<4;k++)CX.push(OX[d]+31+k*62);   // centre of each GP column
 const GPL=['MIXER','EVENT','MODE','DIRECTION','DIVIDER','LENGTH','TRANSPOSE','GROOVE','TRIGGER','FX','MANUAL','MORPH','BPM','SAVE','MIDI','SYS EX'];
 const canv=[], OS=4;   // OLED canvas oversampling
 const tmpC=document.createElement('canvas');tmpC.width=256;tmpC.height=64;
 for(let d=0;d<4;d++){
-  const c=document.createElement('canvas');c.width=256*OS;c.height=64*OS;c.getContext('2d').setTransform(OS,0,0,OS,0,0);c.className='oled';c.style.cssText=`left:${OX[d]}px;top:${OY}px;position:absolute`;W.appendChild(c);canv.push(c);
+  const gx=OX[d]+124-136.5; el('glass',`left:${gx}px;top:${OY-14}px`);          // 84 mm glass, centred over its 4 key columns
+  const c=document.createElement('canvas');c.width=256*OS;c.height=64*OS;c.getContext('2d').setTransform(OS,0,0,OS,0,0);c.className='oled';c.style.cssText=`left:${OX[d]+124-112.5}px;top:${OY}px;position:absolute`;W.appendChild(c);canv.push(c);
 }
 const trkEls=[];
 for(let i=0;i<16;i++){
   const cx=CX[i];
-  encoder('GP'+(i+1),cx-17,104,0,null,{push:'PUSH'+(i+1)});
-  button('GP'+(i+1),cx-25,146,GPL[i],'#FFB547',CAP);
-  trkEls.push(button('TRK'+(i+1),cx-25,214,null,'#4FE3F0',CAP));      // select buttons: no labels (as on the midiphy panel)
+  encoder('GP'+(i+1),cx-17,114,0,null,{push:'PUSH'+(i+1)});
+  button('GP'+(i+1),cx-25,158,GPL[i],'#FFB547',CAP);
+  trkEls.push(button('TRK'+(i+1),cx-25,226,null,'#4FE3F0',CAP));      // select buttons: no labels (as on the midiphy panel)
 }
 const BOT=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SELECT','DOWN','UP','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
 const BOTL=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SHIFT','<','>','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
-BOT.forEach((n,i)=>button(n,CX[i]-25,282,BOTL[i],'#FFB547',CAP));
+BOT.forEach((n,i)=>button(n,CX[i]-25,294,BOTL[i],'#FFB547',CAP));
 /* ---------- OLED-inhoud (benadering uit de huidige LCD-tekst) ---------- */
 const stepNote=Array(16).fill('----'),stepOn=Array(16).fill(false),stepCur=Array(16).fill(false);
 function drawOled(d){
@@ -169,7 +173,7 @@ function update(s){
   if(s.beat_seq!==undefined&&s.beat_seq!==lastBeatSeq){ if(lastBeatSeq!==null){ beat.classList.add('on'); beat.style.opacity=(s.beat_n===0)?'1':'0.7'; clearTimeout(beatTimer); beatTimer=setTimeout(()=>beat.classList.remove('on'),90); } lastBeatSeq=s.beat_seq; }
 }
 /* ---------- schalen + live ---------- */
-function fit(){const s=Math.min(1,(innerWidth-40)/1436);W.style.transform=`scale(${s})`;W.style.marginBottom=(430*s-430+18)+'px';}
+function fit(){const s=Math.min(1,(innerWidth-40)/1516);W.style.transform=`scale(${s})`;W.style.marginBottom=(450*s-450+18)+'px';}
 addEventListener('resize',fit);fit();
 document.getElementById('sync').onclick=e=>{e.preventDefault();api('/api/sync');};
 for(let d=0;d<4;d++)drawOled(d);

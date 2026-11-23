@@ -10,7 +10,9 @@ Stop it with Ctrl+C (SIGINT) so the SEQ leaves remote mode; it holds the MIDI po
 Arranged after a photo of the real (left-handed) midiphy SEQ v4+, with 4 OLEDs instead of its 2 LCDs:
 left block with the datawheel (push) on its own at the top and below it, in a grid aligned with the right rows, the 8 select-mode
 buttons (Track, Param, Trigger, Instr. / Step, Mute, Phrase, Bookm.; the active one lights up), Solo/Metr./Loop/Rec./Live and transport.
-One switch type for every button: identical square 1U caps on a 19.05 mm grid (62 px), 4 columns per OLED (76.2 mm); the left
+One switch type for every button: identical square 1U caps on a 19.05 mm grid (62 px), drawn to scale (1 mm = 3.255 px).
+OLEDs: bare SSD1322 2.8" glass 84.0 x 25.8 mm (active 69.1 x 17.26 mm), centred over its 4 key columns; groups 86.2 mm apart
+(2.2 mm between the glass panels). Panel content is about 455 mm wide. The left
 block uses the same grid (5 columns) and row heights. No round buttons, nothing around the datawheel; on the right 16 push encoders, 16 GP buttons,
 16 select buttons (labels and LEDs follow the select mode: tracks, steps, layers, instruments, mutes, phrases, bookmarks) and
 16 round buttons Copy/Paste/Clear/Move/Scroll/Fast/All/Shift(=SELECT) | </>(=DOWN/UP)/Exit/Menu/Edit/Pattern/Song/Utility
