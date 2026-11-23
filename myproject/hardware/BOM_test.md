@@ -149,3 +149,11 @@ DigiKey stays the one shop with everything for the test order.
 ### Cap choice final 2026-11-23: frosted white 1T16 (the original design)
 Black/red caps dropped again (opaque). **1T16 frosted white**: DigiKey 0 in stock until Apr 2027 -> order at **RS 495-2501**
 (pack of 10: 2 packs for the 13 small keys + spares). The 2x3x4 mm LEDs are needed again (warm white 8, yellow 4, red 1).
+
+### Cap choice (final) 2026-11-23: mixed
+- **Select-mode keys Step, Track, Param., Trigger, Instr., Mute, Phrase, Bookm. (S1-S8): black 1T09, no LED**
+  (DigiKey 679-2120-ND). Their LEDs only show which mode the 16 select keys are in (one of 8 lit). Leave out the LED and
+  its resistor (R26-R33, the U4 outputs). The 595 U4 stays (it is in the DOUT chain before U5).
+- **Solo, Metr., Loop, Rec., Live (S9-S13): frosted white 1T16 with LED** – these show on/off states. 1T16 at RS 495-2501
+  (1 pack of 10). LEDs 2x3x4 mm: 4 yellow (Solo, Metr., Loop, Live) + 1 red (Rec.), plus spares.
+- Optional firmware idea: colour the 16 select keys per select mode, so the mode stays visible without the small LEDs.

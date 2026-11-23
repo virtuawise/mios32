@@ -19,7 +19,7 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
 /* compare: round 1U16 caps instead of the square 1T16 (key C, or ?caps=round) */
 body.roundcaps .btn.small,body.roundcaps .cut.scut{border-radius:50%}
 /* solid (opaque) 1T caps: no light through the cap, the LED is useless with them */
-body.opaquecaps .btn.small,body.opaquecaps .btn.small.on{background:radial-gradient(ellipse at 50% 40%,color-mix(in srgb,var(--capc) 85%,#fff) 0%,var(--capc) 60%,color-mix(in srgb,var(--capc) 70%,#000) 100%);box-shadow:0 1px 2px #000c,inset 0 1px 0 #ffffff30;border-color:#0008}
+.btn.small.opq,.btn.small.opq.on{background:radial-gradient(ellipse at 50% 40%,color-mix(in srgb,var(--capc) 85%,#fff) 0%,var(--capc) 60%,color-mix(in srgb,var(--capc) 70%,#000) 100%);box-shadow:0 1px 2px #000c,inset 0 1px 0 #ffffff30;border-color:#0008}
 .cut{position:absolute;background:#08090a;border-radius:4px;box-shadow:inset 0 2px 4px #000}
 .btn.down{transform:translateY(2px);box-shadow:0 1px 1px #000c}.btn.latched{outline:2px solid #ffc400}.btn.na{opacity:.4;cursor:not-allowed}
 .lbl{position:absolute;width:70px;text-align:center;font-size:10px;font-weight:600;letter-spacing:.05em;color:#f0f0f0;white-space:nowrap}
@@ -239,11 +239,12 @@ const mkSel=(lbl,key)=>{const l=document.createElement('span');l.textContent=lbl
   sel.onchange=()=>{ledCfg[key]=sel.value;applyLed();};ledBox.append(l,sel);};
 const mkCol=(lbl,key)=>{const l=document.createElement('span');l.textContent=lbl;const c=document.createElement('input');c.type='color';c.value=ledCfg[key];
   c.oninput=()=>{ledCfg[key]=c.value;applyLed();};ledBox.append(l,c);};
-const CAPOPT={'frosted wit (1T16, licht door)':null,'zwart (1T09)':'#16171a','grijs (1T03)':'#6d6f73','wit (1T06)':'#e9e7e2','rood (1T08)':'#b3302a','geel (1T04)':'#e0b324','groen (1T02)':'#3f8f4a','blauw (1T00)':'#2f5fa8'};
+const CAPOPT={'gemengd: select-modes zwart, Solo/Metr./Loop/Rec./Live frosted':'mix','frosted wit (1T16, licht door)':null,'zwart (1T09)':'#16171a','grijs (1T03)':'#6d6f73','wit (1T06)':'#e9e7e2','rood (1T08)':'#b3302a','geel (1T04)':'#e0b324','groen (1T02)':'#3f8f4a','blauw (1T00)':'#2f5fa8'};
 {const l=document.createElement('span');l.textContent='Kleur kleine kapjes';const sel=document.createElement('select');
  for(const k in CAPOPT){const o=document.createElement('option');o.value=k;o.textContent=k;sel.appendChild(o);}
- const ap=()=>{const c=CAPOPT[sel.value];document.body.classList.toggle('opaquecaps',!!c);if(c)document.body.style.setProperty('--capc',c);ledCfg.cap=sel.value;localStorage.setItem('ledCfg',JSON.stringify(ledCfg));};
- sel.value=ledCfg.cap&&ledCfg.cap in CAPOPT?ledCfg.cap:'frosted wit (1T16, licht door)';sel.onchange=ap;ledBox.append(l,sel);setTimeout(ap,0);}
+ const ap=()=>{const c=CAPOPT[sel.value];const mix=c==='mix';document.body.style.setProperty('--capc',mix?'#16171a':(c||'#16171a'));
+ for(const g in LEDGRP)LEDGRP[g].forEach(n=>{const b=btnEls[n];if(b)b.classList.toggle('opq',mix?g==='sel':!!c);});ledCfg.cap=sel.value;localStorage.setItem('ledCfg',JSON.stringify(ledCfg));};
+ sel.value=ledCfg.cap&&ledCfg.cap in CAPOPT?ledCfg.cap:'gemengd: select-modes zwart, Solo/Metr./Loop/Rec./Live frosted';sel.onchange=ap;ledBox.append(l,sel);setTimeout(ap,0);}
 mkSel('LED select mode','sel');mkSel('LED Solo/Metr./Loop/Live','amb');mkSel('LED Rec.','rec');
 mkCol('RGB actief (GP, select, functie)','rgbA');mkCol('RGB huidige track / transport','rgbW');
 const rst=document.createElement('button');rst.textContent='standaard';rst.style.cssText='font:600 10px sans-serif;cursor:pointer';
