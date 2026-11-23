@@ -87,9 +87,16 @@ for(let i=0;i<16;i++){
   const cx=CX[i];
   encoder('GP'+(i+1),cx-17,108,0,null,{push:'PUSH'+(i+1)});
   button('GP'+(i+1),cx-25,152,GPL[i],'#FFB547',{h:32});
-  trkEls.push(button('TRK'+(i+1),cx-25,206,String(i+1),'#7CFF8A',{h:28}));
+  trkEls.push(button('TRK'+(i+1),cx-25,206,'G'+(Math.floor(i/4)+1)+'T'+(i%4+1),'#7CFF8A',{h:28}));
 }
-el('grp','left:12px;top:212px;color:#888;width:30px;text-align:right','SEL');
+// labels of the 16 track buttons follow the selection view (what the buttons select at this moment)
+const trkLbl=trkEls.map(b=>b.nextSibling);
+const selName=el('grp','left:0px;top:212px;color:#7CFF8A;width:42px;text-align:right','TRACK');
+const VIEWS={1:['BOOKMRK',i=>'BM'+(i+1)],2:['STEPS',i=>''],3:['TRACK',i=>'G'+(Math.floor(i/4)+1)+'T'+(i%4+1)],
+  4:['LAYER',i=>'PAR '+String.fromCharCode(65+i)],5:['TRIGGER',i=>'TRG '+String.fromCharCode(65+i)],6:['INSTR.',i=>'INS '+(i+1)],
+  7:['MUTE',i=>'G'+(Math.floor(i/4)+1)+'T'+(i%4+1)],8:['PHRASE',i=>String.fromCharCode(65+i)]};
+let lastView=-1;
+function selLabels(v){ if(v===lastView||!VIEWS[v])return; lastView=v; const [n,f]=VIEWS[v]; selName.textContent=n; trkLbl.forEach((l,i)=>l.textContent=f(i)); }
 /* function rows (aligned with the GP columns) */
 const F1=[[0,'EDIT','EDIT'],[1,'MUTE','MUTE'],[2,'PATTERN','PATTERN'],[3,'SONG','SONG'],
           [4,'PHRASE','PHRASE'],[5,'STEP_VIEW','STEP VIEW'],[6,'TRACK_SEL','TRACK SEL'],[7,'PAR_SEL','PAR SEL'],
@@ -166,6 +173,7 @@ function update(s){
   for(const[n,[g,r]]of Object.entries(s.leds)){
     if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!ownLayout&&!!(g||r));continue;}   // GP-knoppen lopen mee met de sequencer in alle pagina's (de OLED's tonen geen afspeelstap meer)
     const b=btnEls[n];if(b)b.classList.toggle('on',!!g);}
+  if(s.sel_view!==undefined) selLabels(s.sel_view);
   if(s.sel_g!==undefined){ for(let i=0;i<16;i++){const g=(s.sel_g>>i)&1,r=(s.sel_r>>i)&1,b=trkEls[i];
     b.classList.toggle('on',!!(g||r)); b.style.setProperty('--c', g&&r ? '#FFB547' : (r ? '#ff5a5a' : '#7CFF8A')); } }
   if(s.beat_seq!==undefined&&s.beat_seq!==lastBeatSeq){ if(lastBeatSeq!==null){ beat.classList.add('on'); beat.style.opacity=(s.beat_n===0)?'1':'0.7'; clearTimeout(beatTimer); beatTimer=setTimeout(()=>beat.classList.remove('on'),90); } lastBeatSeq=s.beat_seq; }
