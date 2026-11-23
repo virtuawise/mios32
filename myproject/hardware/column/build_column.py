@@ -35,6 +35,8 @@ def place(lib, name, ref, x, y, rot=0.0, padnets=None, back=False, value=""):
     f.SetReference(ref)
     f.SetValue(value or name)
     board.Add(f)
+    if "0603" in name:          # dense 0603 blocks: reference on the assembly (Fab) layer, not on the silkscreen
+        f.Reference().SetLayer(pcbnew.B_Fab if back else pcbnew.F_Fab)
     if back:
         f.Flip(f.GetPosition(), pcbnew.FLIP_DIRECTION_TOP_BOTTOM if hasattr(pcbnew, "FLIP_DIRECTION_TOP_BOTTOM") else False)
     f.SetOrientationDegrees(rot)
@@ -129,7 +131,10 @@ for i in range(4):
           padnets={"1": "CS%d" % i, "2": "OLED_CS"}, value="CS%d" % i)
 
 # ---- OLED: Newhaven NHD-3.12-25664UCY2 on a 1x20 socket, 4-wire SPI (datasheet p. 4-8) ----
-oled = {"1": "GND", "2": "+3V3", "3": None, "4": "OLED_DC", "5": "GND", "6": "GND", "7": "OLED_SCLK", "8": "OLED_SDIN",
+# Power: jumper option #1 (datasheet p. 6/7): logic VDD (pin 2) 3.3 V (200 uA), boost converter BC_VDD (pin 3) from the 5 V LED
+# supply (150/170 mA at 100 % on) instead of 310/340 mA from 3.3 V. With the default jumper pin 3 is open on the module (harmless).
+oled = {"1": "GND", "2": "+3V3", "3": "VLED",   # 3 = BC_VDD: boost converter from 5 V (jumper option #1: R14 open, R15 closed)
+         "4": "OLED_DC", "5": "GND", "6": "GND", "7": "OLED_SCLK", "8": "OLED_SDIN",
         "9": None, "10": "GND", "11": "GND", "12": "GND", "13": "GND", "14": "GND", "15": None, "16": "OLED_RES",
         "17": "OLED_CS", "18": None, "19": "GND", "20": "GND"}
 sock = None

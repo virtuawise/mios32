@@ -1,14 +1,29 @@
-# Step after build_column.py + Freerouting: import the routed tracks (column.ses), add GND planes on both layers and a grid
-# of stitching vias, fill the zones and save. Run with KiCad's Python.
-#   java -jar freerouting-2.5.0.jar -de column.dsn -do column.ses -mp 40 --gui.enabled=false
-import os, pcbnew
-D = os.path.dirname(os.path.abspath(__file__))
-PCB = os.path.join(D, "column.kicad_pcb")
-OX, OY, W, H = 100.0, 100.0, 90.6, 126.0
+# Step after build_<board>.py + Freerouting (see route.sh): import the routed tracks (<board>.ses), add GND planes on both
+# layers and stitching vias, fill the zones and save. Run with KiCad's Python:  route_board.py <dir>/<board>.kicad_pcb
+import os, sys, pcbnew
+PCB = os.path.abspath(sys.argv[1])
+SES = PCB.replace(".kicad_pcb", ".ses")
 
 b = pcbnew.LoadBoard(PCB)
-# always run on a freshly built board (build_column.py): it only contains the locked GND fan-out and the LED keep-outs
-assert pcbnew.ImportSpecctraSES(b, os.path.join(D, "column.ses")), "SES import failed"
+bb = b.GetBoardEdgesBoundingBox()
+OX, OY = bb.GetX() / 1e6, bb.GetY() / 1e6
+W, H = bb.GetWidth() / 1e6, bb.GetHeight() / 1e6
+# always run on a freshly built board (build_<board>.py): it only contains the locked GND fan-out and the LED keep-outs
+assert pcbnew.ImportSpecctraSES(b, SES), "SES import failed"
+# Freerouting sometimes leaves a via whose tracks are all on one layer (useless, DRC "via_dangling"): remove it
+def ends_at(t, p):
+    return t.GetStart() == p or t.GetEnd() == p
+vias = [t for t in b.GetTracks() if t.Type() == pcbnew.PCB_VIA_T and not t.IsLocked()]
+trs = [t for t in b.GetTracks() if t.Type() == pcbnew.PCB_TRACE_T]
+dangling = 0
+for v in vias:
+    layers = {t.GetLayer() for t in trs if t.GetNetCode() == v.GetNetCode() and ends_at(t, v.GetPosition())}
+    if len(layers) < 2:
+        b.Remove(v); dangling += 1
+print("removed one-layer vias", dangling)
+for t in b.GetTracks():               # Freerouting necks tracks down at some pads (0.125 mm): bring them to the 0.15 mm minimum
+    if t.Type() == pcbnew.PCB_TRACE_T and t.GetWidth() < pcbnew.FromMM(0.15):
+        t.SetWidth(pcbnew.FromMM(0.15))
 gnd = b.FindNet("GND")
 
 def zone(layer):
@@ -57,9 +72,10 @@ while y < H - 3:
             b.Add(v); n += 1
         x += 7.5
     y += 7.5
-# GND pins of connectors and encoders: full connection to the planes (return current between boards must see a low impedance)
+# GND pins of connectors, encoders and small keys: full connection to the planes (return current between boards must see a low impedance)
 for f in b.GetFootprints():
-    if f.GetReference()[:1] in ("J",) or f.GetReference().startswith("EN"):
+    ref = f.GetReference()
+    if ref[0] == "J" or ref.startswith("EN") or (ref[0] == "S" and ref[1].isdigit()):     # connectors, encoders, small keys
         for pd in f.Pads():
             if pd.GetNetname() == "GND":
                 pd.SetLocalZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
@@ -116,6 +132,16 @@ for _ in range(3):
         break
     filler.Fill(b.Zones())
 n += extra
+# drop stitching vias that do not land in the plane on both layers (dangling), then fill again
+planes = {z.GetLayer(): z.GetFilledPolysList(z.GetLayer()) for z in b.Zones() if not z.GetIsRuleArea()}
+drop = [t for t in b.GetTracks() if t.Type() == pcbnew.PCB_VIA_T and not t.IsLocked() and t.GetNetCode() == gnd.GetNetCode()
+        and not all(pl.Contains(t.GetPosition()) for pl in planes.values())
+        and not any(o.HitTest(t.GetPosition(), pcbnew.FromMM(0.31)) for o in b.GetTracks() if o.Type() == pcbnew.PCB_TRACE_T and o.GetNetCode() == gnd.GetNetCode())]
+for t in drop:
+    b.Remove(t)
+n -= len(drop)
+if drop:
+    filler.Fill(b.Zones())
 b.Save(PCB)
 print("routed board saved, tracks", len([t for t in b.GetTracks() if t.Type() == pcbnew.PCB_TRACE_T]),
       "vias", len([t for t in b.GetTracks() if t.Type() == pcbnew.PCB_VIA_T]), "stitching vias", n)

@@ -20,7 +20,7 @@ for u in ("U1", "U2", "U3"):                 # 74HC165: 8 GND, 16 VCC, 15 /CE GN
 for i in range(1, 13):                        # SK6812MINI-E REV02: 1 VDD, 3 GND
     rules.update({"D%d.1" % i: "VLED", "D%d.3" % i: "GND"})
 rules.update({"J7.1": "GND", "J7.2": "+3V3", "J7.7": "OLED_SCLK", "J7.8": "OLED_SDIN", "J7.4": "OLED_DC", "J7.16": "OLED_RES",
-              "J7.17": "OLED_CS", "J7.19": "GND", "J7.20": "GND", "J7.9": "", "J7.3": "", "J7.15": "", "J7.18": ""})
+              "J7.17": "OLED_CS", "J7.19": "GND", "J7.20": "GND", "J7.9": "", "J7.3": "VLED", "J7.15": "", "J7.18": ""})
 for s in ("J1", "J2"):                        # core J8/J9 pinout
     rules.update({s + ".1": "GND", s + ".2": "GND", s + ".3": "+5V", s + ".4": "+5V", s + ".6": "SO", s + ".7": "SC", s + ".8": "SC",
                   s + ".9": "RC2", s + ".10": "RC1"})

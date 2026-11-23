@@ -19,7 +19,7 @@ J15), with two differences, both for modularity:
 | PCB | Qty | Content | DIN inputs | 
 |---|---|---|---|
 | Column PCB (~91 x 110 mm) | 4 (identical) | 1 OLED display (Newhaven NHD-3.12-25664UC: display glass on its own small PCB, plugged in with its 1x20 header and screwed on with its 4 M2.5 holes – one part, no extra board), 4 EC11E with push, 12 MX keys (GP, select, function row), 12 SK6812MINI-E | 4 x 2 (A/B) + 4 push + 12 keys = 24 -> **3 x 74HC165** |
-| Left PCB | 1 | datawheel EC11E with push, 13 MEC 3FTH9 small keys (one-colour 3 mm LED), 5 MX transport keys + 5 SK6812MINI-E, beat LED | 2 + 1 + 13 + 5 = 21 -> 3 x 74HC165; LEDs 13 + 1 -> 2 x 74HC595 |
+| Left PCB (100.3 x 126 mm) | 1 | datawheel EC11E with push, 13 MEC 3FTH9 small keys (LED fitted by APEM), 5 MX transport keys + 5 SK6812MINI-E, beat LED; interface to the core (SRIO, J15A, J4B) and the 5 V LED/OLED supply input | 2 + 1 + 13 + 5 = 21 -> 3 x 74HC165; LEDs 13 + 1 -> 2 x 74HC595 |
 | Switch plate | 1 | 1.5 mm FR4 or aluminium, 14 x 14 mm MX cut-outs, holds the switches and the encoders' alignment | – |
 | Front plate | 1 | aluminium 2-3 mm, one cut-out per key row, holes for small keys / encoders / OLED windows | – |
 
@@ -116,3 +116,36 @@ U3 D0/D1 encoder 1 A/B ... D6/D7 encoder 4 A/B. CS select: solder one of JP1..JP
 - **Case:** FR4 front panel and switch plate are insulators (their standoffs tie nothing). With a metal case: connect the case to
   GND at one point only, at the power inlet. MIDI IN is opto-isolated (no ground connection to other gear); USB brings the
   computer's ground – if hum appears through audio gear, use a USB isolator, not a ground lift.
+
+## Left PCB – status (built, routed, verified)
+`left/build_left.py` -> `left/left.kicad_pcb`, routed with `./route.sh left` (same pipeline as the column: build -> Specctra ->
+Freerouting -> `route_board.py` (GND planes, stitching, no one-layer vias) -> `verify_left.py` -> DRC).
+Result: **366 pads + 140 datasheet rules OK**, DRC 0 unconnected, only the 5 intended LED-under-switch courtyard overlaps.
+- **Small keys: APEM Multimec 3FTH9xx** – the LED is fitted by APEM, the colour is in the part number (65 white, 40 yellow
+  for the amber keys, 80 red for Rec.). Own footprint `lib/seq4oled.pretty/SW_MEC_3FTH9_LED` from the datasheet
+  (MEC-MULTIMEC3F-2203 p. 3, "TH illuminated"): contact 1/2 to 3/4 on a 10.16 x 7.62 mm grid, LED K in the left column 2.54 mm
+  below pin 2, LED A in the right column 2.54 mm above pin 3. **VERIFY** the LED pin positions with a real switch (read from
+  the drawing, no table) and the PCB thickness (datasheet 1.4 +- 0.2 mm -> order 1.6 mm).
+- **DIN (first in the chain, SR 1-3)**: U1 D0-D7 = Step, Track, Param, Trigger, Instr., Mute, Phrase, Bookm.; U2 = Solo, Metr.,
+  Loop, Rec., Live, Rew, Fwd, Stop; U3 = datawheel A/B (D0/D1, same register as MIOS32 requires), datawheel push, Play,
+  Pause, 3 spare (pulled up). Column modules follow as SR 4-6, 7-9, 10-12, 13-15.
+- **DOUT (only here, SR 1-2)**: U4 QA-QH = LEDs Step ... Bookm.; U5 QA-QF = Solo, Metr., Loop, Rec., Live, Beat. As MBHP_DOUTX4:
+  output -> 680 R -> LED -> GND (~4 mA, 14 LEDs on 2 registers).
+- **Core cables**: J1 = core J8/J9 (2x5), J3 = core **J15A** (2x8: 1 Vs, 2 Vd, 3 V0, 4 RS, 5 RW, 6 E, 7-14 D0-D7, 15/16 B+/B-,
+  from the MBHP_CORE_STM32F4 schematic) – only RS/RW/E/D0-D3 and Vs are used, **Vd is not connected**; J5 = core **J4B**
+  (2x5: pin 6 = SC = PB6, odd pins + 2/4 = Vs) for the RGB LED data.
+- **OLED reset**: MCP100-300 supervisor (SOT-23: 1 /RST, 2 VDD, 3 VSS, Microchip DS11187F) holds /RES of all 4 displays low
+  until 3.3 V is stable + 350 ms (J15 has no reset line). **VERIFY** SOT-23 pin 1 = /RST against the current datasheet.
+- **LED data**: 74AHCT1G125 buffer (TTL input takes the open-drain PB6 with the core's 2.2 k pull-up to 5 V, `modules/ws2812`),
+  33 R series resistor, then D1-D5 and on to column 1 (J6 -> column J5).
+
+## Power (revised after reading the Newhaven datasheet, p. 6/7)
+- **Newhaven in jumper option #1**: on every display move the 0 R from **R14 to R15**. Then the boost converter runs from
+  BC_VDD (pin 3) = 5 V: **150 mA typ / 170 mA max at 100 % on**, and VDD (pin 2) 3.3 V only feeds the logic (200 uA).
+  Default jumper would need 310/340 mA *from 3.3 V* per display (1.4 A for four) – too much for the core.
+  The column PCB connects pin 3 to VLED; with the default jumper pin 3 is open on the module, so nothing breaks.
+- **One 5 V supply for LEDs + OLED boost** (J7 on the left PCB, JST VH): 58 SK6812 + 4 x 170 mA; >= 4 A PSU, brightness
+  limited in firmware. Its GND meets the logic GND only on the left PCB (single point, see Grounding).
+- **OLED logic 3.3 V**: AP2112K-3.3 on the left PCB from the core's 5 V (a few mA).
+- **Core J15_S jumper must be set to 3.3 V**: the core's 74HC595 that drives CS0-3 is powered from it; at 5 V the CS lines
+  would exceed the SSD1322's VIH max (= VDD).
