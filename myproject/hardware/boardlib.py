@@ -40,15 +40,25 @@ class Board:
         assert not missing, (ref, "has no pad", missing)
         return f
 
-    def keepout(self, x, y, hw, hh):
+    def keepout(self, x, y, hw, hh, nofill=False, round_=False):
+        """no tracks/vias (LED cut-outs); nofill=True: no copper at all (isolated mounting holes)"""
+        import math
         z = pcbnew.ZONE(self.b)
         z.SetIsRuleArea(True); z.SetDoNotAllowTracks(True); z.SetDoNotAllowVias(True)
-        z.SetDoNotAllowZoneFills(False); z.SetDoNotAllowPads(False); z.SetDoNotAllowFootprints(False)
+        z.SetDoNotAllowZoneFills(nofill); z.SetDoNotAllowPads(False); z.SetDoNotAllowFootprints(False)
         z.SetLayerSet(pcbnew.LSET.AllCuMask())
         ol = z.Outline(); ol.NewOutline()
-        for dx, dy in ((-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh)):
+        pts = [(hw * math.cos(a * math.pi / 8), hh * math.sin(a * math.pi / 8)) for a in range(16)] if round_ else \
+              ((-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh))
+        for dx, dy in pts:
             ol.Append(pcbnew.FromMM(OX + x + dx), pcbnew.FromMM(OY + y + dy))
         self.b.Add(z)
+
+    def stack_hole(self, ref, x, y):
+        """M1.6 through-bolt of the panel stack (PCB -> spacer -> switch plate -> blind standoff on the front panel):
+        unplated 2.2 mm hole, no copper within 2.5 mm, so the screw never touches GND (no ground tie between boards)"""
+        self.place("MountingHole", "MountingHole_2.2mm_M2", ref, x, y, value="M1.6 stack")
+        self.keepout(x, y, 2.5, 2.5, nofill=True, round_=True)
 
     def _free(self, pt, r, own):
         for f in self.b.GetFootprints():

@@ -108,7 +108,7 @@ P("Capacitor_SMD", "C_0603_1608Metric", "C6", 71.5, 38.0, rot=90, padnets={"1": 
 r += 1
 P("Resistor_SMD", "R_0603_1608Metric", "R%d" % r, 64.5, 38.0, rot=90, padnets={"1": "LED_BUF", "2": "LED_IN"}, value="33")
 P("Capacitor_SMD", "C_0805_2012Metric", "C10", 24.0, 36.0, rot=90, padnets={"1": "+5V", "2": "GND"}, value="10uF")
-P("Capacitor_SMD", "CP_Elec_6.3x7.7", "C11", 40.0, 45.0, padnets={"1": "VLED", "2": "GND"}, value="220uF 10V")
+P("Capacitor_SMD", "CP_Elec_6.3x7.7", "C11", 40.0, 45.0, back=True, padnets={"1": "VLED", "2": "GND"}, value="220uF 10V")   # 7.7 mm tall: on the back (switch plate is 3.5 mm above the top side)
 
 # ---- connectors (bottom side; a flipped IDC header has pad 1 at the origin and its pins going up) ----
 srio = lambda si, so: {"1": "GND", "2": "GND", "3": "+5V", "4": "+5V", "5": si, "6": so, "7": "SC", "8": "SC", "9": "RC2", "10": "RC1"}
@@ -128,9 +128,10 @@ P("Connector_PinHeader_2.54mm", "PinHeader_1x03_P2.54mm_Vertical", "J6", 78.0, 4
 # 5 V supply for LEDs + OLED boost converters (separate PSU, >= 4 A); its GND meets the logic GND here (single point)
 P("Connector_JST", "JST_VH_B2P-VH_1x02_P3.96mm_Vertical", "J7", 28.0, 45.0, back=True, padnets={"1": "VLED", "2": "GND"}, value="5V_LED_IN")
 
-# ---- mounting: M3 standoffs (front panel / switch plate stack) ----
-for i, (x, y) in enumerate([(24.0, 3.5), (86.0, 3.5), ((KX[0] + KX[1]) / 2, 84.25), ((KX[3] + KX[4]) / 2, 84.25), (4.5, 103.5), (W - 4.5, 103.5)]):
-    P("MountingHole", "MountingHole_3.2mm_M3", "H%d" % (i + 1), x, y)
+# ---- mounting: M1.6 through-bolts of the panel stack (see ../README.md, Mechanics) ----
+STACK_HOLES = [(24.0, 3.5), (86.0, 3.5), ((KX[0] + KX[1]) / 2, 84.25), ((KX[3] + KX[4]) / 2, 84.25), (4.5, 101.5), (W - 4.5, 101.5)]
+for i, (x, y) in enumerate(STACK_HOLES):
+    B.stack_hole("H%d" % (i + 1), x, y)
 
 B.gnd_fanout()
 B.save(OUT)

@@ -21,9 +21,33 @@ for v in vias:
     if len(layers) < 2:
         b.Remove(v); dangling += 1
 print("removed one-layer vias", dangling)
-for t in b.GetTracks():               # Freerouting necks tracks down at some pads (0.125 mm): bring them to the 0.15 mm minimum
-    if t.Type() == pcbnew.PCB_TRACE_T and t.GetWidth() < pcbnew.FromMM(0.15):
-        t.SetWidth(pcbnew.FromMM(0.15))
+for t in b.GetTracks():               # Freerouting necks tracks down at some pads (0.125 mm): 0.127 mm = 5 mil fab minimum
+    if t.Type() == pcbnew.PCB_TRACE_T and t.GetWidth() < pcbnew.FromMM(0.127):
+        t.SetWidth(pcbnew.FromMM(0.127))
+# remove dangling track stubs (an end that touches no other track, via or pad), repeat until none is left
+def connected(t, p):
+    tid = t.m_Uuid.AsString()                   # (SWIG returns new proxy objects: compare the UUID, not "is")
+    for o in b.GetTracks():
+        if o.m_Uuid.AsString() == tid or o.GetNetCode() != t.GetNetCode():
+            continue
+        if o.Type() == pcbnew.PCB_VIA_T and o.HitTest(p, 0):
+            return True
+        if o.Type() == pcbnew.PCB_TRACE_T and o.GetLayer() == t.GetLayer() and (o.GetStart() == p or o.GetEnd() == p or o.HitTest(p, 0)):
+            return True
+    for f in b.GetFootprints():
+        for pd in f.Pads():
+            if pd.GetNetCode() == t.GetNetCode() and pd.IsOnLayer(t.GetLayer()) and pd.HitTest(p):
+                return True
+    return False
+stubs = 0
+while True:
+    bad = [t for t in b.GetTracks() if t.Type() == pcbnew.PCB_TRACE_T and not t.IsLocked()
+           and not (connected(t, t.GetStart()) and connected(t, t.GetEnd()))]
+    if not bad:
+        break
+    for t in bad:
+        b.Remove(t); stubs += 1
+print("removed dangling stubs", stubs)
 gnd = b.FindNet("GND")
 
 def zone(layer):
@@ -57,6 +81,9 @@ def free(x, y, r):
                 return False
     for t in b.GetTracks():
         if t.HitTest(p, pcbnew.FromMM(r + t.GetWidth() / 2e6)):
+            return False
+    for z in b.Zones():                                   # keep-outs (LED cut-outs, isolated stack holes)
+        if z.GetIsRuleArea() and z.GetDoNotAllowVias() and z.Outline().Collide(p, pcbnew.FromMM(r)):
             return False
     return True
 n = 0

@@ -166,3 +166,36 @@ Result: **366 pads + 140 datasheet rules OK**, DRC 0 unconnected, only the 5 int
   amber, Play sage green, other transport keys warm white; brightness from the hwcfg (default 64/255 = 25 %).
 - **Note on J15**: the core's J15 RW line is also OE# of its 74HC595 that drives CS0-3, so the CS lines float while a "1"
   bit is clocked. The OLED bus keeps CS0-3 away from SCLK in the ribbon (pins 7-10 vs. 3) so they do not pick up the clock.
+
+## Front panel + switch plate (built, verified against the PCBs)
+`panel/build_panel.py` -> `panel/front.kicad_pcb` (474.7 x 144.4 mm, = the virtual panel) and `panel/plate.kicad_pcb`, both
+from the panel_oled.html geometry. `panel/verify_panel.py` checks them **independently against the routed PCBs**: 53 MX keys
+centred in 14.0 mm plate cut-outs with >= 0.9 mm free around every 18 mm cap in the front cut-outs, 13 small keys centred in
+11.0 x 11.0 mm front holes (APEM cut-out for the 1T cap), 17 encoder shafts centred in their holes, 4 OLED active areas
+inside their windows, 22 PCB stack holes with a plate hole and a front standoff above them, every tall top-side part under a
+plate opening, every standoff >= 1 mm from cut-outs/holes/edge -> **OK**. DRC of both plates clean.
+- **Front panel**: FR4 1.6 mm, **black solder mask, white silkscreen** (printed legends: select-mode/left-block keys, function
+  row, transport symbols, DATA, BEAT, logo; no GP/select labels). OLED windows 80.0 x 21.0 mm (bezel opening 82 x 22).
+- **No visible fasteners**: 30 Würth WA-SMSI **M1.6 bottom-closed** SMT spacers 97730506330R (L 5 mm, OD 3.3 mm, Würth only
+  makes the closed version in M1.6; the M3 versions have a through hole or a locating hole) reflowed on the back.
+  22 of them sit above the PCB stack holes: **one M1.6 screw per point from the back of the PCB** through the PCB, a 3.5 mm
+  spacer tube, the switch plate, into the standoff – clamps PCB, plate and front panel at once. 8 more in the free margins
+  (screwed from below the plate). PCB stack holes are unplated 2.2 mm with no copper within 2.5 mm: the screws never touch
+  GND, so the mechanics add no ground connection between boards.
+- **Switch plate**: FR4 1.5 mm, MX 14.0 x 14.0, 3F 10.8 x 10.8, one opening per column for the Newhaven module + encoders,
+  datawheel 13 x 14, beat LED 3.6, 2.2 mm stack holes.
+
+### Stack heights (z = 0 at the top of the key PCBs)
+| Item | z (mm) | Source | Sticks out above the panel |
+|---|---|---|---|
+| Switch plate | 3.5 – 5.0 | MX plate mount: plate top 5.0 mm above the PCB (Cherry MX drawing) | – |
+| Front panel | 10.0 – 11.6 | plate top + 5.0 mm standoff (97730506330R) + 1.6 mm FR4 | – |
+| 3F + 1T cap (small keys) | top 14.9, travel 1 | APEM: 1T h = 14.9 mm, 3F travel 1 mm | **3.3 mm** (pressed 2.3) |
+| MX housing | top 11.6 | plate + 6.6 mm (Cherry MX) | flush with the panel top |
+| MX + 18 mm cap (big keys) | top ~19-20, travel 4 | cap height depends on the profile – **VERIFY with the sample caps** | ~8 mm (pressed ~4) |
+| Newhaven glass | 2.5 – 8.5 | module 6.0 mm thick (datasheet), soldered on its pins over a 2.5 mm spacer | 1.5 mm below the panel back |
+| EC11E shaft (H20) | top 20.0 | footprint / part H = 20 mm | 8.4 mm shaft for the knob |
+| Beat LED 3 mm | top ~10.3 | 5 mm LED spacer + 5.3 mm LED body – **VERIFY** (or a light pipe) | in the 3.2 mm hole |
+Consequences already applied: the Newhaven is soldered directly (a 1x20 socket would put the glass at 14.5 mm, above the
+panel), the 220 uF capacitor of the left PCB is on the back (7.7 mm tall). If the big caps stick out too far with the chosen
+profile, use a lower profile (DSA/flat) rather than raising the panel – the small keys only have 3.3 mm.

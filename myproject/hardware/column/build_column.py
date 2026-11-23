@@ -15,7 +15,7 @@ Y_ENC, Y_GP, Y_SEL, Y_FN = 51.22, 68.12, 92.09, 116.04            # encoder shaf
 OLED_L = 45.3 - 44.6                                               # left edge of the 89.2 mm Newhaven PCB
 OLED_PIN1 = (OLED_L + 20.47 + 48.26, 2.5)                          # 1x20 header, pin 1 at the right (front view), 2.5 mm from top
 OLED_HOLES = [(OLED_L + 3.0, 3.0), (OLED_L + 86.2, 3.0), (OLED_L + 3.0, 41.0), (OLED_L + 86.2, 41.0)]  # 83.2 x 38.0 mm
-STACK_HOLES = [(4.5, 80.0), (W - 4.5, 80.0), (4.5, 104.0), (W - 4.5, 104.0)]                       # front panel / plate standoffs
+STACK_HOLES = [(3.5, 80.0), (W - 3.5, 80.0), (3.5, 104.0), (W - 3.5, 104.0)]                       # M1.6 through-bolts: PCB -> switch plate -> front panel
 
 board = pcbnew.BOARD()
 nets = {}
@@ -130,7 +130,7 @@ for i in range(4):
     place("Jumper", "SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm", "JP%d" % (i + 1), 35.0 + i * 5.0, 9.0, rot=90,
           padnets={"1": "CS%d" % i, "2": "OLED_CS"}, value="CS%d" % i)
 
-# ---- OLED: Newhaven NHD-3.12-25664UCY2 on a 1x20 socket, 4-wire SPI (datasheet p. 4-8) ----
+# ---- OLED: Newhaven NHD-3.12-25664UCY2 soldered on its 1x20 pins, 4-wire SPI (datasheet p. 4-8) ----
 # Power: jumper option #1 (datasheet p. 6/7): logic VDD (pin 2) 3.3 V (200 uA), boost converter BC_VDD (pin 3) from the 5 V LED
 # supply (150/170 mA at 100 % on) instead of 310/340 mA from 3.3 V. With the default jumper pin 3 is open on the module (harmless).
 oled = {"1": "GND", "2": "+3V3", "3": "VLED",   # 3 = BC_VDD: boost converter from 5 V (jumper option #1: R14 open, R15 closed)
@@ -141,14 +141,25 @@ sock = None
 for rot in (0, 90, 180, 270):            # orientation: pin 1 at the right, pins going to the left
     if sock:
         board.Remove(sock)
-    sock = place("Connector_PinSocket_2.54mm", "PinSocket_1x20_P2.54mm_Vertical", "J7", OLED_PIN1[0], OLED_PIN1[1], rot=rot,
+    # the module's own 1x20 pins are soldered straight into the board on a 2.5 mm spacer (a socket would lift the glass to
+    # 14.5 mm, above the back of the front panel at 10 mm - see README, stack heights)
+    sock = place("Connector_PinHeader_2.54mm", "PinHeader_1x20_P2.54mm_Vertical", "J7", OLED_PIN1[0], OLED_PIN1[1], rot=rot,
                  padnets=oled, value="NHD-3.12-25664UCY2")
     p = {pd.GetNumber(): pd.GetPosition() for pd in sock.Pads()}
     if p["2"].x < p["1"].x and abs(p["2"].y - p["1"].y) < 1000:
         break
 for i, (x, y) in enumerate(OLED_HOLES + STACK_HOLES):
-    lib, nm = ("MountingHole", "MountingHole_2.7mm_M2.5") if i < 4 else ("MountingHole", "MountingHole_3.2mm_M3")
+    lib, nm = ("MountingHole", "MountingHole_2.7mm_M2.5") if i < 4 else ("MountingHole", "MountingHole_2.2mm_M2")
     place(lib, nm, "H%d" % (i + 1), x, y)
+    if i >= 4:        # M1.6 through-bolt of the panel stack: no copper within 2.5 mm (the screw never touches GND)
+        import math
+        z = pcbnew.ZONE(board)
+        z.SetIsRuleArea(True); z.SetDoNotAllowTracks(True); z.SetDoNotAllowVias(True); z.SetDoNotAllowZoneFills(True)
+        z.SetDoNotAllowPads(False); z.SetDoNotAllowFootprints(False); z.SetLayerSet(pcbnew.LSET.AllCuMask())
+        ol = z.Outline(); ol.NewOutline()
+        for a in range(16):
+            ol.Append(pcbnew.FromMM(OX + x + 2.5 * math.cos(a * math.pi / 8)), pcbnew.FromMM(OY + y + 2.5 * math.sin(a * math.pi / 8)))
+        board.Add(z)
 
 # ---- keep tracks 0.3 mm away from the LED cut-outs (Freerouting does not treat footprint cut-outs as board edge) ----
 for i, (ref, x, y) in enumerate(leds):
