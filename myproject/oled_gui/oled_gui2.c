@@ -842,6 +842,16 @@ static void pg_box(u8 (*d)[CW], const og2_page_t *p, int j0, int s0, int sn)
       if( i > 0 ) for(int y=EBY+16; y<EBY+EBH-6; y+=2) px(d, ebx(j+i)-3, y, 3);     // faint divider: one GP button per text
     }
   } break;
+  case OG2_C_STEPS: {
+    int x0 = ebx(j)+5, cwid = 5, gap = 1;
+    for(int i=0; i<16; ++i){
+      int cx = x0 + (i & 7) * (cwid + gap), cy = EBY + 16 + (i >> 3) * 8, on = (c->keys >> i) & 1, play = (c->meter == i);
+      int g = c->dim ? (on ? 5 : 2) : (on ? 11 : 3);
+      if( on ) rect(d, cx, cy, cwid, 6, g); else frame_box(d, cx, cy, cwid, 6, g);
+      if( play ){ rect(d, cx-1, cy-1, cwid+2, 8, 15); }
+    }
+    if( c->value[0] ) ecbtext(d, cx, EBY+36, c->value, 1, c->dim ? 15 : 7);
+  } break;
   case OG2_C_GRAPH: {
     if( c->value[0] ) elabel_right(d, j, n, c->value, 9);
     int x0 = ebx(j)+6, w = ebw(n)-12, yc = 41, cnt = p->graph_n ? p->graph_n : 1, bw = w / cnt;

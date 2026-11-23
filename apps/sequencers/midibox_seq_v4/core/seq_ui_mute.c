@@ -471,23 +471,30 @@ s32 SEQ_UI_MUTE_OledGet(og2_page_t *p)
     strcpy(p->head[1], "GROUP 2");
     strcpy(p->head[2], "GROUP 3");
     strcpy(p->head[3], "GROUP 4");
+    u8 running = SEQ_BPM_IsRunning();
     for(k=0; k<16; ++k) {
-      char lbl[8];
-      u16 m = 1 << k;
+      char lbl[16];
+      u16 m = 1 << k, len = SEQ_CC_Get(k, SEQ_CC_LENGTH) + 1;
+      u8 pos = running ? seq_core_trk[k].step : 0xff;
+      u8 win = (pos != 0xff) ? (pos / 16) : ui_selected_step_view;
+      int i;
       og2_col_t *c;
-      sprintf(lbl, "G%dT%d%s", (k/4)+1, (k%4)+1, (seq_core_trk[k].layer_muted || seq_core_trk[k].layer_muted_from_midi) ? " L" : "");
+      sprintf(lbl, "G%dT%d%s", (k/4)+1, (k%4)+1, (seq_core_trk[k].layer_muted || seq_core_trk[k].layer_muted_from_midi) ? "L" : "");
+      if( len > 16 ) sprintf(lbl + strlen(lbl), " %d/%d", win + 1, (len + 15) / 16);
+      c = OG2_PageCol(p, k, OG2_C_STEPS, 1, lbl);
+      for(i=0; i<16; ++i) {
+	u16 step = (u16)win * 16 + i;
+	if( step < len && SEQ_TRG_GateGet(k, step, 0) ) c->keys |= 1 << i;
+      }
+      c->meter = (pos != 0xff && pos / 16 == win) ? (pos % 16) : 0xff;
+      c->dim = (mute_flags & m) ? 1 : 0;
       if( mute_flags & m ) {
-	c = OG2_PageCol(p, k, OG2_C_CHOICE, 1, lbl);
-	c->on = 1;
 	if( !seq_ui_button_state.SELECT_PRESSED && (seq_core_trk_synched_unmute & m) ) sprintf(c->value, "U %d", remaining);
 	else strcpy(c->value, "MUTE");
       } else if( !seq_ui_button_state.SELECT_PRESSED && (seq_core_trk_synched_mute & m) ) {
-	c = OG2_PageCol(p, k, OG2_C_VALUE, 1, lbl);
 	sprintf(c->value, "M %d", remaining);
-      } else {
-	c = OG2_PageCol(p, k, OG2_C_METER, 1, lbl);
-	c->meter = ((seq_core_trk[k].vu_meter & 0x7f) >> 4) * 100 / 7;     // 8 levels: fewer screen updates
-      }
+      } else
+	sprintf(c->value, "LEN %d", len);
     }
     p->sel = 1 << visible_track;
   }

@@ -19,7 +19,8 @@ The user (Dutch speaking, answers in Dutch) wants a calm, consistent UI and expe
 9. Labels max. 8 characters in a 1-column box (abbreviate sensibly: "JMP BACK", "RND VAL."); avoid long info text blocks – one small box with the essential info is better.
 
 ## Box types (`og2_col_t.kind`)
-VALUE, TOGGLE, CHOICE, ACTION, TEXT (one per page, `pg.text`, lines with '|'), GRAPH, METER, KEYS (note blocks, `meter` = root), ROW, SPAN.
+VALUE, TOGGLE, CHOICE, ACTION, TEXT (one per page, `pg.text`, lines with '|'), GRAPH, METER, KEYS (note blocks, `meter` = root), ROW, STEPS (track box: 16 gates + playing step, used on Mute), SPAN.
+The user likes seeing *where and how a track runs* (gates + play position) – keep such live information when restyling.
 
 ## Where a page gets its layout
 - Own renderer + mapping: Event (`seq_ui_trkevnt.c`), Mode, Divider/Length/Direction (`seq_ui_timing.c`).

@@ -116,6 +116,8 @@ typedef enum {
                     // value = text right in the label row
   OG2_C_ROW,        // label over several columns, value = one text per column separated by '|', centred above each GP button;
                     // a text starting with '>' is the marked choice (filled chip)
+  OG2_C_STEPS,      // track box: 16 gates (keys) as 2 rows of 8, playing step = meter (0-15, 0xff none), value = text below,
+                    // dim = muted (grid dimmed, text bright)
   OG2_C_SPAN        // continuation of the box that starts in a column to the left
 } og2_ckind_t;
 typedef struct {
