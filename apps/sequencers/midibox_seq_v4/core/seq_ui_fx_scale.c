@@ -286,8 +286,26 @@ static s32 EXIT_Handler(void)
 }
 
 
+// 4 x OLED: own column mapping (the original page had ROOT on GP3 and SCALE on GP4-8, GP1/2 unused):
+//   GP1 ROOT | GP2-4 SCALE | GP5-8 keyboard (display only)
+static s32 Encoder_HandlerMap(seq_ui_encoder_t encoder, s32 incrementer)
+{
+  if( encoder == SEQ_UI_ENCODER_GP1 ) return Encoder_Handler(SEQ_UI_ENCODER_GP3, incrementer);
+  if( encoder >= SEQ_UI_ENCODER_GP2 && encoder <= SEQ_UI_ENCODER_GP4 ) return Encoder_Handler(SEQ_UI_ENCODER_GP4, incrementer);
+  if( encoder <= SEQ_UI_ENCODER_GP16 ) return 0;
+  return Encoder_Handler(encoder, incrementer);
+}
+static s32 Button_HandlerMap(seq_ui_button_t button, s32 depressed)
+{
+  if( button <= SEQ_UI_BUTTON_GP16 ) {
+    if( depressed ) return 0;
+    return Encoder_HandlerMap((seq_ui_encoder_t)button, 0);
+  }
+  return Button_Handler(button, depressed);
+}
+
 /////////////////////////////////////////////////////////////////////////////
-// 4 x OLED (myproject): GP3 root, GP4-8 scale, GP9-16 keyboard with the notes of the scale (display only)
+// 4 x OLED (myproject): GP1 root, GP2-4 scale, GP5-8 keyboard with the notes of the scale (display only)
 /////////////////////////////////////////////////////////////////////////////
 s32 SEQ_UI_FX_SCALE_OledGet(og2_page_t *p)
 {
@@ -298,22 +316,22 @@ s32 SEQ_UI_FX_SCALE_OledGet(og2_page_t *p)
   SEQ_CORE_FTS_GetScaleAndRoot(SEQ_UI_VisibleTrackGet(), ui_selected_step, ui_selected_instrument, NULL, &scale, &root_selection, &root);
   OG2_PageInit(p);
   strcpy(p->head[0], "FX SCALE (GLOBAL)");
-  strcpy(p->head[2], "NOTES IN THE SCALE");
-  c = OG2_PageCol(p, 2, OG2_C_VALUE, 1, "ROOT");
+  strcpy(p->head[1], "NOTES IN THE SCALE");
+  c = OG2_PageCol(p, 0, OG2_C_VALUE, 1, "ROOT");
   strcpy(c->value, root_selection ? nn[(root_selection - 1) % 12] : "KEYB");
-  c = OG2_PageCol(p, 3, OG2_C_VALUE, 5, "SCALE");
+  c = OG2_PageCol(p, 1, OG2_C_VALUE, 3, "SCALE");
   sprintf(c->label, "SCALE %d", scale);
   strncpy(c->value, SEQ_SCALE_NameGet(scale), sizeof(c->value)-1);
   { int e = strlen(c->value); while( e > 0 && c->value[e-1] == ' ' ) c->value[--e] = 0; }
-  c = OG2_PageCol(p, 8, OG2_C_KEYS, 8, "KEYBOARD");
+  c = OG2_PageCol(p, 4, OG2_C_KEYS, 4, "NOTES");
   for(k=0; k<12; ++k)
     if( (SEQ_SCALE_NoteValueGet(k, scale, root) % 12) == k )   // the key stays itself: it belongs to the scale
       c->keys |= 1 << k;
   c->meter = root % 12;
   sprintf(c->value, "ROOT %s", nn[root % 12]);
   switch( ui_selected_item ) {
-  case ITEM_SCALE_ROOT: p->sel = 0x0004; break;
-  case ITEM_SCALE: p->sel = 0x00f8; break;
+  case ITEM_SCALE_ROOT: p->sel = 0x0001; break;
+  case ITEM_SCALE: p->sel = 0x000e; break;
   }
   return 0;
 }
@@ -324,8 +342,8 @@ s32 SEQ_UI_FX_SCALE_OledGet(og2_page_t *p)
 s32 SEQ_UI_FX_SCALE_Init(u32 mode)
 {
   // install callback routines
-  SEQ_UI_InstallButtonCallback(Button_Handler);
-  SEQ_UI_InstallEncoderCallback(Encoder_Handler);
+  SEQ_UI_InstallButtonCallback(Button_HandlerMap);
+  SEQ_UI_InstallEncoderCallback(Encoder_HandlerMap);
   SEQ_UI_InstallLEDCallback(LED_Handler);
   SEQ_UI_InstallLCDCallback(LCD_Handler);
   SEQ_UI_InstallExitCallback(EXIT_Handler);

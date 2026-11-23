@@ -20,6 +20,7 @@ Decisions taken with the user: boxes in "Elektron style"; velocity as a number i
 4. **No bars under values.** The only bar is the INIT hold progress.
 5. On / active choice = filled box; last touched = double frame; not applicable = dimmed.
 6. Lists (layers A-P, presets, timebase, direction) = chips in one box; one column per option = separate boxes.
+7. A box never runs across a screen border; the first item starts at GP1 (own mapping when the original page leaves gaps). See `.claude/skills/oled-pages/SKILL.md`.
 
 ## How a page gets its layout
 - Hand-made layout + own mapping: Event, Mode, Divider/Length/Direction (`seq_ui_timing.c`), Transpose.

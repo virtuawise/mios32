@@ -1,0 +1,38 @@
+---
+name: oled-pages
+description: Rules and workflow for the 4 x OLED (256x64) page layouts of the MIDIbox SEQ V4+ fork (branch four-screens-usb). Use when creating or changing any OLED page, box layout, renderer (myproject/oled_gui/oled_gui2.c) or page fill function (SEQ_UI_*_OledGet, seq_oled.c), and when the user reports that a page "klopt niet" / looks wrong.
+---
+
+# OLED pages – rules and workflow
+
+The user (Dutch speaking, answers in Dutch) wants a calm, consistent UI and expects me to build, flash and check on the real SEQ myself.
+
+## Layout rules (all pages)
+1. 4 screens x 4 columns = 16 columns; column k sits above GP encoder/button k+1. Every box sits above the GP controls that change it.
+2. **A box never runs across a screen border** (columns 0-3, 4-7, 8-11, 12-15). Design layouts so boxes stay within one screen. Where the original GP mapping forces a span across a border, the renderer splits it: the largest part shows label + value, smaller parts repeat them only if they fit, else show « / ».
+3. **The first item starts at GP1.** If the original page leaves GP1/GP2 unused or the order is odd, give the page its own encoder/button mapping (see `seq_ui_fx_scale.c`, `seq_ui_trktran.c`, `seq_ui_timing.c`) instead of copying the gaps.
+4. Header per screen: small title top-left + dotted line. Box label top-left in the normal 6x8 font (never the 4x5 small font).
+5. Values: 1x bold, upper case, written out in full, all at the same height (`VALY`). No 2x values, no per-box size switching.
+6. No bars under values (meters/graphs/keyboards are separate box types and stay within one screen).
+7. On / active choice = filled box; last touched / selected = double frame; not applicable = dimmed.
+8. Lists: a row of GP buttons under one title = ROW box (one text above each button, chosen one filled); separate options per column = separate boxes.
+9. Labels max. 8 characters in a 1-column box (abbreviate sensibly: "JMP BACK", "RND VAL."); avoid long info text blocks – one small box with the essential info is better.
+
+## Box types (`og2_col_t.kind`)
+VALUE, TOGGLE, CHOICE, ACTION, TEXT (one per page, `pg.text`, lines with '|'), GRAPH, METER, KEYS (note blocks, `meter` = root), ROW, SPAN.
+
+## Where a page gets its layout
+- Own renderer + mapping: Event (`seq_ui_trkevnt.c`), Mode, Divider/Length/Direction (`seq_ui_timing.c`).
+- Column page filled by the page: `SEQ_UI_<PAGE>_OledGet(og2_page_t *)` in the page source, registered in `page_fill()` in `seq_oled.c`.
+- Column page from LCD columns in `seq_oled.c`: FX table (`lcd_pages[]`), MIDI, Instrument, Euclid, MIDI monitor, Disk, messages.
+- Everything else: generic converter `lcd_generic_fill()`.
+- MIOS32 `sprintf` has no `%+d`; RAM is tight (check the link step for "RAM overflowed"); keep stack buffers small.
+- MIOS32 sources use CRLF line endings: edit with Python/perl in binary mode.
+
+## Workflow (always do all steps)
+1. Host preview where possible: `cd myproject/oled_gui && cc -I host_stub -I ../../modules/glcd_font -I . -o host_test2 host_test2.c oled_gui2.c ../../modules/glcd_font/glcd_font_normal.c ../../modules/glcd_font/glcd_font_small.c`.
+2. Build: `cd apps/sequencers/midibox_seq_v4 && export PATH=$HOME/toolchains/arm-pkg/Payload/bin:$PATH MIOS32_PATH=<repo> MIOS32_FAMILY=STM32F4xx MIOS32_PROCESSOR=STM32F407VG MIOS32_BOARD=MBHP_CORE_STM32F4 MIOS32_LCD=universal && make` (no -j).
+3. Flash: stop the panel (`pkill -INT -f mbseq_panel.py`), `python3 -u myproject/tools/mios32_flash.py flash project.hex`, restart the panel in the background (`cd myproject/panel && nohup python3 -u mbseq_panel.py --no-browser > /tmp/panel.log 2>&1 &`).
+4. Check on the device: `myproject/tools/oled_walk.py out.png "label|b:MENU+GP10;b:GP10" ...` (b: button, e:ENC:d encoder) or `oled_walkmenu.py` for all 42 pages; look at every PNG. EXIT toggles to the Page Menu (MENU is only a hold button).
+5. Do not trigger actions that change the user's data (Save, Delete, Clear, Copy, mutes) – or undo them right away and say so.
+6. Commit per fix (English message, Co-Authored-By line), update `myproject/LOGBOOK.md` / `oled_gui/DESIGN.md` when rules or structure change.

@@ -309,12 +309,19 @@ s32 SEQ_UI_TRKMORPH_OledGet(og2_page_t *p)
   }
   c = OG2_PageCol(p, 5, OG2_C_ACTION, 1, "STORE"); strcpy(c->value, "STORE");
   c = OG2_PageCol(p, 7, OG2_C_VALUE, 1, "VALUE"); sprintf(c->value, "%d", SEQ_MORPH_ValueGet());
-  c = OG2_PageCol(p, 8, OG2_C_METER, 8, "MORPH");
-  c->meter = (SEQ_MORPH_ValueGet() * 100) / 127;
+  {
+    // GP9-16 set the morph value to 0, 16, ... 112: one row of buttons per screen, the nearest one filled
+    int v = SEQ_MORPH_ValueGet() / 16, h;
+    for(h=0; h<2; ++h) {
+      int i, o = 0;
+      c = OG2_PageCol(p, 8 + 4*h, OG2_C_ROW, 4, "SET TO");
+      for(i=0; i<4; ++i) { int n = 4*h + i; o += sprintf(c->value + o, "%s%s%d", i ? "|" : "", (n == v) ? ">" : "", n * 16); }
+    }
+  }
   if( !seq_midi_in_ext_ctrl_channel || seq_midi_in_ext_ctrl_asg[SEQ_MIDI_IN_EXT_CTRL_MORPH] >= 0x80 )
-    strcpy(c->value, "EXT. CTRL OFF (MIDI PAGE)");
+    strcpy(p->head[3], "EXT. CTRL OFF");
   else
-    sprintf(c->value, "EXT. CTRL CHN %d CC %d", seq_midi_in_ext_ctrl_channel, seq_midi_in_ext_ctrl_asg[SEQ_MIDI_IN_EXT_CTRL_MORPH]);
+    sprintf(p->head[3], "EXT. CTRL CC %d", seq_midi_in_ext_ctrl_asg[SEQ_MIDI_IN_EXT_CTRL_MORPH]);
   switch( ui_selected_item ) {
   case ITEM_GXTY: p->sel = 0x0001; break;
   case ITEM_MORPH_MODE: p->sel = 0x0002; break;

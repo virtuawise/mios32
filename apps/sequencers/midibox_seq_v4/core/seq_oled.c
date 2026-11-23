@@ -425,7 +425,7 @@ static s32 trkinst_fill(void)
   c = OG2_PageCol(&pg, 7, OG2_C_ACTION, 1, "TRACK"); strcpy(c->value, "EVENT");
   c = OG2_PageCol(&pg, 8, OG2_C_ACTION, 1, "EDIT"); strcpy(c->value, "NAME");
   SEQ_OLED_LcdText(t, 55, 80, 1);
-  c = OG2_PageCol(&pg, 11, OG2_C_VALUE, 5, "TRACK NAME"); strncpy(c->value, t[0] ? t : "---", sizeof(c->value)-1);
+  c = OG2_PageCol(&pg, 12, OG2_C_VALUE, 4, "TRACK NAME"); strncpy(c->value, t[0] ? t : "---", sizeof(c->value)-1);
   sel_from_leds();
   return 0;
 }
@@ -490,8 +490,20 @@ static s32 message_fill(void)
   }
   SEQ_OLED_LcdText(a, 0, 80, 0);
   SEQ_OLED_LcdText(b, 0, 80, 1);
-  c = OG2_PageCol(&pg, 0, OG2_C_TEXT, 16, "MESSAGE");
-  snprintf(pg.text, sizeof(pg.text), "%s|%s", a, b);
+  c = OG2_PageCol(&pg, 0, OG2_C_TEXT, 4, "");      // one screen, the two LCD rows wrapped at word borders (max. 41 characters per line)
+  {
+    char all[170]; int i, o = 0, line = 0, ls = 0, lastsp = -1;
+    snprintf(all, sizeof(all), "%s %s", a, b);
+    for(i=0; all[i] && o < (int)sizeof(pg.text)-1; ++i) {
+      char ch = all[i];
+      if( ch == ' ' && o == ls ) continue;                 // no space at the start of a line
+      pg.text[o++] = ch;
+      if( ch == ' ' ) lastsp = o - 1;
+      if( o - ls > 41 && lastsp > ls ) { pg.text[lastsp] = '|'; ls = lastsp + 1; lastsp = -1; ++line; }
+    }
+    pg.text[o] = 0;
+    (void)line;
+  }
   (void)c;
   return 0;
 }

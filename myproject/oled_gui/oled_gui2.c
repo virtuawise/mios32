@@ -781,15 +781,31 @@ og2_col_t *OG2_PageCol(og2_page_t *p, int k, u8 kind, int span, const char *labe
   for(int i=1; i<span; ++i){ memset(&p->c[k+i], 0, sizeof(og2_col_t)); p->c[k+i].kind = OG2_C_SPAN; }
   return c;
 }
-static void pg_box(u8 (*d)[CW], const og2_page_t *p, int j)
+// draws the part [s0, s0+sn) of box j; a box never runs across a screen border: each screen gets its own frame
+static void pg_box(u8 (*d)[CW], const og2_page_t *p, int j0, int s0, int sn)
 {
-  const og2_col_t *c = &p->c[j];
-  int n = c->span ? c->span : 1, sel = ((p->sel >> j) & ((1 << n) - 1)) != 0;
+  const og2_col_t *c = &p->c[j0];
+  int nfull = c->span ? c->span : 1, sel = ((p->sel >> j0) & ((1 << nfull) - 1)) != 0;
+  int j = s0, n = sn, tok_skip = s0 - j0;
+  // main part = the largest part of a box that crosses a screen border; smaller parts repeat label/value only if
+  // they fit completely, otherwise they point to the main part
+  int best = 0, best_s = j0;
+  for(int a = j0; a < j0 + nfull; ){ int e = (a/4 + 1)*4; if( e > j0 + nfull ) e = j0 + nfull; if( e - a > best ){ best = e - a; best_s = a; } a = e; }
+  int secondary = (s0 != best_s) && c->kind != OG2_C_ROW;
+  int room = (ebw(n) - 8) / 6;
   int fill = (c->kind == OG2_C_TOGGLE || c->kind == OG2_C_CHOICE) && c->on && !c->dim;
   ebox(d, j, n, sel);
   if( fill && !sel ) rect(d, ebx(j)+1, EBY+1, ebw(n)-2, EBH-2, 3);
-  elabel_n(d, j, n, c->label, sel || fill);
+  if( s0 == best_s || (int)strlen(c->label) <= room ) elabel_n(d, j, n, c->label, sel || fill);
   int cx = ebx(j) + ebw(n)/2;
+  if( secondary ){
+    const char *v = (c->kind == OG2_C_TOGGLE) ? (c->on ? "ON" : "OFF") : c->value;
+    if( (c->kind == OG2_C_VALUE || c->kind == OG2_C_TOGGLE || c->kind == OG2_C_CHOICE) && (int)strlen(v) <= room && v[0] )
+      evalue(d, j, n, v, c->dim ? 5 : ((c->kind == OG2_C_CHOICE && !c->on) ? 6 : 15));
+    else
+      ecbtext(d, cx, VALY, (best_s < s0) ? "<<" : ">>", 1, 6);
+    return;
+  }
   switch( c->kind ){
   case OG2_C_VALUE:
     evalue(d, j, n, c->value, c->dim ? 5 : 15); break;
@@ -805,12 +821,13 @@ static void pg_box(u8 (*d)[CW], const og2_page_t *p, int j)
     char line[84]; int l = 0, o = 0;
     for(int i=0; ; ++i){
       char ch = p->text[i];
-      if( ch == '|' || ch == 0 ){ line[o] = 0; text(d, LFONT, ebx(j)+5, EBY+15+l*11, line, 1, c->dim ? 5 : 10); ++l; o = 0; if( !ch || l >= 3 ) break; }
+      if( ch == '|' || ch == 0 ){ line[o] = 0; text(d, LFONT, ebx(j)+5, (c->label[0] ? EBY+15 : EBY+4)+l*11, line, 1, c->dim ? 5 : 10); ++l; o = 0; if( !ch || l >= (c->label[0] ? 3 : 4) ) break; }
       else if( o < 83 && i < (int)sizeof(p->text) ) line[o++] = ch;
     }
   } break;
   case OG2_C_ROW: {
     const char *q = c->value;
+    for(int i=0; i<tok_skip && *q; ++i){ while( *q && *q != '|' ) ++q; if( *q == '|' ) ++q; }   // texts of the columns left of this part
     for(int i=0; i<n && *q; ++i){
       char t[12]; int o = 0, mark = 0;
       if( *q == '>' ){ mark = 1; ++q; }
@@ -875,7 +892,10 @@ void OG2_RenderPageCell(u8 *out, int cell, const og2_page_t *p)
     const og2_col_t *c = &p->c[j];
     if( c->kind == OG2_C_NONE || c->kind == OG2_C_SPAN ) continue;
     int n = c->span ? c->span : 1;
-    if( cell >= j && cell < j + n ) pg_box(d, p, j);
+    if( cell >= j && cell < j + n ){
+      int s0 = j > scr*4 ? j : scr*4, s1 = (j + n) < (scr*4 + 4) ? (j + n) : (scr*4 + 4);
+      pg_box(d, p, j, s0, s1 - s0);
+    }
   }
   ox_shift = 0;
   tile_pack(out, tmp);

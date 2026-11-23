@@ -379,7 +379,7 @@ s32 SEQ_UI_INFO_OledGet(og2_page_t *p)
   }
   SEQ_OLED_LcdText(a, 40, 80, 0);
   SEQ_OLED_LcdText(b, 40, 80, 1);
-  c = OG2_PageCol(p, 8, OG2_C_TEXT, 8, "INFORMATION");
+  c = OG2_PageCol(p, 8, OG2_C_TEXT, 4, "INFORMATION");
   snprintf(p->text, sizeof(p->text), "%s|%s", a, b);
   return 0;
 }

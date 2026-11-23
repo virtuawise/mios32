@@ -1474,7 +1474,7 @@ s32 SEQ_UI_OPT_OledGet(og2_page_t *p)
   for(i=0; i<40 && item_text[local_selected_item][0][i]; ++i) { char ch = item_text[local_selected_item][0][i]; t[i] = (ch >= 'a' && ch <= 'z') ? ch - 32 : ch; }
   t[i] = 0;
   while( i > 0 && t[i-1] == ' ' ) t[--i] = 0;
-  c = OG2_PageCol(p, 8, OG2_C_VALUE, 8, t);
+  c = OG2_PageCol(p, 8, OG2_C_VALUE, 4, t);
   SEQ_OLED_LcdText(c->value, 40, 80, 1);
   p->sel = 0x00c0;
   return 0;
