@@ -211,5 +211,10 @@ es.onmessage=ev=>{const s=JSON.parse(ev.data);update(s);const st=document.getEle
 es.onerror=()=>{const st=document.getElementById('st');st.textContent='server gone';st.className='off';};
 </script><script>
 if(new URLSearchParams(location.search).get('caps')==='round')document.body.classList.add('roundcaps');
-addEventListener('keydown',e=>{if(e.key==='c'||e.key==='C')document.body.classList.toggle('roundcaps');});
+const capBtn=document.createElement('button');
+capBtn.style.cssText='position:fixed;right:12px;top:8px;z-index:9;font:600 11px sans-serif;letter-spacing:.05em;padding:5px 10px;border-radius:5px;border:1px solid #555;background:#26282c;color:#eee;cursor:pointer';
+const capLbl=()=>{capBtn.textContent='KLEINE KAPJES: '+(document.body.classList.contains('roundcaps')?'ROND (1U16)':'VIERKANT (1T16)');};
+capBtn.onclick=()=>{document.body.classList.toggle('roundcaps');capLbl();};
+document.body.appendChild(capBtn);capLbl();
+addEventListener('keydown',e=>{if((e.key==='c'||e.key==='C')&&!e.ctrlKey&&!e.metaKey){document.body.classList.toggle('roundcaps');capLbl();}});
 </script></body></html>
