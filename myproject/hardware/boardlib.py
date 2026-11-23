@@ -5,6 +5,26 @@ FP = "/Applications/KiCad/KiCad.app/Contents/SharedSupport/footprints"
 LIB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib")
 OX, OY = 100.0, 100.0
 
+def edge_keepouts(board, W, H, OX, OY, m=0.8):
+    """no tracks/vias within 0.8 mm of the board edge (Freerouting does not apply the edge clearance)"""
+    for x0, y0, x1, y1 in ((0, 0, W, m), (0, H - m, W, H), (0, 0, m, H), (W - m, 0, W, H)):
+        z = pcbnew.ZONE(board)
+        z.SetIsRuleArea(True); z.SetDoNotAllowTracks(True); z.SetDoNotAllowVias(True)
+        z.SetDoNotAllowZoneFills(False); z.SetDoNotAllowPads(False); z.SetDoNotAllowFootprints(False)
+        z.SetLayerSet(pcbnew.LSET.AllCuMask())
+        ol = z.Outline(); ol.NewOutline()
+        for x, y in ((x0, y0), (x1, y0), (x1, y1), (x0, y1)):
+            ol.Append(pcbnew.FromMM(OX + x), pcbnew.FromMM(OY + y))
+        board.Add(z)
+
+def set_paper(path, size):
+    """KiCad 10's Python API has no PAGE_INFO: set the sheet in the saved file (boards sit at x/y = 100 mm, so A4 is too
+    small - the title block would end up in the middle of the board)"""
+    import re
+    s = open(path).read()
+    s = re.sub(r'\(paper "[^"]*"( portrait)?\)', '(paper "%s")' % size, s, count=1)
+    open(path, "w").write(s)
+
 class Board:
     def __init__(self, W, H):
         self.b = pcbnew.BOARD(); self.W, self.H = W, H
@@ -13,6 +33,7 @@ class Board:
             s = pcbnew.PCB_SHAPE(self.b); s.SetShape(pcbnew.SHAPE_T_SEGMENT)
             s.SetStart(pcbnew.VECTOR2I_MM(OX + x1, OY + y1)); s.SetEnd(pcbnew.VECTOR2I_MM(OX + x2, OY + y2))
             s.SetLayer(pcbnew.Edge_Cuts); s.SetWidth(pcbnew.FromMM(0.1)); self.b.Add(s)
+        edge_keepouts(self.b, W, H, OX, OY)
 
     def net(self, name):
         if name not in self.nets:
@@ -98,6 +119,7 @@ class Board:
     def save(self, path):
         ds = self.b.GetDesignSettings(); ds.m_CopperEdgeClearance = pcbnew.FromMM(0.3)
         self.b.Save(path)
+        set_paper(path, "A3")
         with open(os.path.join(os.path.dirname(path), "expected_nets.json"), "w") as f:
             json.dump({"%s.%s" % k: v for k, v in self.expect.items()}, f, indent=0, sort_keys=True)
         print("saved", path, "footprints", len(self.b.GetFootprints()), "nets", len(self.nets))

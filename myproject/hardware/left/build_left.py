@@ -44,6 +44,7 @@ for c, name in enumerate(trans):
 # ---- datawheel (EC11E with push; origin = pad A, shaft at +7.5/+2.5) and beat LED (3 mm, pad 1 = K) ----
 P("Rotary_Encoder", "RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm", "EN1", DW[0] - 7.5, DW[1] - 2.5,
   padnets={"A": "DW_A", "B": "DW_B", "C": "GND", "S1": "DW_P", "S2": "GND", "MP": "GND"}, value="EC11E")
+B.keepout(DW[0], DW[1], 5.6, 4.4)        # no tracks/vias under the encoder body, only the GND plane
 P("LED_THT", "LED_D3.0mm", "D6", BEAT[0] - 1.27, BEAT[1], padnets={"1": "GND", "2": "LEDA_BEAT"}, value="3mm red")
 
 # ---- DIN: 3 x 74HC165 (1 /PL, 2 CP, 3-6 D4-D7, 7 /Q7, 8 GND, 9 Q7, 10 DS, 11-14 D0-D3, 15 /CE, 16 VCC) ----

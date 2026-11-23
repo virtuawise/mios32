@@ -109,6 +109,8 @@ for i, (x, y) in enumerate(STACK + MARGIN):
     f.SetPosition(pcbnew.VECTOR2I_MM(OX + x, OY + y))
 F.GetDesignSettings().m_CopperEdgeClearance = pcbnew.FromMM(0.5)
 F.Save(os.path.join(D, "front.kicad_pcb"))
+from boardlib import set_paper
+set_paper(os.path.join(D, "front.kicad_pcb"), "A2")
 
 # ================================ switch plate ================================
 P = new_board()
@@ -131,4 +133,5 @@ circle(P, BEAT[0], BEAT[1], 3.6)
 for x, y in STACK + MARGIN:
     circle(P, x, y, 2.2)                                                       # M1.6 clearance
 P.Save(os.path.join(D, "plate.kicad_pcb"))
+set_paper(os.path.join(D, "plate.kicad_pcb"), "A2")
 print("front panel %.1f x %.1f mm, standoffs %d (stack %d, margin %d); plate saved" % (PW, PH, len(STACK + MARGIN), len(STACK), len(MARGIN)))

@@ -56,6 +56,9 @@ def edge(x1, y1, x2, y2):
     s.SetLayer(pcbnew.Edge_Cuts); s.SetWidth(pcbnew.FromMM(0.1))
     board.Add(s)
 edge(0, 0, W, 0); edge(W, 0, W, H); edge(W, H, 0, H); edge(0, H, 0, 0)
+import sys; sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+from boardlib import edge_keepouts
+edge_keepouts(board, W, H, OX, OY)
 
 # ---- keys (MX, pad 1 = input, pad 2 = GND) and LEDs (SK6812MINI-E: 1 VDD, 2 DOUT, 3 GND, 4 DIN - datasheet REV02) ----
 rows = [("GP", Y_GP), ("SEL", Y_SEL), ("FN", Y_FN)]
@@ -77,12 +80,14 @@ for i, (ref, x, y) in enumerate(leds):
     place("Capacitor_SMD", "C_0603_1608Metric", "CL%d" % (i + 1), x + 9.525, y + 0.0, rot=90,   # in the gap between two switches
           padnets={"1": "VLED", "2": "GND"}, value="100nF")
 
+ENC_KEEPOUTS = []    # no tracks/vias under the encoder bodies (11.7 x 12 mm around the shaft), only the GND plane
 # ---- encoders (EC11E with switch): A/B to DIN, C = GND, S1 = push, S2 = GND (as Wilba: A/B on two DIN pins) ----
 for c in range(4):
     # footprint origin is pad A; shaft centre at (+7.5, +2.5)
     place("Rotary_Encoder", "RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm", "EN%d" % (c + 1), KX[c] - 7.5, Y_ENC - 2.5,
           padnets={"A": "ENC%d_A" % (c + 1), "B": "ENC%d_B" % (c + 1), "C": "GND", "S1": "ENC%d_P" % (c + 1), "S2": "GND", "MP": "GND"},
           value="EC11E")
+    ENC_KEEPOUTS.append((KX[c], Y_ENC))
 
 # ---- 74HC165 x 3 (SOIC-16): 1 /PL, 2 CP, 3-6 D4-D7, 7 /Q7, 8 GND, 9 Q7, 10 DS, 11-14 D0-D3, 15 /CE, 16 VCC ----
 # chain as MBHP_DINX4: U1.Q7 -> SI towards the core, U1.DS <- U2.Q7, U2.DS <- U3.Q7, U3.DS <- SI from the next board
@@ -162,6 +167,15 @@ for i, (x, y) in enumerate(OLED_HOLES + STACK_HOLES):
         board.Add(z)
 
 # ---- keep tracks 0.3 mm away from the LED cut-outs (Freerouting does not treat footprint cut-outs as board edge) ----
+for x, y in ENC_KEEPOUTS:
+    z = pcbnew.ZONE(board)
+    z.SetIsRuleArea(True); z.SetDoNotAllowTracks(True); z.SetDoNotAllowVias(True)
+    z.SetDoNotAllowZoneFills(False); z.SetDoNotAllowPads(False); z.SetDoNotAllowFootprints(False)
+    z.SetLayerSet(pcbnew.LSET.AllCuMask())
+    ol = z.Outline(); ol.NewOutline()
+    for dx, dy in ((-5.6, -4.4), (5.6, -4.4), (5.6, 4.4), (-5.6, 4.4)):
+        ol.Append(pcbnew.FromMM(OX + x + dx), pcbnew.FromMM(OY + y + dy))
+    board.Add(z)
 for i, (ref, x, y) in enumerate(leds):
     z = pcbnew.ZONE(board)
     z.SetIsRuleArea(True); z.SetDoNotAllowTracks(True); z.SetDoNotAllowVias(True)
@@ -208,6 +222,8 @@ print("GND fan-out vias", fan)
 ds = board.GetDesignSettings()
 ds.m_CopperEdgeClearance = pcbnew.FromMM(0.3)
 board.Save(OUT)
+from boardlib import set_paper
+set_paper(OUT, "A3")
 import json
 with open(os.path.join(os.path.dirname(OUT), "expected_nets.json"), "w") as f:
     json.dump({"%s.%s" % k: v for k, v in EXPECT.items()}, f, indent=0, sort_keys=True)
