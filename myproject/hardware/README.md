@@ -49,9 +49,15 @@ all inputs, 100 nF per IC.
 has to be extended for 4 displays. **VERIFY**: SSD1322 serial mode pins on the Newhaven module (BS0/BS1 jumpers for
 4-wire SPI), reset line.
 
-**SK6812 chain** – source: `modules/ws2812/ws2812.c`: data from **PB6 (J4B.SC)**, 800 kHz. 3.3 V data into a 5 V LED:
-**VERIFY** level (a 74AHCT125 level shifter at the start of the chain is the safe choice). Footprint
-`LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount` pads 1..4 – **VERIFY** pad meaning against the LCSC C5149201 datasheet.
+**SK6812 chain** – source: `modules/ws2812/ws2812.c`: data from **PB6 (J4B.SC)**, 800 kHz. 3.3 V data into a 5 V LED
+(VIH 0.7 x VDD = 3.5 V): use a **74AHCT125 level shifter** at the start of the chain.
+**SK6812MINI-E pinout (datasheet REV02, Adafruit 4960): 1 = VDD, 2 = DOUT, 3 = GND, 4 = DIN.** The KiCad symbol
+`SK6812MINI-E` inherits the older SK6812 numbering (1 VSS, 2 DIN, 3 VDD, 4 DOUT) – **do not use it**; pads are wired
+from the datasheet. **VERIFY** pad positions of the reverse-mount footprint against the datasheet drawing (mirrored).
+
+**OLED (Newhaven NHD-3.12-25664UCY2, yellow) in 4-wire SPI** – source: datasheet rev. 7, p. 4-8: BS1 = BS0 = GND
+(pins 19/20); 7 = SCLK (D0), 8 = SDIN (D1), 9 (D2) open, 4 = D/C, 16 = /RES, 17 = /CS, 5-6 and 10-14 GND, 2 = VDD 3.3 V,
+1 = VSS, 3/15/18 not connected.
 
 **Encoders** – EC11E footprint `RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm`: pads A, B, C (common), S1/S2 (push),
 MP (mounting). As Wilba: A and B on two DIN inputs, C to GND, push on a third DIN input.
@@ -61,6 +67,12 @@ MP (mounting). As Wilba: A and B on two DIN inputs, C to GND, push on a third DI
 through the ribbon cables. OLEDs ~3.3 V, Newhaven module current per datasheet (**VERIFY**).
 
 ## Mechanics
+- **Front panel = PCB (FR4 1.6 mm), matte black solder mask with white silkscreen legends (printed, not engraved), and it is
+  the MX switch plate at the same time** (14 x 14 mm cut-outs, 5 mm above the key PCB = standard MX plate height).
+  **VERIFY** MX clips on 1.6 mm (made for 1.5 mm) with the chosen switch.
+- **Fastening without visible screws:** SMD threaded standoffs (e.g. Würth SMSN, M2.5/M3) reflowed on the back of the front
+  panel PCB; screws from below through the key PCB into them; the case is fixed the same way. Spread around each screen group
+  and between the rows. Encoders without a nut on the front.
 - **No visible fasteners on the front.** The OLED displays (Newhaven, glass on its own small PCB) are plugged into and screwed to their column PCB; switches clip into the switch
   plate; encoders are held by the PCB/plate; the front plate is fixed from behind (press-in threaded studs / bushings).
 - The rigidity comes from the switch plate + front plate; every module PCB is fixed with >= 4 standoffs.
