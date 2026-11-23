@@ -1,0 +1,7 @@
+Quantity,Manufacturer Part Number,Manufacturer,Digi-Key Part Number,Customer Reference,Description
+1,NHD-3.12-25664UCY2,Newhaven Display,NHD-3.12-25664UCY2-ND,OLED,OLED 3.12in 256x64 yellow SSD1322
+2,EC11E15244G1,Alps Alpine,4809-EC11E15244G1-ND,ENC,Encoder vertical 20mm shaft with push (if out of stock: Mouser 688-EC11E15244G1)
+6,3FTH9,MEC Switches (APEM),,SMALLKEY,Multimec 3F tactile switch without LED (LED 2x3x4mm inserted)
+6,1T16,MEC Switches (APEM),679-2121-ND,SMALLCAP,1T cap square 10.6mm frosted white
+1,4960,Adafruit,1528-4960-ND,RGBLED,SK6812MINI-E reverse mount 10-pack
+10,97730506330R,Wurth Elektronik,,STANDOFF,WA-SMSI M1.6 bottom closed 5mm SMT spacer
