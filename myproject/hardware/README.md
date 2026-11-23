@@ -87,3 +87,16 @@ through the ribbon cables. OLEDs ~3.3 V, Newhaven module current per datasheet (
 2. Placement on the panel grid (91 mm groups, 19.05 mm keys), board outline, mounting holes; render and compare with the
    virtual panel.
 3. Routing (Freerouting), DRC, review against this list; then the left PCB; Gerbers/BOM/CPL.
+
+## Column PCB – status (step 2: parts, connections, placement)
+`column/build_column.py` builds `column/column.kicad_pcb` (KiCad 10, Python API): 93 footprints, 58 nets, placement on the
+panel grid (keys 19.05 mm, rows 24 mm, OLED header and M2.5 holes per the Newhaven drawing, M3 holes for the panel stack).
+`column/verify_column.py` reads the saved board back and checks **every pad** against the expected nets plus independent
+datasheet rules (74HC165 power/control, SK6812MINI-E VDD/GND, Newhaven serial pins, core J8/J9 pinout), the unbroken LED
+chain and the DIN chain -> **293 pads + 72 rules OK**. KiCad DRC: no errors except 12 intended courtyard overlaps
+(LED under its switch). Not routed yet (235 unconnected items).
+Findings while checking: the KiCad symbol `SK6812MINI-E` has the wrong pin numbering for this part (we wire per datasheet);
+KiCad's reverse-mount footprint has only 0.17 mm pad-to-cut-out -> own footprint `lib/seq4oled.pretty/LED_SK6812MINI-E_ReverseMount_Cut3.5x3.1`
+(0.30 mm; **VERIFY** the manufacturer's inner router radius <= 0.5 mm). Renders: `column/render_top.png`, `column/render_bottom.png`.
+Input mapping (for MBSEQ_HW.V4): U1 D0-3 GP keys 1-4, D4-7 select keys 1-4; U2 D0-3 function keys 1-4, D4-7 encoder pushes 1-4;
+U3 D0/D1 encoder 1 A/B ... D6/D7 encoder 4 A/B. CS select: solder one of JP1..JP4 per board position.
