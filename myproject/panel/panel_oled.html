@@ -2,7 +2,7 @@
 <style>
 :root{--amber:#FFB547;--bg:#16181b;--btn:#1b1d20;--btn2:#202226}
 body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;align-items:center}
-#wrap{position:relative;width:1500px;height:443px;margin:18px;background:linear-gradient(#1f2125,#17191c);border-radius:12px;
+#wrap{position:relative;width:1500px;height:470px;margin:18px;background:linear-gradient(#1f2125,#17191c);border-radius:12px;
       box-shadow:0 24px 60px #000a,0 0 0 1px #000;transform-origin:top center}
 .abs{position:absolute}
 .btn{position:absolute;width:50px;height:40px;border-radius:8px;background:#2b2e33;border:1px solid #4d5158;box-sizing:border-box;box-shadow:inset 0 -4px 0 #44484e,0 2px 4px #000a;cursor:pointer;touch-action:none}
@@ -11,6 +11,7 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
 .btn.down{transform:translateY(2px)}.btn.latched{outline:2px solid #ffc400}.btn.na{opacity:.4;cursor:not-allowed}
 .lbl{position:absolute;width:70px;text-align:center;font-size:10px;font-weight:600;letter-spacing:.05em;color:#f0f0f0;white-space:nowrap}
 .side{position:absolute;font-size:9px;color:#aaa}
+.enc.pushed{box-shadow:inset 0 0 0 2px #FFB547,0 0 10px #FFB547}
 .enc{position:absolute;width:34px;height:34px;border-radius:50%;background:#111214;box-shadow:inset 0 0 0 2px #2c2f34,0 3px 8px #000a;cursor:ns-resize}
 .enc i{position:absolute;left:calc(50% - 1.5px);top:3px;width:3px;height:11px;border-radius:2px;background:#d7dade;transform-origin:50% 14px;transform:rotate(var(--a,0deg))}
 .encn{position:absolute;width:34px;text-align:center;font-size:8px;color:#888}
@@ -33,7 +34,7 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
 <script>
 const W=document.getElementById('wrap');
 const api=p=>fetch(p).catch(()=>{});
-const NA=new Set(['SCRUB','LIVE','RECORD','COPY','PASTE','CLEAR']);
+const NA=new Set(['SCRUB']);
 const el=(c,css,t,p)=>{const e=document.createElement('div');if(c)e.className=c;if(css)e.style.cssText=css;if(t!=null)e.textContent=t;(p||W).appendChild(e);return e;};
 const latched=new Set(), btnEls={};
 /* knop: name (API), x,y = linkerbovenhoek, label, kleur, w,h */
@@ -56,7 +57,7 @@ function button(name,x,y,label,color,o={}){
     else{latched.add(name);b.classList.add('latched');api('/api/down?b='+name);}});
   return b;
 }
-function encoder(name,x,y,size,cls){
+function encoder(name,x,y,size,cls,o={}){
   const e=el('enc',`left:${x}px;top:${y}px`+(size?`;width:${size}px;height:${size}px`:''));
   if(cls){e.className=cls;e.style.left=x+'px';e.style.top=y+'px';}
   e.title=name;e.innerHTML='<i></i>';let ang=0,acc=0,dragY=null,pending=0,timer=null;
@@ -64,54 +65,52 @@ function encoder(name,x,y,size,cls){
     if(!timer)timer=setTimeout(()=>{const p=pending;pending=0;timer=null;if(p)api(`/api/enc?e=${name}&d=${p}&wait=0`);},30);};
   e.addEventListener('wheel',ev=>{ev.preventDefault();acc+=ev.deltaY;const st=ev.shiftKey?15:40;
     while(Math.abs(acc)>=st){const d=acc<0?1:-1;send(ev.shiftKey?d*4:d);acc-=(acc<0?-st:st);}},{passive:false});
-  e.addEventListener('pointerdown',ev=>{dragY=ev.clientY;e.setPointerCapture(ev.pointerId);});
+  const push=o.push;   // midiphy: encoders can be pushed (held = FAST while turning)
+  e.addEventListener('pointerdown',ev=>{dragY=ev.clientY;e.setPointerCapture(ev.pointerId);if(push){e.classList.add('pushed');api('/api/down?b='+push);}});
   e.addEventListener('pointermove',ev=>{if(dragY===null)return;const dy=dragY-ev.clientY,st=ev.shiftKey?3:8;
     if(Math.abs(dy)>=st){const n=Math.trunc(dy/st);send(ev.shiftKey?n*4:n);dragY-=n*st;}});
-  e.addEventListener('pointerup',()=>dragY=null);
+  e.addEventListener('pointerup',()=>{dragY=null;if(push){e.classList.remove('pushed');api('/api/up?b='+push);}});
   return e;
 }
-/* ---------- linkerblok ---------- */
-el('grp','left:62px;top:44px;color:#c9c9c9','GROUP');el('grp','left:138px;top:44px;color:var(--amber)','TRACK');
-for(let i=0;i<4;i++){
-  button('GROUP'+(i+1),62,62+i*49,null,'#ffffff',{w:50,h:40});button('TRACK'+(i+1),138,62+i*49,null,'#7CFF8A',{w:50,h:40});
-  el('side',`left:50px;top:${74+i*49}px`,i+1);el('side',`left:190px;top:${74+i*49}px`,i+1);
-}
-el('grp','left:62px;top:253px;color:var(--amber)','TRIGGER');el('grp','left:138px;top:253px;color:var(--amber)','PARAM');
-['A','B','C'].forEach((x,i)=>{button('TRG_'+x,62,272+i*49,null,'#B39DDB',{w:50,h:40});button('PAR_'+x,138,272+i*49,null,'#4FC3F7',{w:50,h:40});
-  el('side',`left:50px;top:${284+i*49}px`,x);el('side',`left:190px;top:${284+i*49}px`,x);});
-el('foot','','').innerHTML='MIDIBOX <b>SEQ</b>';
-/* ---------- OLED's + encoders + GP-knoppen ---------- */
-const OX=[242,534,880,1172],OY=52;
-const CX=[];for(let d=0;d<4;d++)for(let k=0;k<4;k++)CX.push(OX[d]+31+k*62);   // encoder-midden per stap
+/* ---------- midiphy-style layout: OLEDs, push encoders, GP buttons, 16 track buttons, function rows, datawheel block ---------- */
+el('foot','','').innerHTML='MIDIBOX <b>SEQ</b> V4+ · 4x OLED';
+const OX=[40,330,620,910],OY=34;
+const CX=[];for(let d=0;d<4;d++)for(let k=0;k<4;k++)CX.push(OX[d]+31+k*62);   // centre of each GP column
 const GPL=['MIXER','EVENT','MODE','DIRECTION','DIVIDER','LENGTH','TRANSPOSE','GROOVE','TRIGGER','FX','MANUAL','MORPH','BPM','SAVE','MIDI','SYS EX'];
-const GPS=['A','B','C','D','E','F','G','H','1','2','3','4','5','6','7','8'];
 const canv=[], OS=4;   // OLED canvas oversampling
 const tmpC=document.createElement('canvas');tmpC.width=256;tmpC.height=64;
 for(let d=0;d<4;d++){
   const c=document.createElement('canvas');c.width=256*OS;c.height=64*OS;c.getContext('2d').setTransform(OS,0,0,OS,0,0);c.className='oled';c.style.cssText=`left:${OX[d]}px;top:${OY}px;position:absolute`;W.appendChild(c);canv.push(c);
-  el('brk',`left:${OX[d]}px;top:${OY+75}px`);
 }
+const trkEls=[];
 for(let i=0;i<16;i++){
   const cx=CX[i];
-  encoder('GP'+(i+1),cx-17,153);
-  el('encn',`left:${cx-17}px;top:190px`,i+1);
-  button('GP'+(i+1),cx-25,212,GPL[i],'#FFB547',{side:GPS[i]});
+  encoder('GP'+(i+1),cx-17,108,0,null,{push:'PUSH'+(i+1)});
+  button('GP'+(i+1),cx-25,152,GPL[i],'#FFB547',{h:32});
+  trkEls.push(button('TRK'+(i+1),cx-25,206,String(i+1),'#7CFF8A',{h:28}));
 }
-/* tweede en derde rij */
-const row=(names,y)=>names.forEach(n=>{ if(!n)return;});
-const R2=[[0,'EDIT','EDIT'],[1,'MUTE','MUTE'],[2,'PATTERN','PATTERN'],[3,'SONG','SONG'],
-          [4,'COPY','COPY'],[5,'PASTE','PASTE'],[6,'CLEAR','CLEAR'],
-          [9,'DOWN','▼'],[10,'UP','▲'],[11,'UTILITY','UTILITY'],
-          [12,'TRACK_SEL','F1'],[13,'LIVE','F2'],[14,'RECORD','F3'],[15,'SAVE_ALL','F4']];
-R2.forEach(([i,n,l])=>button(n,CX[i]-25,285,l,'#FFB547'));
-const R3=[[0,'STEP_VIEW','STEP VIEW'],[1,'SOLO','SOLO'],[2,'FAST','FAST'],[3,'ALL','ALL'],
-          [4,'MENU','MENU'],[5,'SELECT','SELECT'],[6,'EXIT','EXIT'],
-          [9,'SCRUB','SCRUB'],[10,'METRONOME','METRONOME'],[11,'REW','◀◀'],
-          [12,'STOP','■'],[13,'PAUSE','❚❚'],[14,'PLAY','▶'],[15,'FWD','▶▶']];
-R3.forEach(([i,n,l])=>button(n,CX[i]-25,358,l,n==='PLAY'?'#7CFF8A':(['STOP','PAUSE','REW','FWD'].includes(n)?'#ffffff':'#FFB547')));
-/* datawheel + beat */
-const dw=encoder('DATAWHEEL',781,297,100,'dw');el('lbl','left:796px;top:402px;width:70px','DATA');
-const beat=el('beat','');el('lbl','left:796px;top:245px','BEAT');
+el('grp','left:12px;top:212px;color:#888;width:30px;text-align:right','SEL');
+/* function rows (aligned with the GP columns) */
+const F1=[[0,'EDIT','EDIT'],[1,'MUTE','MUTE'],[2,'PATTERN','PATTERN'],[3,'SONG','SONG'],
+          [4,'PHRASE','PHRASE'],[5,'STEP_VIEW','STEP VIEW'],[6,'TRACK_SEL','TRACK SEL'],[7,'PAR_SEL','PAR SEL'],
+          [8,'TRG_SEL','TRG SEL'],[9,'INS_SEL','INS SEL'],[10,'BOOKMARK','BOOKMARK'],[11,'UTILITY','UTILITY'],
+          [12,'SOLO','SOLO'],[13,'FAST','FAST'],[14,'ALL','ALL'],[15,'SAVE_ALL','SAVE ALL']];
+F1.forEach(([i,n,l])=>button(n,CX[i]-25,268,l,'#FFB547',{h:30}));
+const F2=[[0,'COPY','COPY'],[1,'PASTE','PASTE'],[2,'CLEAR','CLEAR'],[3,'MOVE','MOVE'],
+          [4,'SCROLL','SCROLL'],[5,'UNDO','UNDO'],
+          [8,'LIVE','LIVE'],[9,'RECORD','RECORD'],[10,'LOOP','LOOP'],[11,'FOLLOW','FOLLOW'],
+          [12,'METRONOME','METRONOME'],[13,'LEFT','◀'],[14,'RIGHT','▶']];
+F2.forEach(([i,n,l])=>button(n,CX[i]-25,330,l,n==='RECORD'?'#ff5a5a':'#FFB547',{h:30}));
+el('grp','left:12px;top:276px;color:#888;width:30px;text-align:right','PAGE');
+el('grp','left:12px;top:338px;color:#888;width:30px;text-align:right','EDIT');
+/* right block: datawheel (push), navigation, transport */
+const RX=1230;
+const dw=encoder('DATAWHEEL',RX+30,34,110,'dw',{push:'PUSH_DW'});el('lbl',`left:${RX+50}px;top:148px;width:70px`,'DATA');
+const beat=el('beat','');beat.style.left=(RX+190)+'px';beat.style.top='44px';el('lbl',`left:${RX+170}px;top:66px`,'BEAT');
+button('MENU',RX,180,'MENU','#FFB547',{h:30});button('SELECT',RX+60,180,'SELECT','#FFB547',{h:30});button('EXIT',RX+120,180,'EXIT','#FFB547',{h:30});
+button('UP',RX+190,150,'▲','#FFB547',{h:30});button('DOWN',RX+190,206,'▼','#FFB547',{h:30});
+[['REW','◀◀'],['STOP','■'],['PAUSE','❚❚'],['PLAY','▶'],['FWD','▶▶']].forEach(([n,l],k)=>
+  button(n,RX-20+k*52,268,l,n==='PLAY'?'#7CFF8A':'#ffffff',{w:46,h:30}));
 /* ---------- OLED-inhoud (benadering uit de huidige LCD-tekst) ---------- */
 const stepNote=Array(16).fill('----'),stepOn=Array(16).fill(false),stepCur=Array(16).fill(false);
 function drawOled(d){
@@ -167,10 +166,12 @@ function update(s){
   for(const[n,[g,r]]of Object.entries(s.leds)){
     if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!ownLayout&&!!(g||r));continue;}   // GP-knoppen lopen mee met de sequencer in alle pagina's (de OLED's tonen geen afspeelstap meer)
     const b=btnEls[n];if(b)b.classList.toggle('on',!!g);}
+  if(s.sel_g!==undefined){ for(let i=0;i<16;i++){const g=(s.sel_g>>i)&1,r=(s.sel_r>>i)&1,b=trkEls[i];
+    b.classList.toggle('on',!!(g||r)); b.style.setProperty('--c', g&&r ? '#FFB547' : (r ? '#ff5a5a' : '#7CFF8A')); } }
   if(s.beat_seq!==undefined&&s.beat_seq!==lastBeatSeq){ if(lastBeatSeq!==null){ beat.classList.add('on'); beat.style.opacity=(s.beat_n===0)?'1':'0.7'; clearTimeout(beatTimer); beatTimer=setTimeout(()=>beat.classList.remove('on'),90); } lastBeatSeq=s.beat_seq; }
 }
 /* ---------- schalen + live ---------- */
-function fit(){const s=Math.min(1,(innerWidth-40)/1536);W.style.transform=`scale(${s})`;W.style.marginBottom=(443*s-443+18)+'px';}
+function fit(){const s=Math.min(1,(innerWidth-40)/1536);W.style.transform=`scale(${s})`;W.style.marginBottom=(470*s-470+18)+'px';}
 addEventListener('resize',fit);fit();
 document.getElementById('sync').onclick=e=>{e.preventDefault();api('/api/sync');};
 for(let d=0;d<4;d++)drawOled(d);

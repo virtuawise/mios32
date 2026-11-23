@@ -868,6 +868,19 @@ s32 SEQ_OLED_Handler(void)
     last_beat_no = 0xffffffff;
   }
 
+  // LEDs of the 16 track buttons (virtual midiphy panel): on change and with every full resend
+  if( (ctr % OLED_PERIOD_MS) == 13 ) {
+    static u32 last_sel = 0xffffffff;
+    u16 g, r;
+    SEQ_UI_SelLedsGet(&g, &r);
+    u32 v = ((u32)g << 16) | r;
+    v ^= (u32)SEQ_UI_SelViewGet() * 0x9e3779b1u;            // view change also counts
+    if( v != last_sel || resend_ctr >= OLED_RESEND_MS - 100 ) {
+      if( SEQ_MIDI_SYSEX_REMOTE_Server_SendSelLeds(SEQ_UI_SelViewGet(), g, r) >= 0 )
+	last_sel = v;
+    }
+  }
+
   // tell the client which menu button belongs to the current page (on change and with every full resend)
   if( (ctr % OLED_PERIOD_MS) == 7 ) {
     u8 mb = SEQ_OLED_MenuButtonGet();

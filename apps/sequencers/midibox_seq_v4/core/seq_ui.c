@@ -1825,7 +1825,8 @@ static s32 SEQ_UI_Button_DirectTrack(s32 depressed, u32 sel_button)
 
   if( sel_button >= 16 ) return -2; // max. 16 direct track buttons
 
-  u8 selbuttons_available = seq_hwcfg_blm8x8.dout_gp_mapping == 3;
+  // myproject: the 16 track buttons of the virtual (midiphy style) panel always follow the selection view
+  u8 selbuttons_available = 1;
 
   if( depressed ) {
     button_state |= (1 << sel_button);
@@ -2850,6 +2851,48 @@ s32 SEQ_UI_REMOTE_MIDI_Receive(mios32_midi_port_t port, mios32_midi_package_t mi
 /////////////////////////////////////////////////////////////////////////////
 // MIDI Remote Keyboard Function (called from SEQ_MIDI_IN)
 /////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// 4 x OLED / virtual midiphy panel: LEDs of the 16 track (selection) buttons, same as the midiphy select LED row
+// green = selection, red = playing step view / selected tracks
+/////////////////////////////////////////////////////////////////////////////
+void SEQ_UI_SelLedsGet(u16 *green, u16 *red)
+{
+  u8 visible_track = SEQ_UI_VisibleTrackGet();
+  u16 g = 0, r = 0;
+  if( seq_ui_sel_view == SEQ_UI_SEL_VIEW_NONE )
+    seq_ui_sel_view = SEQ_UI_SEL_VIEW_TRACKS;     // default view (as on the midiphy panel)
+  switch( seq_ui_sel_view ) {
+  case SEQ_UI_SEL_VIEW_BOOKMARKS: g = 1 << ui_selected_bookmark; break;
+  case SEQ_UI_SEL_VIEW_STEPS: {
+    int num_steps = SEQ_TRG_NumStepsGet(visible_track);
+    if( num_steps > 128 ) g = 1 << ui_selected_step_view;
+    else if( num_steps > 64 ) g = 3 << (2*ui_selected_step_view);
+    else g = 15 << (4*ui_selected_step_view);
+    if( SEQ_BPM_IsRunning() ) {
+      u8 v = seq_core_trk[visible_track].step / 16;
+      if( num_steps > 128 ) r = 1 << v; else if( num_steps > 64 ) r = 3 << (2*v); else r = 15 << (4*v);
+    }
+  } break;
+  case SEQ_UI_SEL_VIEW_TRACKS: g = 0xf << (4*ui_selected_group); r = ui_selected_tracks; break;
+  case SEQ_UI_SEL_VIEW_PAR: g = 1 << ui_selected_par_layer; break;
+  case SEQ_UI_SEL_VIEW_TRG: g = 1 << ui_selected_trg_layer; break;
+  case SEQ_UI_SEL_VIEW_INS: g = 1 << ui_selected_instrument; break;
+  case SEQ_UI_SEL_VIEW_MUTE:
+    g = seq_ui_button_state.MUTE_PRESSED ? (seq_core_trk[visible_track].layer_muted | seq_core_trk[visible_track].layer_muted_from_midi) : seq_core_trk_muted;
+    if( seq_ui_options.INVERT_MUTE_LEDS ) g ^= 0xffff;
+    break;
+  case SEQ_UI_SEL_VIEW_PHRASE: g = 1 << ui_selected_phrase; break;
+  default: break;
+  }
+  *green = g;
+  *red = r;
+}
+
+u8 SEQ_UI_SelViewGet(void)
+{
+  return (u8)seq_ui_sel_view;
+}
+
 s32 SEQ_UI_REMOTE_MIDI_Keyboard(u8 key, u8 depressed)
 {
   // 4 x OLED / virtual midiphy panel (myproject): extra buttons on notes below C-2 and above C-7.

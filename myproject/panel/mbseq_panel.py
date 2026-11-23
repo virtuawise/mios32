@@ -72,10 +72,18 @@ BUTTON_NOTES.update({
     "SONG": 0x4D, "FAST": 0x4E, "METRONOME": 0x4F, "TRACK_SEL": 0x52,
     "STOP": 0x53, "PLAY": 0x54, "PAUSE": 0x55, "REW": 0x56, "FWD": 0x57,
     "UTILITY": 0x58, "MENU": 0x5B, "SELECT": 0x5C, "EXIT": 0x5D,
-    "DOWN": 0x5E, "UP": 0x5F,
+    "DOWN": 0x5E, "UP": 0x5F, "PAR_SEL": 0x51,
+})
+# midiphy-style extra buttons (myproject firmware, SEQ_UI_REMOTE_MIDI_Keyboard): 16 track buttons, encoder push, edit/record buttons
+BUTTON_NOTES.update({f"TRK{i + 1}": i for i in range(16)})
+BUTTON_NOTES.update({"PUSH_DW": 0x10, **{f"PUSH{i + 1}": 0x11 + i for i in range(16)}})
+BUTTON_NOTES.update({
+    "COPY": 0x61, "PASTE": 0x62, "CLEAR": 0x63, "MOVE": 0x64, "SCROLL": 0x65, "UNDO": 0x66,
+    "LIVE": 0x67, "RECORD": 0x68, "PHRASE": 0x69, "LOOP": 0x6A, "BOOKMARK": 0x6B,
+    "TRG_SEL": 0x6C, "INS_SEL": 0x6D, "FOLLOW": 0x6E,
 })
 SPECIAL_BUTTONS = {"SAVE_ALL"}                       # via terminal
-UNAVAILABLE = {"SCRUB", "LIVE", "RECORD", "COPY", "PASTE", "CLEAR"}  # niet bereikbaar op afstand
+UNAVAILABLE = {"SCRUB"}                              # not reachable remotely
 ENCODERS = {"DATAWHEEL": 0, **{f"GP{i + 1}": i + 1 for i in range(16)}}
 
 # tekstweergave van custom characters 0..7 per charset (seq_lcd.h volgorde)
@@ -112,6 +120,7 @@ class Seq:
         self.oled_ver = [0] * 4
         self.beat_seq = 0                  # incremented for every beat pulse from the firmware (cmd 0x09)
         self.beat_n = 0
+        self.sel_view, self.sel_g, self.sel_r = 0, 0, 0   # LEDs of the 16 track buttons (cmd 0x0A)
         self.menu_btn = 0x7f               # GP button (0-15) of the current UI page, 0x7f = none (cmd 0x08)
         self.sr = [0] * 32
         self.matrix = [0] * 8
@@ -324,6 +333,10 @@ class Seq:
                 self.beat_n = d[7] & 3
                 self.beat_seq += 1
                 self.version += 1
+            elif cmd == 0x0A and len(d) >= 14:                  # LEDs of the 16 track buttons: view, green, red
+                self.sel_view = d[7]
+                self.sel_g = d[8] | (d[9] << 7) | (d[10] << 14)
+                self.sel_r = d[11] | (d[12] << 7) | (d[13] << 14)
             elif cmd == 0x08 and len(d) >= 8:                   # menu button of the current page
                 self.menu_btn = d[7]
                 self.version += 1
@@ -399,6 +412,7 @@ class Seq:
                 "held": list(self.held),
                 "oled_ver": list(self.oled_ver),
                 "menu_btn": self.menu_btn,
+                "sel_view": self.sel_view, "sel_g": self.sel_g, "sel_r": self.sel_r,
                 "beat_seq": self.beat_seq, "beat_n": self.beat_n,
             }
 

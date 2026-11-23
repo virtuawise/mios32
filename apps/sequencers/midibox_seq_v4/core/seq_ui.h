@@ -543,6 +543,8 @@ extern seq_ui_edit_view_t seq_ui_edit_view;
 extern seq_ui_edit_datawheel_mode_t seq_ui_edit_datawheel_mode;
 
 extern seq_ui_sel_view_t seq_ui_sel_view;
+extern void SEQ_UI_SelLedsGet(u16 *green, u16 *red);   // myproject: LEDs of the 16 track buttons
+extern u8 SEQ_UI_SelViewGet(void);
 
 extern seq_ui_options_t seq_ui_options;
 
