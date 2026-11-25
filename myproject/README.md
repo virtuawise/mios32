@@ -6,12 +6,23 @@ with a new page layout built from blocks ("boxes"), and test everything in softw
 | Path | What |
 |---|---|
 | `oled_gui/` | Platform-independent drawing layer (`oled_gui2.c/.h`, 4-bit grey, 64x64 cells) + Mac test programs and design mock-ups |
-| `emu/` | **Emulator**: the real SEQ firmware on macOS (`make && ./run.sh`, panel on :8766) - develop without hardware |
+| `emu/` | **Emulator**: this firmware on macOS (`make && ./run.sh`, panel on :8766/oled) - develop without hardware |
 | `panel/` | Virtual front panel (`mbseq_panel.py`, browser UI at `/oled`) that receives the OLED frames from the firmware over USB-MIDI |
 | `tools/mios32_flash.py` | Uploads a `.hex` to the core over USB-MIDI (same protocol as MIOS Studio) |
 | `LOGBOOK.md` | Chronological log of what was done |
 
 Firmware changes live in `apps/sequencers/midibox_seq_v4/core/`: `seq_oled.c/.h` (collects the screen data and streams cells), `seq_midi_sysex.c` (SysEx command `09 07`), `seq_ui_trkevnt.c` (new Event page mapping), `seq_ui_timing.c` (Divider/Length/Direction pages), `seq_ui_trkmode.c` (Mode page mapping), `seq_ui_mixer.c`, `seq_lcd.c` (small getters).
+
+## Branches
+| Branch | What |
+|---|---|
+| `four-screens-usb` (this one) | 4-OLED development: firmware changes, OLED renderer, panel, hardware (PCBs, front panel, BOMs), emulator |
+| `emulator` | MIDIbox SEQ in software: the **official** firmware (upstream master) + `myproject/emu` + `myproject/panel` only. Worktree: `../mios32_emulator` |
+| `master` | upstream `midibox/mios32` |
+
+The real SEQ runs the official firmware (V4+.098, upstream master); its panel is http://127.0.0.1:8765/. OLED work is
+developed and tested in the emulator (http://127.0.0.1:8766/oled) and only flashed on request.
+Emulator fixes go into both branches (same `myproject/emu` code; only one emulator can run at a time, ports 8766/8767).
 
 ## How it works
 - Each screen is split into four 64x64 **cells** (one per GP column; 16 cells in total). A cell is rendered only when its input changes, run-length encoded (PackBits), 7-bit packed and sent as SysEx `F0 00 00 7E 4D <id> 09 07 <screen> <cell> <data> F7` in remote-server mode.

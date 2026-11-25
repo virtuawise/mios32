@@ -5,6 +5,7 @@ common code (MIDI, SRIO, DIN/DOUT/ENC, LCD) on the Mac, so the hardware can stay
 No JUCE, no Xcode project: plain C + pthreads + CoreMIDI.
 
 ## Use
+Requirements: Xcode command line tools (`clang`, `make`) and `pip3 install mido python-rtmidi`.
 ```
 cd myproject/emu
 make                 # ~1 min the first time
@@ -49,3 +50,7 @@ Debug switches: `EMU_STATS=1` (task rates, remote state every ~5 s), `EMU_MIDILO
 - `strtok_r`: macOS sets the rest pointer to NULL after the last token, newlib to ""; the terminal relies on newlib -> emulator wrapper.
 - `seq_file_c.c` reads `MIDI_OUT_MClock_Ports 0xffffffff` with `strtol`: on the STM32 this saturates to 0x7fffffff
   (bit 31 lost), on the Mac it becomes -1 and the line is ignored. Harmless, left as is.
+
+## Branches
+The same emulator is in branch `emulator` (official firmware only, worktree `../mios32_emulator`). The Makefile adds the
+OLED renderer only when `myproject/oled_gui` exists. Keep emulator fixes in sync in both branches; run one emulator at a time.
