@@ -44,7 +44,7 @@ Quantities counted from the board files (`column/column.kicad_pcb`, `left/left.k
 | B21 | Box header 2x5, 2.54 mm, vertical (shrouded) | | IDC 2x5 | 4 | 4 | 8 |
 | B22 | Box header 2x8, 2.54 mm, vertical (core J15A) | | IDC 2x8 | – | 1 | 1 |
 | B23 | Pin header 1x3, 2.54 mm | | 1x03 | 2 | 1 | 3 |
-| B24 | JST VH 2-pin header B2P-VH + housing VHR-2N + crimps | 5 V LED/OLED supply | VH 1x02 | – | 1 | 1 |
+| B24 | Molex KK396 2-pin header 0009652028 + housing 09-50-3021 + crimps 08-50-0106 | 5 V LED/OLED supply | VH 1x02 | – | 1 | 1 |
 | B25 | Ribbon cable 10-way + IDC sockets 2x5 (and 1x 16-way + 2x8 sockets for J15A) | | | | | ~1 m, 10 + 2 sockets |
 | B26 | Spacer for the Newhaven pins | 2.5 mm plastic pin spacer, 1x20 | | 1 | – | 1 |
 | B27 | 5 V supply for LEDs + OLED (test) | 5 V >= 2 A (full panel later >= 4 A) | | | | 1 |
@@ -79,7 +79,7 @@ DigiKey's BOM Manager / "Bulk add" accepts the manufacturer part numbers (MPN) b
 | 220 uF 10 V 6.3x7.7 | Panasonic EEE-FK1A221P | MPN | |
 | Box header 2x5 / 2x8 | Würth 61201021621 / 61201621621 | MPN | |
 | Pin header 1x3 | Würth 61300311121 | MPN | |
-| JST VH | B2P-VH(LF)(SN) + VHR-2N + SVH-21T-P1.1 | MPN | |
+| Molex KK396 | 0009652028 (WM18823-ND) + 09-50-3021 (WM2100-ND) + 08-50-0106 (WM2300-ND) | MPN | |
 
 ## Small keys: plain 3FTH9 + inserted LED (decided 2026-11-23)
 The factory-lit 3FTH965/940/980 are not stocked anywhere (Mouser 642-3FTH965: MOQ 100, 20 weeks). midiphy uses the plain
