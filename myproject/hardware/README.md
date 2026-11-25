@@ -194,7 +194,7 @@ plate opening, every standoff >= 1 mm from cut-outs/holes/edge -> **OK**. DRC of
 | MX housing | top 11.6 | plate + 6.6 mm (Cherry MX) | flush with the panel top |
 | MX + 18 mm cap (big keys) | top ~19-20, travel 4 | cap height depends on the profile – **VERIFY with the sample caps** | ~8 mm (pressed ~4) |
 | Newhaven glass | 2.5 – 8.5 | module 6.0 mm thick (datasheet), soldered on its pins over a 2.5 mm spacer | 1.5 mm below the panel back |
-| EC11E shaft (H20) | top 20.0 | footprint / part H = 20 mm | 8.4 mm shaft for the knob |
+| EC11E15244G1 shaft ("20 mm") | top 24.5 | Alps drawing 5 (p.206): 4.5 mm body + 20 mm shaft above the mounting surface; bushing top ~11.5 | ~12.9 mm shaft for the knob (not 8.4) |
 | Beat LED 3 mm | top ~10.3 | 5 mm LED spacer + 5.3 mm LED body – **VERIFY** (or a light pipe) | in the 3.2 mm hole |
 Consequences already applied: the Newhaven is soldered directly (a 1x20 socket would put the glass at 14.5 mm, above the
 panel), the 220 uF capacitor of the left PCB is on the back (7.7 mm tall). If the big caps stick out too far with the chosen
