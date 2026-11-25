@@ -12,7 +12,7 @@
 u8 seq_oled_hw_active = 0;
 static u8 num_disp = 0;
 
-#if defined(MIOS32_BOARD_MBHP_CORE_STM32F4)
+#if defined(MIOS32_BOARD_MBHP_CORE_STM32F4) && !defined(MIOS32_FAMILY_EMULATION)
 // own bit-bang with a slower clock than MIOS32_BOARD_J15_SerDataShift (SSD1322: SCLK cycle >= 100 ns, low/high >= 50 ns;
 // the bus runs over ribbon cables to 4 boards). E1 = PC8 and E2 = PC9 both carry SCLK, RW = PC11 carries SDIN.
 #define SCLK_0   { GPIOC->BSRRH = GPIO_Pin_8 | GPIO_Pin_9; }

@@ -48,6 +48,7 @@ The user likes seeing *where and how a track runs* (gates + play position) – k
 - MIOS32 sources use CRLF line endings: edit with Python/perl in binary mode.
 
 ## Workflow (always do all steps)
+0. **Emulator first** (no hardware needed): `cd myproject/emu && make && NO_BROWSER=1 ./run.sh &` - the real firmware on the Mac, panel on http://127.0.0.1:8766/oled; tools with `MBSEQ_PANEL=http://127.0.0.1:8766`. Flash the real SEQ only when the user wants it on the hardware (see `myproject/emu/README.md`).
 1. Host preview where possible: `cd myproject/oled_gui && cc -I host_stub -I ../../modules/glcd_font -I . -o host_test2 host_test2.c oled_gui2.c ../../modules/glcd_font/glcd_font_normal.c ../../modules/glcd_font/glcd_font_small.c`.
 2. Build: `cd apps/sequencers/midibox_seq_v4 && export PATH=$HOME/toolchains/arm-pkg/Payload/bin:$PATH MIOS32_PATH=<repo> MIOS32_FAMILY=STM32F4xx MIOS32_PROCESSOR=STM32F407VG MIOS32_BOARD=MBHP_CORE_STM32F4 MIOS32_LCD=universal && make` (no -j).
 3. Flash: stop the panel (`pkill -INT -f mbseq_panel.py`), `python3 -u myproject/tools/mios32_flash.py flash project.hex`, restart the panel in the background (`cd myproject/panel && nohup python3 -u mbseq_panel.py --no-browser > /tmp/panel.log 2>&1 &`).

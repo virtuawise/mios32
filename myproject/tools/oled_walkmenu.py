@@ -1,11 +1,12 @@
 # Walks through all pages of the Page Menu (via the panel API), captures every page; writes m0.png, m1.png, ... (8 pages each) and prints the LCD row 1 per page.
 import time, json, urllib.request, zlib, struct
-A="http://127.0.0.1:8765/api"
+import os; PANEL=os.environ.get("MBSEQ_PANEL","http://127.0.0.1:8765")   # emulator panel: MBSEQ_PANEL=http://127.0.0.1:8766
+A=PANEL+"/api"
 def get(p): return urllib.request.urlopen(A+p).read()
 def lcd():
     l=json.loads(get('/state'))['lcd']; return [''.join(chr(c) if 32<=c<127 else '#' for c in r) for r in l]
 def shot():
-    scr=[urllib.request.urlopen(f"http://127.0.0.1:8765/oled_raw?d={d}").read() for d in range(4)]
+    scr=[urllib.request.urlopen(f"{PANEL}/oled_raw?d={d}").read() for d in range(4)]
     return [bytes((((scr[x//256][y*128+(x%256)//2]>>4) if x%2==0 else (scr[x//256][y*128+(x%256)//2]&15))*17) for x in range(1024)) for y in range(64)]
 def save(name, rows):
     def chunk(t,c): return struct.pack('>I',len(c))+t+c+struct.pack('>I',zlib.crc32(t+c)&0xffffffff)

@@ -108,6 +108,53 @@ def screensaver_active(lcd):
     return any(c < 8 for c in flat) and all(c < 8 or c == 32 for c in flat)
 
 
+class EmuLink:
+    """Direct link to the MIDIbox SEQ emulator (myproject/emu, TCP 127.0.0.1:8767) instead of MIDI ports:
+    frames <port 0..3> <len hi> <len lo> <MIDI bytes>. Gives mido-like port objects (send / iter_pending)."""
+    def __init__(self, host="127.0.0.1", port=8767):
+        import socket, mido
+        self.sock = socket.create_connection((host, port))
+        self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        self.parsers = [mido.Parser() for _ in range(4)]
+        self.lock = threading.Lock()
+        threading.Thread(target=self._rx, daemon=True).start()
+
+    def _rx(self):
+        buf = b""
+        while True:
+            d = self.sock.recv(65536)
+            if not d:
+                return
+            buf += d
+            while len(buf) >= 3:
+                n = (buf[1] << 8) | buf[2]
+                if len(buf) < 3 + n:
+                    break
+                port, data, buf = buf[0], buf[3:3 + n], buf[3 + n:]
+                if port < 4:
+                    self.parsers[port].feed(data)
+
+    def send(self, port, msg):
+        data = bytes(msg.bytes())
+        with self.lock:
+            self.sock.sendall(bytes([port, len(data) >> 8, len(data) & 0xFF]) + data)
+
+    class Port:
+        def __init__(self, link, n):
+            self.link, self.n = link, n
+        def send(self, msg):
+            self.link.send(self.n, msg)
+        def iter_pending(self):
+            p = self.link.parsers[self.n]
+            while p.pending():
+                yield p.get_message()
+        def close(self):
+            pass
+
+    def port(self, n):
+        return EmuLink.Port(self, n)
+
+
 class Seq:
     def __init__(self, in1, out1, out2, device_id=0):
         self.in1, self.out1, self.out2 = in1, out1, out2
@@ -557,6 +604,7 @@ def main():
     ap.add_argument("--http", type=int, default=8765, help="HTTP-poort (standaard 8765)")
     ap.add_argument("--no-browser", action="store_true")
     ap.add_argument("--device-id", type=int, default=0)
+    ap.add_argument("--emu", action="store_true", help="MIDIbox SEQ emulator (myproject/emu) via 127.0.0.1:8767")
     args = ap.parse_args()
 
     try:
@@ -564,12 +612,15 @@ def main():
     except ImportError:
         sys.exit("mido ontbreekt: pip3 install mido python-rtmidi")
 
-    ins, outs = mido.get_input_names(), mido.get_output_names()
-    p_in1, p_out1, p_out2 = find_port(ins, args.port1), find_port(outs, args.port1), find_port(outs, args.port2)
-    if not (p_in1 and p_out1 and p_out2):
-        sys.exit(f"MIDIbox-poorten niet gevonden. IN: {ins}  OUT: {outs}")
-
-    in1, out1, out2 = mido.open_input(p_in1), mido.open_output(p_out1), mido.open_output(p_out2)
+    if args.emu:                                        # MIDIbox SEQ emulator (myproject/emu): direct link, no MIDI ports
+        link = EmuLink()
+        in1, out1, out2 = link.port(0), link.port(0), link.port(1)
+    else:
+        ins, outs = mido.get_input_names(), mido.get_output_names()
+        p_in1, p_out1, p_out2 = find_port(ins, args.port1), find_port(outs, args.port1), find_port(outs, args.port2)
+        if not (p_in1 and p_out1 and p_out2):
+            sys.exit(f"MIDIbox-poorten niet gevonden. IN: {ins}  OUT: {outs}")
+        in1, out1, out2 = mido.open_input(p_in1), mido.open_output(p_out1), mido.open_output(p_out2)
     seq = Seq(in1, out1, out2, args.device_id)
     threading.Thread(target=seq.reader, daemon=True).start()
     threading.Thread(target=seq.keepalive, daemon=True).start()

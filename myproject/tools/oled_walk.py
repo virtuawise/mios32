@@ -1,6 +1,7 @@
 # usage: walk.py out.png "label|keys;keys" ...   keys: b:BUTTON  e:ENC:d  w:secs ; each step captures after navigation
 import sys, time, json, urllib.request, zlib, struct, subprocess
-A="http://127.0.0.1:8765/api"
+import os; PANEL=os.environ.get("MBSEQ_PANEL","http://127.0.0.1:8765")   # emulator panel: MBSEQ_PANEL=http://127.0.0.1:8766
+A=PANEL+"/api"
 def get(p): return urllib.request.urlopen(A+p).read()
 def act(tok):
     k,_,v=tok.partition(':')
@@ -9,7 +10,7 @@ def act(tok):
     elif k=='w': time.sleep(float(v))
     time.sleep(0.6)
 def shot():
-    scr=[urllib.request.urlopen(f"http://127.0.0.1:8765/oled_raw?d={d}").read() for d in range(4)]
+    scr=[urllib.request.urlopen(f"{PANEL}/oled_raw?d={d}").read() for d in range(4)]
     rows=[]
     for y in range(64):
         r=bytearray()

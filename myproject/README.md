@@ -6,6 +6,7 @@ with a new page layout built from blocks ("boxes"), and test everything in softw
 | Path | What |
 |---|---|
 | `oled_gui/` | Platform-independent drawing layer (`oled_gui2.c/.h`, 4-bit grey, 64x64 cells) + Mac test programs and design mock-ups |
+| `emu/` | **Emulator**: the real SEQ firmware on macOS (`make && ./run.sh`, panel on :8766) - develop without hardware |
 | `panel/` | Virtual front panel (`mbseq_panel.py`, browser UI at `/oled`) that receives the OLED frames from the firmware over USB-MIDI |
 | `tools/mios32_flash.py` | Uploads a `.hex` to the core over USB-MIDI (same protocol as MIOS Studio) |
 | `LOGBOOK.md` | Chronological log of what was done |
