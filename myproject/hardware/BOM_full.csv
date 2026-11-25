@@ -1,4 +1,4 @@
-Qty,DigiKey part,Description,Unit USD,Total USD,Stock check
+Qty,Part,Description,Unit USD,Total USD,Stock check
 4,NHD-3.12-25664UCY2-ND,OLED 3.12in 256x64 yellow,38.2,152.68,live 832 in stock
 18,"74HC165D,653","74HC165 SOIC-16 (15 + 3 spare), Nexperia - the TI SN74HC165DR is out of stock",0.223,4.01,live 22737
 3,SN74HC595DR,74HC595 (2 + 1),0.65,1.95,live 39725
