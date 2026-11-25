@@ -27,3 +27,5 @@
 6, WM2300-ND, Molex KK396 crimp 18-24 AWG (08-50-0106)
 22, 61201023021, IDC socket 2x5 (cable side)
 2, 61201623021, IDC socket 2x8 (cable side)
+10, 19-3365/10100-DS-ND, 3M 3365/10 ribbon 10-way gray, quantity = feet
+10, 19-3365/16100-DS-ND, 3M 3365/16 ribbon 16-way gray, quantity = feet

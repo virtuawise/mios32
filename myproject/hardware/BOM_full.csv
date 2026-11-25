@@ -28,3 +28,5 @@ Qty,Part,Description,Unit USD,Total USD,Stock check
 6,WM2300-ND,Molex KK396 crimp 08-50-0106 (2 + spare),0.12,0.72,live
 22,61201023021,IDC socket 2x5 for ribbon cable (20 + 2),0.447,9.83,live 39157
 2,61201623021,IDC socket 2x8 for ribbon cable (1 + 1),0.75,1.50,live 31730
+10,19-3365/10100-DS-ND,3M 3365/10 ribbon cable 10-way gray 28 AWG - 10 ft (assumed length),0.64,6.40,live 11680 ft
+10,19-3365/16100-DS-ND,3M 3365/16 ribbon cable 16-way gray 28 AWG - 10 ft (assumed length),0.834,8.34,live 222 ft
