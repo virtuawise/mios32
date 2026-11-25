@@ -33,8 +33,10 @@ Paste `digikey_bulk_full.txt` into DigiKey's Bulk Add.
 | 2 | WM18823-ND | Molex KK396 header 0009652028 (1 + 1) | $0.24 | $0.48 | live |
 | 2 | WM2100-ND | Molex KK396 housing 09-50-3021 (1 + 1) | $0.10 | $0.20 | live |
 | 6 | WM2300-ND | Molex KK396 crimp 08-50-0106 (2 + spare) | $0.12 | $0.72 | live |
+| 22 | 61201023021 | IDC socket 2x5 for ribbon cable (20 + 2) | $0.447 | $9.83 | live 39157 (732-2102-ND) |
+| 2 | 61201623021 | IDC socket 2x8 for ribbon cable (1 + 1) | $0.75 | $1.50 | live 31730 (732-2103-ND) |
 
-**Total about $361** (excl. shipping and tax).
+**Total about $373** (excl. shipping and tax).
 
 ## Totals per function
 - 15 x 74HC165 (3 per column PCB x 4 + 3 on the left), 2 x 74HC595, 53 x SK6812MINI-E, 53 x MX switch + cap, 17 x EC11E encoder (4 per column x 4 + datawheel), 13 x 3FTH9, 4 x OLED.
@@ -46,7 +48,7 @@ Paste `digikey_bulk_full.txt` into DigiKey's Bulk Add.
 | 5 | APEM 1T16 frosted white cap | RS 495-2501 (select keys S9-S13: Solo/Metr./Loop/Rec./Live) |
 | 5 | LED 2x3x4 mm rectangular THT (4 yellow, 1 red) for the lit 3FTH9 keys | not sourced yet |
 | 1 | 3 mm red LED (beat) + 5 mm spacer | any |
-| ~20 | IDC sockets 2x5, 1 x 2x8 and ~10-way ribbon cable (about 1-2 m) | length depends on the case |
+| 1 | ribbon cable 10-way and 16-way, 28 AWG (about 1-2 m) | length depends on the case; IDC sockets are now in the DigiKey list |
 | 1 | 5 V supply, at least 4 A | for 53 LEDs + 4 OLEDs |
 | 1 | switch plate (FR4 1.5 mm) and front plate (aluminium) | `panel/` files |
 | - | M1.6 x 10 screws, 2.5 mm pin spacers for the OLED pins | |
