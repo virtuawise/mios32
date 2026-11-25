@@ -1,4 +1,4 @@
-<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>MIDIbox SEQ – 4x OLED panel (design)</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>MIDIbox SEQ – 4x OLED panel (design)</title>
 <style>
 :root{--amber:#FFB547;--bg:#16181b;--btn:#1b1d20;--btn2:#202226}
 body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;align-items:center}
@@ -55,7 +55,7 @@ const api=p=>fetch(p).catch(()=>{});
 const NA=new Set(['SCRUB']);
 const el=(c,css,t,p)=>{const e=document.createElement('div');if(c)e.className=c;if(css)e.style.cssText=css;if(t!=null)e.textContent=t;(p||W).appendChild(e);return e;};
 const latched=new Set(), btnEls={};
-/* knop: name (API), x,y = linkerbovenhoek, label, kleur, w,h */
+/* button: name (API), x,y = top left corner, label, colour, w,h */
 function button(name,x,y,label,color,o={}){
   const w=o.w||50,h=o.h||40;
   const b=el('btn'+(NA.has(name)?' na':'')+(o.round?' round':''),`left:${x}px;top:${y}px;width:${w}px;height:${h}px;--c:${color||'#FFB547'}`);
@@ -141,19 +141,19 @@ for(let i=0;i<16;i++){
 const BOT=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SELECT','DOWN','UP','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
 const BOTL=['COPY','PASTE','CLEAR','MOVE','SCROLL','FAST','ALL','SHIFT','<','>','EXIT','MENU','EDIT','PATTERN','SONG','UTILITY'];
 BOT.forEach((n,i)=>button(n,CX[i]-29,359,BOTL[i],'#FFB547',CAP));
-/* ---------- OLED-inhoud (benadering uit de huidige LCD-tekst) ---------- */
+/* ---------- OLED content (approximation from the current LCD text) ---------- */
 const stepNote=Array(16).fill('----'),stepOn=Array(16).fill(false),stepCur=Array(16).fill(false);
 function drawOled(d){
   const c=canv[d],g=c.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,256,64);
   for(let k=0;k<4;k++){
     const i=d*4+k,x=k*64,on=stepOn[i];
     const note=stepNote[i].trim().replace('▒','');
-    if(on){                                   // getriggerde stap: duidelijk gevuld vlak
+    if(on){                                   // triggered step: clearly filled area
       g.fillStyle='#3a2606';g.fillRect(x+1,0,62,64);
       g.fillStyle='#FFB547';g.fillRect(x+1,0,62,12);               // kopbalk
       g.fillStyle='#000';g.font='bold 10px monospace';g.textAlign='left';g.fillText(String(i+1).padStart(2,'0'),x+4,10);
       g.textAlign='right';g.fillText(note||'ON',x+60,10);
-    }else{                                    // stap uit: zwak
+    }else{                                    // step off: dim
       g.fillStyle='#4a3a18';g.font='9px monospace';g.textAlign='left';g.fillText(String(i+1).padStart(2,'0'),x+4,10);
       g.textAlign='right';g.fillText('--',x+60,10);
     }
@@ -168,7 +168,7 @@ function drawOled(d){
 }
 const ch=c=>c===0x7e?'→':c===0x7f?'←':(c>=32&&c<127?String.fromCharCode(c):'▒');
 const oledVer=[0,0,0,0], oledReal=[false,false,false,false];
-async function drawReal(d){   // 4-bit grijs framebuffer uit de firmware: 256x64, 128 bytes per rij, hoge nibble = linkse pixel
+async function drawReal(d){   // 4-bit grey framebuffer from the firmware: 256x64, 128 bytes per row, high nibble = left pixel
   const buf=new Uint8Array(await (await fetch('/oled_raw?d='+d)).arrayBuffer());
   const c=canv[d],g=c.getContext('2d'),t=tmpC.getContext('2d'),im=t.createImageData(256,64);
   for(let y=0;y<64;y++)for(let x=0;x<256;x++){
@@ -181,12 +181,12 @@ function update(s){
   const row0=s.lcd[0].map(c=>c>=32&&c<127?String.fromCharCode(c):' ').join('');
   const inEdit=/^G\dT\d .*P[A-P]:/.test(row0);
   const mb=(s.menu_btn===undefined)?127:s.menu_btn, ownLayout=(mb===1);   // pages with their own OLED layout: no LED mirroring on the GP buttons (the screens show the selection)
-  for(let i=0;i<16;i++){const b=btnEls['GP'+(i+1)];if(b)b.classList.toggle('page',i===mb);}        // stap-/laagpagina herkend aan de kop 'G1T1 ... PA:Note'
-  // stapnoten staan op de tweede LCD-regel: 8 stappen per LCD, 5 tekens per stap
+  for(let i=0;i<16;i++){const b=btnEls['GP'+(i+1)];if(b)b.classList.toggle('page',i===mb);}        // step/layer page recognised by the header 'G1T1 ... PA:Note'
+  // step notes are on the second LCD line: 8 steps per LCD, 5 characters per step
   for(let i=0;i<16;i++){const lcd=i<8?0:1,off=lcd*40+(i%8)*5;
     stepNote[i]=s.lcd[1].slice(off,off+4).map(ch).join('');}
   const lit=[];for(let i=0;i<16;i++){const [g,r]=s.leds['GP'+(i+1)]||[0,0];lit[i]=!!(g||r);}
-  for(let i=0;i<16;i++)stepOn[i]=/[^\s\-]/.test(stepNote[i]);          // noot aanwezig = stap getriggerd
+  for(let i=0;i<16;i++)stepOn[i]=/[^\s\-]/.test(stepNote[i]);          // note present = step triggered
   const nl=lit.filter(Boolean).length;
   for(let i=0;i<16;i++)stepCur[i]=(nl===1&&lit[i]);                    // 1 LED = looplicht (afspeelpositie)
   for(let d=0;d<4;d++){
@@ -194,7 +194,7 @@ function update(s){
     else if(!oledReal[d]) drawOled(d);
   }
   for(const[n,[g,r]]of Object.entries(s.leds)){
-    if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!ownLayout&&!!(g||r));continue;}   // GP-knoppen lopen mee met de sequencer in alle pagina's (de OLED's tonen geen afspeelstap meer)
+    if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!ownLayout&&!!(g||r));continue;}   // GP buttons follow the sequencer on all pages (the OLEDs no longer show the play step)
     const b=btnEls[n];if(b)b.classList.toggle('on',!!g);}
   if(s.sel_g!==undefined){ for(let i=0;i<16;i++){const g=(s.sel_g>>i)&1,r=(s.sel_r>>i)&1,b=trkEls[i];
     b.classList.toggle('on',!!(g||r)); b.style.setProperty('--c', r ? PAL.white : PAL.amber); } }
@@ -215,15 +215,17 @@ es.onerror=()=>{const st=document.getElementById('st');st.textContent='server go
 if(new URLSearchParams(location.search).get('caps')==='round')document.body.classList.add('roundcaps');
 const capBtn=document.createElement('button');
 capBtn.style.cssText='font:600 11px sans-serif;letter-spacing:.05em;padding:5px 10px;border-radius:5px;border:1px solid #555;background:#26282c;color:#eee;cursor:pointer';
-const capLbl=()=>{capBtn.textContent='KLEINE KAPJES: '+(document.body.classList.contains('roundcaps')?'ROND (1U16)':'VIERKANT (1T16)');};
+const capLbl=()=>{capBtn.textContent='SMALL CAPS: '+(document.body.classList.contains('roundcaps')?'ROUND (1U16)':'SQUARE (1T16)');};
 capBtn.onclick=()=>{document.body.classList.toggle('roundcaps');capLbl();};
 const ctl=document.createElement('div');ctl.style.cssText='margin:0 18px 18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center';
 document.body.appendChild(ctl);ctl.appendChild(capBtn);capLbl();
 /* LED colours to try out. Small keys: one-colour 2x3x4 mm LED in the 3FTH9 (the colour is chosen by buying that LED);
    big keys: SK6812 RGB (any colour; the firmware palette in seq_rgbled.c must follow what is chosen here). Kept in localStorage. */
-const LEDOPT={'warm wit':'#FFF0DA','koel wit':'#E8F0FF','geel':'#FFD84A','amber':'#FFB547','oranje':'#FF8A3D','rood':'#FF5A4E','groen':'#7EE07E','blauw':'#5AA9FF'};
+const LEDOPT={'warm white':'#FFF0DA','cool white':'#E8F0FF','yellow':'#FFD84A','amber':'#FFB547','orange':'#FF8A3D','red':'#FF5A4E','green':'#7EE07E','blue':'#5AA9FF'};
 const LEDGRP={sel:['STEP_VIEW','TRACK_SEL','PAR_SEL','TRG_SEL','INS_SEL','MUTE','PHRASE','BOOKMARK'],amb:['SOLO','METRONOME','LOOP','LIVE'],rec:['RECORD']};
-const ledCfg=Object.assign({sel:'warm wit',amb:'amber',rec:'rood',rgbA:PAL.amber,rgbW:PAL.white},JSON.parse(localStorage.getItem('ledCfg')||'{}'));
+const ledCfg=Object.assign({sel:'warm white',amb:'amber',rec:'red',rgbA:PAL.amber,rgbW:PAL.white},JSON.parse(localStorage.getItem('ledCfg')||'{}'));
+{const OLD={'warm wit':'warm white','koel wit':'cool white','geel':'yellow','oranje':'orange','rood':'red','groen':'green','blauw':'blue'};   // settings saved by older versions
+ for(const k of ['sel','amb','rec'])if(OLD[ledCfg[k]])ledCfg[k]=OLD[ledCfg[k]];}
 function applyLed(){
   for(const g in LEDGRP)LEDGRP[g].forEach(n=>{const b=btnEls[n];if(b)b.style.setProperty('--c',LEDOPT[ledCfg[g]]);});
   PAL.amber=ledCfg.rgbA;PAL.white=ledCfg.rgbW;
@@ -239,15 +241,15 @@ const mkSel=(lbl,key)=>{const l=document.createElement('span');l.textContent=lbl
   sel.onchange=()=>{ledCfg[key]=sel.value;applyLed();};ledBox.append(l,sel);};
 const mkCol=(lbl,key)=>{const l=document.createElement('span');l.textContent=lbl;const c=document.createElement('input');c.type='color';c.value=ledCfg[key];
   c.oninput=()=>{ledCfg[key]=c.value;applyLed();};ledBox.append(l,c);};
-const CAPOPT={'gemengd: select-modes zwart, Solo/Metr./Loop/Rec./Live frosted':'mix','frosted wit (1T16, licht door)':null,'zwart (1T09)':'#16171a','grijs (1T03)':'#6d6f73','wit (1T06)':'#e9e7e2','rood (1T08)':'#b3302a','geel (1T04)':'#e0b324','groen (1T02)':'#3f8f4a','blauw (1T00)':'#2f5fa8'};
-{const l=document.createElement('span');l.textContent='Kleur kleine kapjes';const sel=document.createElement('select');
+const CAPOPT={'mixed: select modes black, Solo/Metr./Loop/Rec./Live frosted':'mix','frosted white (1T16, lets light through)':null,'black (1T09)':'#16171a','grey (1T03)':'#6d6f73','white (1T06)':'#e9e7e2','red (1T08)':'#b3302a','yellow (1T04)':'#e0b324','green (1T02)':'#3f8f4a','blue (1T00)':'#2f5fa8'};
+{const l=document.createElement('span');l.textContent='Small cap colour';const sel=document.createElement('select');
  for(const k in CAPOPT){const o=document.createElement('option');o.value=k;o.textContent=k;sel.appendChild(o);}
  const ap=()=>{const c=CAPOPT[sel.value];const mix=c==='mix';document.body.style.setProperty('--capc',mix?'#16171a':(c||'#16171a'));
  for(const g in LEDGRP)LEDGRP[g].forEach(n=>{const b=btnEls[n];if(b)b.classList.toggle('opq',mix?g==='sel':!!c);});ledCfg.cap=sel.value;localStorage.setItem('ledCfg',JSON.stringify(ledCfg));};
- sel.value=ledCfg.cap&&ledCfg.cap in CAPOPT?ledCfg.cap:'gemengd: select-modes zwart, Solo/Metr./Loop/Rec./Live frosted';sel.onchange=ap;ledBox.append(l,sel);setTimeout(ap,0);}
+ sel.value=ledCfg.cap&&ledCfg.cap in CAPOPT?ledCfg.cap:'mixed: select modes black, Solo/Metr./Loop/Rec./Live frosted';sel.onchange=ap;ledBox.append(l,sel);setTimeout(ap,0);}
 mkSel('LED select mode','sel');mkSel('LED Solo/Metr./Loop/Live','amb');mkSel('LED Rec.','rec');
-mkCol('RGB actief (GP, select, functie)','rgbA');mkCol('RGB huidige track / transport','rgbW');
-const rst=document.createElement('button');rst.textContent='standaard';rst.style.cssText='font:600 10px sans-serif;cursor:pointer';
+mkCol('RGB active (GP, select, function)','rgbA');mkCol('RGB current track / transport','rgbW');
+const rst=document.createElement('button');rst.textContent='defaults';rst.style.cssText='font:600 10px sans-serif;cursor:pointer';
 rst.onclick=()=>{localStorage.removeItem('ledCfg');location.reload();};ledBox.append(rst);
 ctl.appendChild(ledBox);applyLed();
 addEventListener('keydown',e=>{if((e.key==='c'||e.key==='C')&&!e.ctrlKey&&!e.metaKey){document.body.classList.toggle('roundcaps');capLbl();}});

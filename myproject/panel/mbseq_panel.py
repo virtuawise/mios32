@@ -1,32 +1,36 @@
 #!/usr/bin/env python3
 """
-MIDIbox SEQ V4 (Wilba-frontpanel) - virtueel frontpaneel in de browser + API.
+MIDIbox SEQ V4+ - virtual front panel (layout of Wilba's front panel) in the browser + HTTP API.
+Also shows the 4 OLED screens of this fork at /oled (panel_oled.html).
+Works with a real SEQ over USB MIDI and with the macOS emulator (myproject/emu/run.sh, option --emu).
 
-  python3 mbseq_panel.py            -> start server, opent http://127.0.0.1:8765
+  python3 mbseq_panel.py            -> real SEQ: start the server, open http://127.0.0.1:8765
   python3 mbseq_panel.py --no-browser
+  python3 mbseq_panel.py --emu --http 8766   -> emulator (direct link 127.0.0.1:8767, no MIDI ports)
 
-Hoe het werkt (zie seq_midi_sysex.c / seq_ui.c / seq_midi_in.c in de firmware):
-  * LCD + LED's : SysEx "remote server" op Port 1. Elke seconde een REFRESH
-                  (F0 00 00 7E 4D 00 09 01 F7); de SEQ stuurt LCD-wijzigingen (09 02)
-                  en LED-shiftregisters (09 04). Bij Wilba zitten de LED's in een
-                  8x8-matrix (rijselectie SR1, LED's SR2) die we hier terugrekenen.
-                  Vereist RemotePort 0x10 in MBSEQ_GC.V4.
-  * Encoders    : CC 15 (datawheel) / 16..31 (GP1..16), waarde 64+delta, kanaal 1, Port 1.
-  * Knoppen     : de Wilba-knoppen zitten in een matrix (DIN-pin >= 256) en zijn via het
-                  remote-protocol NIET bereikbaar. Daarom de "MIDI Remote Keyboard"-functie:
-                  noot 96 vasthouden op Port 2 (kanaal 1) -> andere noten = frontpaneelknoppen.
-  * SAVE ALL    : MIOS-terminalcommando "store".
+How it works (see seq_midi_sysex.c / seq_ui.c / seq_midi_in.c in the firmware):
+  * LCD + LEDs : SysEx "remote server" on Port 1. Every second a REFRESH
+                 (F0 00 00 7E 4D 00 09 01 F7); the SEQ sends LCD changes (09 02), the charset (09 03)
+                 and the LED shift registers (09 04). On Wilba's panel the LEDs are an 8x8 matrix
+                 (row select SR1, LEDs SR2), decoded here. A real SEQ needs RemotePort 0x10 in MBSEQ_GC.V4.
+  * Encoders   : CC 15 (datawheel) / 16..31 (GP1..16), value 64+delta, channel 1, Port 1.
+  * Buttons    : Wilba's buttons are a matrix (DIN pin >= 256) and can't be reached with the remote
+                 protocol, so the "MIDI Remote Keyboard" function is used: hold note 96 on Port 2
+                 (channel 1), then other notes = front panel buttons (SEQ_UI_REMOTE_MIDI_Keyboard).
+  * SAVE ALL   : MIOS terminal command "store".
 
-API (voor scripts / Claude):
-  GET /api/screen                 -> LCD als platte tekst (2 regels x 80)
-  GET /api/state                  -> JSON: lcd, leds, charset
-  GET /api/press?b=EDIT           -> knop tikken; combinatie: b=SELECT+GP3 (eerste wordt vastgehouden)
-        &ms=120                      (optioneel: hoe lang ingedrukt)
-  GET /api/down?b=FAST  /api/up?b=FAST   -> knop vasthouden / loslaten
-  GET /api/enc?e=GP3&d=2          -> encoder draaien (e = DATAWHEEL of GP1..GP16, d = -63..63)
-  GET /api/sync                   -> volledig scherm opnieuw laten sturen (MENU-tik)
-  GET /api/store                  -> sessie opslaan (SAVE ALL)
-  GET /api/buttons                -> lijst van bruikbare knopnamen
+API (for scripts):
+  GET /api/screen                 -> LCD as plain text (2 lines x 80)
+  GET /api/state                  -> JSON: lcd, leds, charset, screen
+  GET /api/press?b=EDIT           -> tap a button; combination: b=SELECT+GP3 (the first one is held)
+        &ms=120                      (optional: how long it is pressed)
+  GET /api/down?b=FAST  /api/up?b=FAST   -> hold / release a button
+  GET /api/enc?e=GP3&d=2          -> turn an encoder (e = DATAWHEEL or GP1..GP16, d = -63..63)
+  GET /api/sync                   -> let the SEQ send the whole screen again (MENU tap)
+  GET /api/store                  -> save the session (SAVE ALL)
+  GET /api/buttons                -> list of button names
+  GET /api/fb?cmd=dir%20/SESSIONS -> MIOS file browser command (same protocol as MIOS Studio), returns the replies
+  GET /api/upload?src=<dir>&name=<session> -> copy a local folder to /SESSIONS/<session> on the SD card
 """
 import argparse
 import base64
@@ -39,12 +43,12 @@ import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
-SEQ_HDR = [0x00, 0x00, 0x7E, 0x4D]      # MBSEQ SysEx header (zonder F0)
+SEQ_HDR = [0x00, 0x00, 0x7E, 0x4D]      # MBSEQ SysEx header (without F0)
 MIOS_HDR = [0x00, 0x00, 0x7E, 0x32]     # MIOS32 SysEx header (terminal)
 REMOTE_KEY = 96                         # MidiRemoteKey in MBSEQ_GC.V4
 
 # ---------------------------------------------------------------- Wilba hardware
-# LED -> (matrixrij 0..7 = M1..M8, bit)   (hwcfg/wilba/MBSEQ_HW.V4)
+# LED -> (matrix row 0..7 = M1..M8, bit)   (hwcfg/wilba/MBSEQ_HW.V4)
 LEDS = {
     "TRACK1": (6, 2), "TRACK2": (6, 1), "TRACK3": (4, 2), "TRACK4": (4, 1),
     "PAR_A": (3, 2), "PAR_B": (3, 1), "PAR_C": (3, 0),
@@ -55,10 +59,10 @@ LEDS = {
     "PLAY": (0, 3), "STOP": (2, 3), "PAUSE": (1, 3), "REW": (2, 2), "FWD": (0, 2),
     "BEAT": (0, 1),
 }
-# GP-LED's: tweekleurig, 2 per rij (seq_ui.c, dout_gp_mapping 1)
+# GP LEDs: dual colour, 2 per row (seq_ui.c, dout_gp_mapping 1)
 GP_ROW = [4, 4, 5, 5, 6, 6, 7, 7, 3, 3, 2, 2, 1, 1, 0, 0]
 
-# knop -> noot in de MIDI Remote Keyboard-functie (SEQ_UI_REMOTE_MIDI_Keyboard)
+# button -> note of the MIDI Remote Keyboard function (SEQ_UI_REMOTE_MIDI_Keyboard)
 _GP_NOTES = [0x24, 0x26, 0x28, 0x29, 0x2B, 0x2D, 0x2F, 0x30,
              0x32, 0x34, 0x35, 0x37, 0x39, 0x3B, 0x3C, 0x3E]
 BUTTON_NOTES = {f"GP{i + 1}": n for i, n in enumerate(_GP_NOTES)}
@@ -86,24 +90,24 @@ SPECIAL_BUTTONS = {"SAVE_ALL"}                       # via terminal
 UNAVAILABLE = {"SCRUB"}                              # not reachable remotely
 ENCODERS = {"DATAWHEEL": 0, **{f"GP{i + 1}": i + 1 for i in range(16)}}
 
-# tekstweergave van custom characters 0..7 per charset (seq_lcd.h volgorde)
+# text version of the custom characters 0..7 per charset (order of seq_lcd.h)
 CHARSET_TEXT = {
-    1: "<>↔     ",              # Menu: pijltjes
+    1: "<>↔     ",              # Menu: arrows
     2: "▁▂▃▄▅▆▇█",  # VBars
     3: " ▏▎▍·>  ",                       # HBars
-    4: "·●○◉    ",                       # drums groot
+    4: "·●○◉    ",                       # drums big
     5: " ··:    ",                                 # drums medium
-    6: " ··:·::∴",                       # drums klein
+    6: " ··:·::∴",                       # drums small
 }
 
 
-# MIDIbox-logo van de screensaver (seq_lcd_logo.inc): 2 tekenregels x 200 kolommen,
-# bit n = pixelrij n binnen de tekenregel
+# MIDIbox logo of the screensaver (seq_lcd_logo.inc): 2 character lines x 200 columns,
+# bit n = pixel row n within the character line
 LOGO = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 224, 240, 120, 252, 248, 128, 192, 224, 112, 184, 252, 254, 62, 14, 0, 0, 24, 24, 28, 140, 252, 124, 28, 12, 12, 4, 7, 3, 3, 134, 230, 246, 60, 28, 56, 240, 224, 0, 0, 0, 24, 24, 28, 12, 236, 252, 60, 12, 12, 12, 4, 4, 0, 128, 224, 240, 188, 142, 135, 3, 0, 0, 0, 0, 128, 128, 128, 128, 128, 128, 0, 0, 96, 224, 192, 0, 0, 0, 0, 128, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 96, 112, 248, 216, 200, 204, 204, 132, 134, 6, 6, 3, 0, 192, 192, 224, 248, 220, 204, 134, 6, 6, 6, 132, 196, 224, 96, 48, 48, 24, 24, 28, 204, 252, 16, 0, 0, 0, 0, 0, 0, 0, 28, 252, 0, 0, 0, 128, 224, 112, 60, 14, 7, 3, 1, 0, 128, 192, 0, 0, 224, 224, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 60, 31, 15, 3, 0, 3, 7, 3, 1, 0, 124, 63, 15, 1, 0, 96, 224, 96, 112, 120, 126, 111, 35, 48, 48, 112, 112, 64, 64, 104, 110, 111, 51, 48, 56, 24, 14, 7, 3, 64, 224, 96, 96, 112, 120, 127, 103, 48, 48, 48, 48, 48, 120, 126, 103, 99, 97, 49, 57, 29, 15, 2, 60, 62, 55, 35, 35, 33, 49, 49, 57, 31, 47, 48, 48, 24, 27, 15, 30, 126, 99, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 8, 60, 48, 96, 32, 32, 48, 48, 48, 25, 31, 15, 7, 8, 62, 63, 51, 33, 33, 32, 32, 32, 32, 8, 62, 63, 49, 48, 48, 55, 31, 30, 254, 255, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 63, 60, 15, 3, 1, 0, 0, 0, 0, 24, 30, 31, 27, 25, 248, 252, 63, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 
 def screensaver_active(lcd):
-    """Screensaver = scherm bevat alleen spaties en custom chars (logo-venster)."""
+    """Screensaver = the screen only contains spaces and custom chars (logo window)."""
     flat = [c for line in lcd for c in line]
     return any(c < 8 for c in flat) and all(c < 8 or c == 32 for c in flat)
 
@@ -163,7 +167,7 @@ class Seq:
         self.midi_lock = threading.Lock()
         self.lcd = [[32] * 80 for _ in range(2)]
         self.charset = 0
-        self.oled4 = [bytearray(8192) for _ in range(4)]   # OLED-framebuffers 256x64, 4 bit grijs (128 bytes per rij) uit de firmware (cmd 0x07)
+        self.oled4 = [bytearray(8192) for _ in range(4)]   # OLED framebuffers 256x64, 4 bit grey (128 bytes per row) from the firmware (cmd 0x07)
         self.oled_ver = [0] * 4
         self.beat_seq = 0                  # incremented for every beat pulse from the firmware (cmd 0x09)
         self.beat_n = 0
@@ -174,16 +178,16 @@ class Seq:
         self._cand = [None] * 8
         self.version = 0
         self.last_rx = 0.0
-        self.held = []                        # ingedrukte knoppen (remote keyboard)
+        self.held = []                        # buttons held down (remote keyboard)
         self.stop = threading.Event()
 
-    # ------------------------------------------------------------- MIDI uit
+    # ------------------------------------------------------------- MIDI out
     def _send(self, port, msg):
         with self.midi_lock:
             port.send(msg)
 
     def remote_off(self):
-        """Remote-modus uitzetten; anders blijft de SEQ alle MIDI op Port 1 afvangen."""
+        """Leave remote mode; otherwise the SEQ keeps catching all MIDI on Port 1."""
         import mido
         self._send(self.out1, mido.Message("sysex", data=SEQ_HDR + [self.dev, 0x09, 0x00, 0x00]))
 
@@ -192,12 +196,12 @@ class Seq:
         self._send(self.out1, mido.Message("sysex", data=SEQ_HDR + [self.dev, 0x09, 0x01]))
 
     def wake(self):
-        """Screensaver uitzetten: remote-knoppen doen dat niet (alleen fysieke knoppen),
-        het terminalcommando 'lcd' wel (toont 2 s een korte melding)."""
+        """Leave the screensaver: remote buttons don't (only physical buttons do),
+        the terminal command 'lcd' does (shows a short message for 2 s)."""
         with self.lock:
             active = screensaver_active(self.lcd)
         if active:
-            self.terminal("lcd virtueel paneel")
+            self.terminal("lcd virtual panel")
             time.sleep(0.15)
         return active
 
@@ -264,7 +268,7 @@ class Seq:
         self._send(self.out1, mido.Message("sysex", data=data))
 
     def fb(self, cmd, quiet=1.5, maxwait=20):
-        """MIOS-bestandsbrowser (zelfde protocol als MIOS Studio): stuur 'dir /SESSIONS', 'read ...', enz. en verzamel de antwoorden."""
+        """MIOS file browser (same protocol as MIOS Studio): send 'dir /SESSIONS', 'read ...' etc. and collect the replies."""
         import mido
         self.fb_rx = []
         data = MIOS_HDR + [self.dev, 0x0D, 0x01] + [ord(c) & 0x7F for c in cmd] + [0x0A]
@@ -279,7 +283,7 @@ class Seq:
         return list(self.fb_rx)
 
     def _fb_cmd(self, cmd, timeout=5.0):
-        """Stuur 1 browsercommando en wacht op precies 1 antwoord (elk commando geeft er een, behalve read/dir)."""
+        """Send 1 browser command and wait for exactly 1 reply (every command gives one, except read/dir)."""
         import mido
         n = len(getattr(self, "fb_rx", []))
         self._send(self.out1, mido.Message("sysex", data=MIOS_HDR + [self.dev, 0x0D, 0x01] + [ord(c) & 0x7F for c in cmd] + [0x0A]))
@@ -291,24 +295,24 @@ class Seq:
         return None
 
     def upload(self, src, name, block=32, burst=32):
-        """Schrijf alle bestanden uit map 'src' naar /SESSIONS/<name> op de SD-kaart van de SEQ (map moet nog niet bestaan)."""
+        """Write all files of folder 'src' to /SESSIONS/<name> on the SEQ's SD card (the folder must not exist yet)."""
         import os
         import mido
         self.fb_rx = []
         listing = "".join(self.fb("dir /SESSIONS", 0.8)).replace("\x00", "") + ","
         if f",D{name}," in listing or f",F{name}," in listing:
-            raise ValueError(f"/SESSIONS/{name} bestaat al")
+            raise ValueError(f"/SESSIONS/{name} already exists")
         if self._fb_cmd(f"mkdir /SESSIONS/{name}") != "M#":
-            raise ValueError("mkdir mislukt")
+            raise ValueError("mkdir failed")
         t0, total = time.time(), 0
         for f in sorted(os.listdir(src)):
             data = open(os.path.join(src, f), "rb").read()
             if self._fb_cmd(f"write /SESSIONS/{name}/{f} {len(data)}") != "W00000000":
-                raise ValueError(f"write {f} mislukt")
+                raise ValueError(f"write {f} failed")
             pos = 0
             while pos < len(data):
                 cmds, wants = [], []
-                for _ in range(burst):                      # burst: blokken achter elkaar sturen, daarna alle antwoorden controleren
+                for _ in range(burst):                      # burst: send blocks back to back, then check all replies
                     if pos >= len(data):
                         break
                     chunk = data[pos:pos + block]
@@ -323,12 +327,12 @@ class Seq:
                     time.sleep(0.0005)
                 got = [r.rstrip("\x00") for r in self.fb_rx[n:n + len(cmds)]]
                 if got != wants:
-                    raise ValueError(f"{f}: antwoorden wijken af bij offset {pos}: {got[:2]} ... verwacht {wants[:2]}")
+                    raise ValueError(f"{f}: unexpected replies at offset {pos}: {got[:2]} ... expected {wants[:2]}")
             total += len(data)
-        return {"bytes": total, "seconden": round(time.time() - t0, 1)}
+        return {"bytes": total, "seconds": round(time.time() - t0, 1)}
 
     def sync(self):
-        """MENU kort indrukken -> SEQ tekent het hele scherm opnieuw."""
+        """Tap MENU -> the SEQ draws the whole screen again."""
         self.press(["MENU"], ms=250)
 
     # ------------------------------------------------------------- MIDI in
@@ -336,7 +340,7 @@ class Seq:
         if msg.type != "sysex":
             return
         d = list(msg.data)
-        if len(d) >= 7 and d[:4] == MIOS_HDR and d[5] == 0x0D and d[6] == 0x41:     # bestandsbrowser-antwoord
+        if len(d) >= 7 and d[:4] == MIOS_HDR and d[5] == 0x0D and d[6] == 0x41:     # file browser reply
             if not hasattr(self, "fb_rx"):
                 self.fb_rx = []
             self.fb_rx.append("".join(chr(b) for b in d[7:] if b < 0x80 and b != 0x0A))
@@ -357,13 +361,13 @@ class Seq:
             elif cmd == 0x03 and len(d) >= 8:                   # charset
                 self.charset = d[7]
                 self.version += 1
-            elif cmd == 0x07 and len(d) >= 10:                  # OLED-cel (64x64 px, 4 bit, RLE) in een scherm
+            elif cmd == 0x07 and len(d) >= 10:                  # OLED cell (64x64 px, 4 bit, RLE) of one screen
                 disp, cell, raw, packed = d[7], d[8], d[9:], []
-                for g in range(0, len(raw), 8):                 # 7-bit: 1 MSB-byte + max 7 databytes
+                for g in range(0, len(raw), 8):                 # 7-bit: 1 MSB byte + max. 7 data bytes
                     msb = raw[g]
                     for i, b in enumerate(raw[g + 1:g + 8]):
                         packed.append(b | (0x80 if msb >> i & 1 else 0))
-                px, i = bytearray(), 0                          # PackBits-RLE: <128 = literal c+1, >=128 = herhaal (c-126)
+                px, i = bytearray(), 0                          # PackBits-RLE: <128 = literal c+1, >=128 = repeat (c-126)
                 while i < len(packed):
                     c = packed[i]; i += 1
                     if c < 128:
@@ -387,7 +391,7 @@ class Seq:
             elif cmd == 0x08 and len(d) >= 8:                   # menu button of the current page
                 self.menu_btn = d[7]
                 self.version += 1
-            elif cmd == 0x04 and len(d) >= 8:                   # LED-SR's
+            elif cmd == 0x04 and len(d) >= 8:                   # LED shift registers
                 first = d[7]
                 for k, v in enumerate(d[8:]):
                     n = first + k
@@ -395,11 +399,11 @@ class Seq:
                         break
                     j = n // 2
                     self.sr[j] = (self.sr[j] & 0xF0) | v if n % 2 == 0 else (self.sr[j] & 0x0F) | (v << 4)
-                sel = ~self.sr[0] & 0xFF                        # SR1: rijselectie, actief laag
+                sel = ~self.sr[0] & 0xFF                        # SR1: row select, active low
                 if sel and not sel & (sel - 1):
                     row = sel.bit_length() - 1
-                    val = self.sr[1]                            # SR2: LED's van die rij
-                    # pas overnemen als 2x achter elkaar gelijk (filtert scan-glitches)
+                    val = self.sr[1]                            # SR2: LEDs of that row
+                    # take it only when it is the same twice in a row (filters scan glitches)
                     if self._cand[row] == val and self.matrix[row] != val:
                         self.matrix[row] = val
                         self.version += 1
@@ -419,7 +423,7 @@ class Seq:
             try:
                 self.refresh()
             except Exception as e:                              # noqa: BLE001
-                print("refresh mislukt:", e, file=sys.stderr)
+                print("refresh failed:", e, file=sys.stderr)
             self.stop.wait(1.0)
 
     # ------------------------------------------------------------- state
@@ -435,7 +439,7 @@ class Seq:
 
     def screen_text(self):
         if screensaver_active(self.lcd):
-            return ["[screensaver actief - wordt gewekt bij de volgende knop/encoder]".ljust(80), " " * 80]
+            return ["[screensaver active - the next button/encoder wakes it up]".ljust(80), " " * 80]
         cs = CHARSET_TEXT.get(self.charset, "▒" * 8)
         def ch(c):
             if c < 8:
@@ -491,11 +495,11 @@ def make_handler(seq):
             try:
                 if p == "/":
                     return self._send(200, PAGE.replace("__LOGO__", json.dumps(LOGO)), "text/html")
-                if p == "/oled":      # ontwerp met 4 OLED-vlakken (panel_oled.html)
+                if p == "/oled":      # design with the 4 OLEDs (panel_oled.html)
                     html = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "panel_oled.html"),
                                 encoding="utf-8").read()
                     return self._send(200, html, "text/html")
-                if p == "/oled_raw":      # ruw 4-bit framebuffer van 1 scherm (8192 bytes)
+                if p == "/oled_raw":      # raw 4-bit framebuffer of one screen (8192 bytes)
                     dn = int(q.get("d", 0))
                     with seq.lock:
                         body = bytes(seq.oled4[dn]) if 0 <= dn < 4 else b""
@@ -520,12 +524,12 @@ def make_handler(seq):
                 if p == "/api/buttons":
                     return self._send(200, {"buttons": sorted(BUTTON_NOTES) + ["SAVE_ALL"],
                                             "encoders": list(ENCODERS),
-                                            "niet_beschikbaar": sorted(UNAVAILABLE)})
+                                            "unavailable": sorted(UNAVAILABLE)})
                 if p == "/api/press":
                     names = [n for n in q.get("b", "").replace(" ", "+").split("+") if n]
                     self._check(names)
                     seq.press(names, int(q.get("ms", 100)))
-                    time.sleep(float(q.get("wait", 0.15)))      # SEQ even tijd geven
+                    time.sleep(float(q.get("wait", 0.15)))      # give the SEQ some time
                     return self._send(200, {"ok": True, "pressed": names})
                 if p in ("/api/down", "/api/up"):
                     names = [q.get("b", "")]
@@ -538,7 +542,7 @@ def make_handler(seq):
                 if p == "/api/enc":
                     e = q.get("e", "").upper()
                     if e not in ENCODERS:
-                        return self._send(400, {"error": f"onbekende encoder {e}", "encoders": list(ENCODERS)})
+                        return self._send(400, {"error": f"unknown encoder {e}", "encoders": list(ENCODERS)})
                     seq.encoder(e, int(q.get("d", 1)))
                     time.sleep(float(q.get("wait", 0.1)))
                     return self._send(200, {"ok": True})
@@ -547,16 +551,16 @@ def make_handler(seq):
                     time.sleep(0.3)
                     return self._send(200, {"ok": True})
                 if p == "/api/fb":
-                    return self._send(200, {"antwoord": seq.fb(q["cmd"], float(q.get("quiet", 1.5)), float(q.get("maxwait", 20)))})
+                    return self._send(200, {"reply": seq.fb(q["cmd"], float(q.get("quiet", 1.5)), float(q.get("maxwait", 20)))})
                 if p == "/api/upload":
                     return self._send(200, seq.upload(q["src"], q["name"], int(q.get("block", 32)), int(q.get("burst", 32))))
                 if p == "/api/store":
                     seq.terminal("store")
                     return self._send(200, {"ok": True})
-                return self._send(404, {"error": "niet gevonden"})
+                return self._send(404, {"error": "not found"})
             except KeyError as e:
-                return self._send(400, {"error": f"onbekende knop {e}",
-                                        "tip": "zie /api/buttons"})
+                return self._send(400, {"error": f"unknown button {e}",
+                                        "hint": "see /api/buttons"})
             except ValueError as e:
                 return self._send(400, {"error": str(e)})
 
@@ -564,11 +568,11 @@ def make_handler(seq):
             for n in names:
                 n = n.upper()
                 if n in UNAVAILABLE:
-                    raise ValueError(f"{n} is niet op afstand bedienbaar (firmwarebeperking Wilba-matrix)")
+                    raise ValueError(f"{n} can't be operated remotely (not in the firmware's remote keyboard map)")
                 if n not in BUTTON_NOTES and n not in SPECIAL_BUTTONS:
                     raise KeyError(n)
             if not names:
-                raise ValueError("geen knop opgegeven (?b=NAAM)")
+                raise ValueError("no button given (?b=NAME)")
 
         def _events(self):
             self.send_response(200)
@@ -598,10 +602,10 @@ def find_port(names, wanted):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Virtueel MBSEQ V4 Wilba-frontpaneel")
-    ap.add_argument("--port1", default="MIDIbox SEQ V4+ Port 1", help="remote/LCD-poort (USB1)")
-    ap.add_argument("--port2", default="MIDIbox SEQ V4+ Port 2", help="poort voor knoppen (remote keyboard)")
-    ap.add_argument("--http", type=int, default=8765, help="HTTP-poort (standaard 8765)")
+    ap = argparse.ArgumentParser(description="MIDIbox SEQ V4+ virtual front panel")
+    ap.add_argument("--port1", default="MIDIbox SEQ V4+ Port 1", help="remote/LCD port (USB1)")
+    ap.add_argument("--port2", default="MIDIbox SEQ V4+ Port 2", help="port for the buttons (remote keyboard)")
+    ap.add_argument("--http", type=int, default=8765, help="HTTP port (default 8765)")
     ap.add_argument("--no-browser", action="store_true")
     ap.add_argument("--device-id", type=int, default=0)
     ap.add_argument("--emu", action="store_true", help="MIDIbox SEQ emulator (myproject/emu) via 127.0.0.1:8767")
@@ -610,7 +614,7 @@ def main():
     try:
         import mido
     except ImportError:
-        sys.exit("mido ontbreekt: pip3 install mido python-rtmidi")
+        sys.exit("mido is missing: pip3 install mido python-rtmidi")
 
     if args.emu:                                        # MIDIbox SEQ emulator (myproject/emu): direct link, no MIDI ports
         link = EmuLink()
@@ -619,7 +623,7 @@ def main():
         ins, outs = mido.get_input_names(), mido.get_output_names()
         p_in1, p_out1, p_out2 = find_port(ins, args.port1), find_port(outs, args.port1), find_port(outs, args.port2)
         if not (p_in1 and p_out1 and p_out2):
-            sys.exit(f"MIDIbox-poorten niet gevonden. IN: {ins}  OUT: {outs}")
+            sys.exit(f"MIDIbox ports not found. IN: {ins}  OUT: {outs}")
         in1, out1, out2 = mido.open_input(p_in1), mido.open_output(p_out1), mido.open_output(p_out2)
     seq = Seq(in1, out1, out2, args.device_id)
     threading.Thread(target=seq.reader, daemon=True).start()
@@ -636,7 +640,7 @@ def main():
     srv = ThreadingHTTPServer(("127.0.0.1", args.http), make_handler(seq))
     srv.daemon_threads = True
     url = f"http://127.0.0.1:{args.http}/"
-    print(f"MBSEQ-paneel draait op {url}  (Ctrl+C = stoppen)", flush=True)
+    print(f"MBSEQ panel running on {url}  (Ctrl+C = stop)", flush=True)
     if not args.no_browser:
         threading.Timer(0.8, lambda: webbrowser.open(url)).start()
     try:
@@ -651,13 +655,13 @@ def main():
         time.sleep(0.05)
         srv.server_close()
         import os
-        os._exit(0)                          # rtmidi-threads niet laten hangen
+        os._exit(0)                          # don't let rtmidi threads hang
 
 
 # ---------------------------------------------------------------- HTML
 PAGE = r"""<!doctype html>
-<html lang="nl"><head><meta charset="utf-8">
-<title>MBSEQ V4 – virtueel frontpaneel</title>
+<html lang="en"><head><meta charset="utf-8">
+<title>MIDIbox SEQ V4+ – virtual front panel</title>
 <style>
 :root{--txt:#d5d9de;--dim:#8a9199;--lcd:#9fd400;--lcdbg:#1a2a06;--col:66px}
 *{box-sizing:border-box}
@@ -671,7 +675,7 @@ body{color:var(--txt);font:13px/1.2 -apple-system,Helvetica,Arial,sans-serif;use
 .brand{font-weight:700;letter-spacing:.12em;color:#e8eaed}
 .status{font-size:12px;color:var(--dim)} .status b.on{color:#6c6} .status b.off{color:#e55}
 .body{display:flex;gap:26px;align-items:stretch}
-/* ---------- linker sectie ---------- */
+/* ---------- left section ---------- */
 .left{display:flex;flex-direction:column;justify-content:space-between;padding:2px 0 14px}
 .pair{display:flex;gap:16px}
 .left .ctl{gap:2px}
@@ -681,7 +685,7 @@ body{color:var(--txt);font:13px/1.2 -apple-system,Helvetica,Arial,sans-serif;use
 .vlabel{writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;letter-spacing:.14em;color:var(--dim);
         border-left:1px solid #ffffff30;padding-left:5px;text-align:center;white-space:nowrap}
 .stack{display:flex;flex-direction:column;gap:5px}
-/* ---------- hoofdgrid ---------- */
+/* ---------- main grid ---------- */
 .main{display:grid;grid-template-columns:repeat(8,var(--col)) 84px repeat(8,var(--col));
       grid-template-rows:auto 64px auto 62px 62px;align-items:center;justify-items:center}
 .lcd{background:#0b0f05;border-radius:6px;padding:9px;box-shadow:inset 0 0 0 3px #000,0 0 0 1px #444;
@@ -691,7 +695,7 @@ body{color:var(--txt);font:13px/1.2 -apple-system,Helvetica,Arial,sans-serif;use
 .lcd .row{height:25px;display:flex;justify-content:center}
 .lcd .c{display:inline-block;width:12.3px;height:25px;text-align:center}
 .lcd .c.g{background-size:100% 100%;background-repeat:no-repeat}
-/* ---------- bediening ---------- */
+/* ---------- controls ---------- */
 .enc{width:44px;height:44px;border-radius:50%;cursor:ns-resize;position:relative;
      background:radial-gradient(circle at 35% 30%,#5a5f66,#2a2d31 60%,#16181a);
      box-shadow:0 3px 6px #000c, inset 0 1px 1px #ffffff22}
@@ -721,19 +725,19 @@ button.b.na{opacity:.35;cursor:not-allowed}
 .hint{margin-top:12px;font-size:11px;color:var(--dim);max-width:1300px}
 </style></head><body>
 <div id="wrap"><div class="panel">
-  <div class="top"><div class="brand">MIDIbox SEQ V4 · virtueel frontpaneel</div>
+  <div class="top"><div class="brand">MIDIbox SEQ V4+ · virtual front panel</div>
        <div class="status">SEQ: <b id="st" class="off">offline</b> · charset <span id="cs">?</span>
-       · <a href="#" id="sync" style="color:#9cf">scherm verversen</a></div></div>
+       · <a href="#" id="sync" style="color:#9cf">refresh screen</a></div></div>
   <div class="body">
     <div class="left" id="left"></div>
     <div class="main" id="main"></div>
   </div>
-  <div class="hint">Klik = knop indrukken (vasthouden kan) · rechtsklik = knop vastzetten voor combinaties
-   (bijv. MENU of SELECT + GP) · encoders: scrollen of verticaal slepen, Shift = sneller ·
-   toetsen: ←/→ datawheel, Enter = SELECT, Esc = EXIT · grijze knoppen kan de firmware niet op afstand bedienen.</div>
+  <div class="hint">Click = press a button (can be held) · right click = latch a button for combinations
+   (e.g. MENU or SELECT + GP) · encoders: scroll or drag vertically, Shift = faster ·
+   keys: ←/→ datawheel, Enter = SELECT, Esc = EXIT · grey buttons can't be operated remotely by the firmware.</div>
 </div></div>
 <script>
-const CHARSETS={ // 8 tekens x 8 rijen, 5 bits breed (seq_lcd.c)
+const CHARSETS={ // 8 chars x 8 rows, 5 bits wide (seq_lcd.c)
  1:[[1,3,7,3,1,0,0,0],[0,0,0,16,24,28,24,16],[1,3,7,19,25,28,24,16]],
  2:[0,1,2,3,4,5,6,7].map(n=>Array.from({length:8},(_,r)=>r>=7-n?30:0)),
  3:[[0,0,0,0,0,0,0,0],[0,16,16,16,16,16,16,0],[0,20,20,20,20,20,20,0],[0,21,21,21,21,21,21,0],
@@ -752,7 +756,7 @@ function glyph(cs,code){
   return glyphCache[k]='url("data:image/svg+xml;utf8,'+encodeURIComponent(svg)+'")';
 }
 const LOGO=__LOGO__;
-function logoGlyph(x,y){ // teken op kolom x (0..39 binnen een LCD), regel y
+function logoGlyph(x,y){ // character at column x (0..39 within one LCD), line y
   const k='logo:'+x+':'+y; if(glyphCache[k]) return glyphCache[k]; let r='';
   for(let cx=0;cx<5;cx++){const v=LOGO[y*200+x*5+cx]||0;
     for(let py=0;py<8;py++) if(v&(1<<py)) r+=`<rect x="${cx}" y="${py}" width=".9" height=".9"/>`;}
@@ -764,13 +768,13 @@ const NA=new Set(['SCRUB','LIVE','RECORD','COPY','PASTE','CLEAR']);
 const latched=new Set(), ledEls={};
 const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;};
 
-/* knop: opts = {top:'1', led:true|false, side:'A', label:'MIXER', ledLeft:true} */
+/* button: opts = {top:'1', led:true|false, side:'A', label:'MIXER', ledLeft:true} */
 function ctl(name,o={}){
   const w=el('div','ctl'); const led=el('div','led'+(o.led===false?' nl':''));
   if(o.led!==false) ledEls[name]=led;
   const topl=el('div','topl'); if(o.top!=null) topl.append(o.ledLeft?led:'',el('span','',o.top),o.ledLeft?'':led); else topl.append(led);
   const b=el('button','b'+(NA.has(name)?' na':''));
-  b.title=NA.has(name)?name+': niet op afstand bedienbaar':name;
+  b.title=NA.has(name)?name+': can\'t be operated remotely':name;
   const bl=el('div','bline'); bl.append(el('span','side'+(o.side?'':' empty'),o.side||'·'),b,el('span','side empty','·'));
   w.append(topl,bl,el('div','lbl',o.label||''));
   if(!NA.has(name)){
@@ -800,7 +804,7 @@ function encoder(name,big){
   return e;
 }
 
-/* ---------- linker sectie (zoals op het Wilba-paneel) ---------- */
+/* ---------- left section (as on Wilba's panel) ---------- */
 function column(title,items){const c=el('div','colblk');c.append(el('div','vlabel',title));
   const s=el('div','stack');items.forEach(i=>s.appendChild(i));c.appendChild(s);return c;}
 const left=document.getElementById('left');
@@ -812,17 +816,17 @@ p2.append(column('TRIGGER LAYER',['A','B','C'].map(x=>ctl('TRG_'+x,{top:x,ledLef
           column('PARAMETER LAYER',['A','B','C'].map(x=>ctl('PAR_'+x,{top:x,ledLeft:true}))));
 left.append(p1,p2);
 
-/* ---------- hoofdgrid ---------- */
+/* ---------- main grid ---------- */
 const main=document.getElementById('main');
 const put=(node,col,row,span)=>{node.style.gridColumn=span?`${col} / span ${span}`:col;node.style.gridRow=row;main.appendChild(node);return node;};
-const colOf=i=>i<8?i+1:i+2;   // GP-index 0..15 -> gridkolom (kolom 9 = midden)
-// LCD's
+const colOf=i=>i<8?i+1:i+2;   // GP index 0..15 -> grid column (column 9 = middle)
+// LCDs
 const cells=[[],[]];
 [0,1].forEach(d=>{const l=el('div','lcd'),scr=el('div','scr');l.appendChild(scr);
   for(let y=0;y<2;y++){const row=el('div','row');scr.appendChild(row);
     for(let x=0;x<40;x++){const s=el('span','c',' ');row.appendChild(s);cells[y][d*40+x]=s;}}
   put(l,d?10:1,1,8);});
-// encoders + GP-knoppen
+// encoders + GP buttons
 const GP_SIDE=['A','B','C','D','E','F','G','H','1','2','3','4','5','6','7','8'];
 const GP_LBL=['MIXER','EVENT','MODE','DIRECTION','DIVIDER','LENGTH','TRANSPOSE','GROOVE',
               'TRIGGER','FX','MANUAL','MORPH','BPM','SAVE','MIDI','SYS EX'];
@@ -830,18 +834,18 @@ for(let i=0;i<16;i++){
   put(encoder('GP'+(i+1)),colOf(i),2);
   put(ctl('GP'+(i+1),{top:String(i+1),side:GP_SIDE[i],label:GP_LBL[i]}),colOf(i),3);
 }
-// midden: BEAT + datawheel
+// middle: BEAT + datawheel
 const beat=el('div','ctl beat');const bl=el('div','led');ledEls['BEAT']=bl;
 beat.append(el('div','topl'),bl,el('div','lbl','BEAT'));main.appendChild(beat);
 const dw=encoder('DATAWHEEL',true);dw.classList.add('dw');main.appendChild(dw);
-// onderste rijen links (kolom 1..7)
+// bottom rows left (column 1..7)
 [['EDIT','EDIT',1],['MUTE','MUTE',1],['PATTERN','PATTERN',1],['SONG','SONG',1],
  ['COPY','COPY',0],['PASTE','PASTE',0],['CLEAR','CLEAR',0]]
  .forEach(([n,l,led],i)=>put(ctl(n,{label:l,led:!!led}),i+1,4));
 [['STEP_VIEW','STEP VIEW',1],['SOLO','SOLO',1],['FAST','FAST',1],['ALL','ALL',1],
  ['MENU','MENU',0],['SELECT','SELECT',0],['EXIT','EXIT',0]]
  .forEach(([n,l,led],i)=>put(ctl(n,{label:l,led:!!led}),i+1,5));
-// onderste rijen rechts (kolom van GP10..16)
+// bottom rows right (columns of GP10..16)
 [['DOWN','▽',0],['UP','△',0],['UTILITY','UTILITY',0],['TRACK_SEL','F1',0],['LIVE','F2',0],
  ['RECORD','F3',0],['SAVE_ALL','F4',0]]
  .forEach(([n,l,led],i)=>put(ctl(n,{label:l,led:!!led}),colOf(9+i),4));
@@ -849,7 +853,7 @@ const dw=encoder('DATAWHEEL',true);dw.classList.add('dw');main.appendChild(dw);
  ['PLAY','▷',1],['FWD','▷▷',1]]
  .forEach(([n,l,led],i)=>put(ctl(n,{label:l,led:!!led}),colOf(9+i),5));
 
-/* ---------- LCD tekenen ---------- */
+/* ---------- draw the LCDs ---------- */
 const prev=[[],[]];let prevCs=-1;
 let prevSaver=false;
 function drawLcd(lcd,cs){
@@ -863,12 +867,12 @@ function drawLcd(lcd,cs){
       e.textContent=c===0x7e?'→':c===0x7f?'←':(c>=32&&c<127?String.fromCharCode(c):' ');}}
   prevCs=cs;
 }
-/* ---------- schalen naar vensterbreedte ---------- */
+/* ---------- scale to the window width ---------- */
 function fit(){const w=document.getElementById('wrap');w.style.transform='';
   const s=Math.min(1,(innerWidth-36)/w.scrollWidth);w.style.transform=`scale(${s})`;}
 addEventListener('resize',fit);setTimeout(fit,0);
 
-/* ---------- toetsenbord ---------- */
+/* ---------- keyboard ---------- */
 addEventListener('keydown',e=>{if(e.repeat&&!['ArrowLeft','ArrowRight'].includes(e.key))return;
   if(e.key==='ArrowRight')api('/api/enc?e=DATAWHEEL&d=1&wait=0');
   else if(e.key==='ArrowLeft')api('/api/enc?e=DATAWHEEL&d=-1&wait=0');
@@ -883,7 +887,7 @@ es.onmessage=ev=>{const s=JSON.parse(ev.data);drawLcd(s.lcd,s.charset);
   const st=document.getElementById('st');st.textContent=s.online?'online':'offline';st.className=s.online?'on':'off';
   for(const[n,[g,r]]of Object.entries(s.leds)){const e=ledEls[n];if(!e)continue;
     e.className='led '+(n.startsWith('GP')?(g&&r?'y':g?'g':r?'r':''):(g?'on':''));}};
-es.onerror=()=>{const st=document.getElementById('st');st.textContent='server weg';st.className='off';};
+es.onerror=()=>{const st=document.getElementById('st');st.textContent='server gone';st.className='off';};
 </script></body></html>
 """
 
