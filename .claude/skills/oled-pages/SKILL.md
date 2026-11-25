@@ -48,10 +48,10 @@ The user likes seeing *where and how a track runs* (gates + play position) – k
 - MIOS32 sources use CRLF line endings: edit with Python/perl in binary mode.
 
 ## Workflow (always do all steps)
-0. **Emulator first** (no hardware needed): `cd myproject/emu && make && NO_BROWSER=1 ./run.sh &` - the real firmware on the Mac, panel on http://127.0.0.1:8766/oled; tools with `MBSEQ_PANEL=http://127.0.0.1:8766`. Flash the real SEQ only when the user wants it on the hardware (see `myproject/emu/README.md`).
+0. **Develop in the emulator only** (user's choice, 2026-11-25: the real SEQ runs the official firmware V4+.098 from upstream/master again, with the old LCD panel on :8765 - do NOT flash it): `cd myproject/emu && make && NO_BROWSER=1 ./run.sh &` - the real firmware on the Mac, panel on http://127.0.0.1:8766/oled; tools with `MBSEQ_PANEL=http://127.0.0.1:8766`. Flash the real SEQ only when the user explicitly asks (see `myproject/emu/README.md`).
 1. Host preview where possible: `cd myproject/oled_gui && cc -I host_stub -I ../../modules/glcd_font -I . -o host_test2 host_test2.c oled_gui2.c ../../modules/glcd_font/glcd_font_normal.c ../../modules/glcd_font/glcd_font_small.c`.
 2. Build: `cd apps/sequencers/midibox_seq_v4 && export PATH=$HOME/toolchains/arm-pkg/Payload/bin:$PATH MIOS32_PATH=<repo> MIOS32_FAMILY=STM32F4xx MIOS32_PROCESSOR=STM32F407VG MIOS32_BOARD=MBHP_CORE_STM32F4 MIOS32_LCD=universal && make` (no -j).
-3. Flash: stop the panel (`pkill -INT -f mbseq_panel.py`), `python3 -u myproject/tools/mios32_flash.py flash project.hex`, restart the panel in the background (`cd myproject/panel && nohup python3 -u mbseq_panel.py --no-browser > /tmp/panel.log 2>&1 &`).
+3. (Only on request) Flash: stop the panel (`pkill -INT -f mbseq_panel.py`), `python3 -u myproject/tools/mios32_flash.py flash project.hex`, restart the panel in the background (`cd myproject/panel && nohup python3 -u mbseq_panel.py --no-browser > /tmp/panel.log 2>&1 &`).
 4. Check on the device: `myproject/tools/oled_walk.py out.png "label|b:MENU+GP10;b:GP10" ...` (b: button, e:ENC:d encoder) or `oled_walkmenu.py` for all 42 pages; look at every PNG. EXIT toggles to the Page Menu (MENU is only a hold button).
 5. Do not trigger actions that change the user's data (Save, Delete, Clear, Copy, mutes) – or undo them right away and say so.
 6. Commit per fix (English message, Co-Authored-By line), update `myproject/LOGBOOK.md` / `oled_gui/DESIGN.md` when rules or structure change.
