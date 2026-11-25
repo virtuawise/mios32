@@ -1,0 +1,57 @@
+# Full sequencer - DigiKey order (4 column PCBs + 1 left PCB)
+
+Counts from `column/column.kicad_pcb` (x4) and `left/left.kicad_pcb` (x1) plus spares. Stock and prices checked on the DigiKey product pages on 2026-11-25 ("live"), or from search results ("snippet", can lag). Prices USD at the quantity shown; "est." = estimated.
+
+Paste `digikey_bulk_full.txt` into DigiKey's Bulk Add.
+
+| Qty | Part | What | Unit | Total | Stock check |
+|---|---|---|---|---|---|
+| 4 | NHD-3.12-25664UCY2-ND | OLED 3.12in 256x64 yellow | $38.2 | $152.68 | live 832 in stock |
+| 18 | 74HC165D,653 | 74HC165 SOIC-16 (15 + 3 spare), Nexperia - the TI SN74HC165DR is out of stock | $0.223 | $4.01 | live 22737 |
+| 3 | SN74HC595DR | 74HC595 (2 + 1) | $0.65 | $1.95 | live 39725 |
+| 2 | SN74AHCT1G125DBVR | LED data buffer (1 + 1) | $0.14 | $0.28 | live 68462 |
+| 2 | AP2112K-3.3TRG1 | 3.3 V LDO (1 + 1) | $0.29 | $0.58 | live 401213 |
+| 2 | MCP100T-300I/TT | reset supervisor (1 + 1) | $0.42 | $0.84 | live 10320 |
+| 140 | ERJ-3EKF1002V | 10k 0603 (125 + 15), Panasonic - Yageo RC0603FR-0710KL out of stock | $0.0195 | $2.73 | snippet ~857k |
+| 20 | RC0603FR-07680RL | 680 R 0603 (14 + 6) | $0.028 | $0.56 | live 19340 |
+| 5 | ERJ-3EKF33R0V | 33 R 0603 (1 + 4), Panasonic - Yageo out of stock | $0.1 | $0.50 | snippet 177k, price est. |
+| 85 | CC0603KRX7R9BB104 | 100 nF 50 V X7R 0603 (72 + 13), Yageo - Samsung CL10B104 out of stock | $0.06 | $5.10 | snippet ~4.8M, price est. |
+| 5 | CC0603KRX5R7BB105 | 1 uF 16 V X5R 0603 (2 + 3), Yageo - Samsung CL10A105 out of stock | $0.19 | $0.95 | snippet 484k |
+| 12 | GRM21BR61E106KA73L | 10 uF 25 V X5R 0805 (9 + 3), Murata - Samsung CL21A106 out of stock | $0.17 | $2.04 | DigiKey substitute table 1.67M |
+| 6 | CL21A226MPQNNNE | 22 uF 10 V X5R 0805 (4 + 2) - CL21A226MAQNNNE is obsolete | $0.19 | $1.14 | live 18796 |
+| 2 | EEE-FK1A221XP | 220 uF 10 V, 6.3 mm can (1 + 1) - the -FK1A221P is 8 mm wide | $0.77 | $1.54 | live 25006 |
+| 6 | 1528-4960-ND | SK6812MINI-E reverse mount, 10-pack (53 needed, 60 supplied) | $2.95 | $17.70 | live 358 |
+| 6 | 1528-4954-ND | Kailh MX brown, pack (53 needed + spares) - CHECK pack size | $6.95 | $41.70 | live only 9 in stock |
+| 6 | 1528-5008-ND | smoked DSA caps, 10-pack (53 + spares) | $5.95 | $35.70 | live 24 |
+| 15 | 3FTH9 | MEC 3FTH9 small key (13 + 2) | $2.93 | $44.01 | live 7082 (679-3730-5-ND) |
+| 10 | 679-2120-ND | MEC 1T09 black cap (8 select-mode keys + 2) | $0.754 | $7.54 | live 540 |
+| 26 | 97730506330R | Wurth WA-SMSI M1.6 standoff 5 mm (22 stack holes + 4) - CHECK count against the plate stack | $0.81 | $21.06 | live 1428 (732-13685-1-ND) |
+| 22 | 61201021621 | box header 2x5 (20 + 2) | $0.443 | $9.75 | live 58923 |
+| 2 | 61201621621 | box header 2x8, core J15A (1 + 1) | $0.6 | $1.20 | live 6344 |
+| 10 | 61300311121 | pin header 1x3 (9 + 1) | $0.107 | $1.07 | live 199350 |
+| 5 | 61302011121 | pin header 1x20, OLED (4 + 1) | $1.16 | $5.80 | live 5819 |
+| 2 | B2P-VH(LF)(SN) | JST VH header 2-pin (1 + 1) | $0.16 | $0.32 | snippet 66186 |
+| 2 | VHR-2N | JST VH housing (1 + 1) | $0.11 | $0.22 | snippet 104981 |
+| 6 | SVH-21T-P1.1 | JST VH crimp (2 + spare) | $0.081 | $0.49 | snippet |
+
+**Total about $361** (excl. shipping and tax).
+
+## Totals per function
+- 15 x 74HC165 (3 per column PCB x 4 + 3 on the left), 2 x 74HC595, 53 x SK6812MINI-E, 53 x MX switch + cap, 17 x EC11E encoder (4 per column x 4 + datawheel), 13 x 3FTH9, 4 x OLED.
+
+## Not available at DigiKey (order elsewhere)
+| Qty | Part | Where / remark |
+|---|---|---|
+| 19 | Alps EC11E15244G1 (vertical, 20 mm shaft, push) + 19 knobs | DigiKey 0 in stock; TME had it |
+| 5 | APEM 1T16 frosted white cap | RS 495-2501 (select keys S9-S13: Solo/Metr./Loop/Rec./Live) |
+| 5 | LED 2x3x4 mm rectangular THT (4 yellow, 1 red) for the lit 3FTH9 keys | not sourced yet |
+| 1 | 3 mm red LED (beat) + 5 mm spacer | any |
+| ~20 | IDC sockets 2x5, 1 x 2x8 and ~10-way ribbon cable (about 1-2 m) | length depends on the case |
+| 1 | 5 V supply, at least 4 A | for 53 LEDs + 4 OLEDs |
+| 1 | switch plate (FR4 1.5 mm) and front plate (aluminium) | `panel/` files |
+| - | M1.6 x 10 screws, 2.5 mm pin spacers for the OLED pins | |
+
+## Things to check before ordering
+- Kailh 4954: only 9 packs in stock; confirm it is a 10-pack before counting on 53 switches.
+- Standoffs: 22 assumes one per stack hole (6 on the left PCB, 4 per column PCB).
+- R26-R33 on the left PCB are left unfitted (select keys without LED), so the LED holes stay empty there.
