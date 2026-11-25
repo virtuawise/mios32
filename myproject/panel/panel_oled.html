@@ -10,6 +10,7 @@ body{margin:0;background:#0c0d0f;color:#ccc;font:11px -apple-system,Helvetica,Ar
    Off: almost black. On: the whole cap glows in the LED colour (light stays in the cap: no pudding skirt). */
 .btn{position:absolute;width:50px;height:40px;border-radius:6px;background:radial-gradient(ellipse at 50% 40%,#2a2c30 0%,#1a1b1e 70%,#141517 100%);border:1px solid #0a0a0b;box-sizing:border-box;box-shadow:0 2px 3px #000c,inset 0 1px 0 #3a3c41;cursor:pointer;touch-action:none}
 .btn.on{background:radial-gradient(ellipse at 50% 45%,color-mix(in srgb,var(--c,#FFB547) 80%,#fff) 0%,color-mix(in srgb,var(--c,#FFB547) 55%,#111) 55%,color-mix(in srgb,var(--c,#FFB547) 30%,#0b0b0c) 100%);box-shadow:0 0 10px color-mix(in srgb,var(--c,#FFB547) 60%,transparent),inset 0 1px 0 #ffffff40}
+.btn.play{box-shadow:0 0 16px 3px #ffffffcc,0 0 4px #fff !important}
 .btn.page{background:radial-gradient(ellipse at 50% 45%,#fffaf2 0%,#bfb3a0 55%,#4d473f 100%);box-shadow:0 0 10px #FFF0DA88}
 /* front plate: one cutout per row of keys (panel material only between rows and groups) */
 .btn.small{border-radius:3px;border-color:#2a2c30;box-shadow:0 1px 2px #000c,inset 0 0 0 1px #ffffff14}
@@ -194,7 +195,8 @@ function update(s){
     else if(!oledReal[d]) drawOled(d);
   }
   for(const[n,[g,r]]of Object.entries(s.leds)){
-    if(n.startsWith('GP')){const b=btnEls[n];if(b)b.classList.toggle('on',!ownLayout&&!!(g||r));continue;}   // GP buttons follow the sequencer on all pages (the OLEDs no longer show the play step)
+    if(n.startsWith('GP')){const b=btnEls[n];if(b){const play=!ownLayout&&!!r&&!g;   // the firmware shows the running step in the other LED colour (red) than triggered steps (green)
+      b.classList.toggle('on',!ownLayout&&!!(g||r));b.classList.toggle('play',play);b.style.setProperty('--c',play?'#ffffff':PAL.amber);}continue;}   // GP buttons follow the sequencer on all pages (the OLEDs no longer show the play step)
     const b=btnEls[n];if(b)b.classList.toggle('on',!!g);}
   if(s.sel_g!==undefined){ for(let i=0;i<16;i++){const g=(s.sel_g>>i)&1,r=(s.sel_r>>i)&1,b=trkEls[i];
     b.classList.toggle('on',!!(g||r)); b.style.setProperty('--c', r ? PAL.white : PAL.amber); } }
