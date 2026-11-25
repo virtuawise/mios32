@@ -54,4 +54,4 @@ The user likes seeing *where and how a track runs* (gates + play position) – k
 3. (Only on request) Flash: stop the panel (`pkill -TERM -f "mbseq_panel.py --no-browser"`; SIGINT does not stop a background panel), `python3 -u myproject/tools/mios32_flash.py flash project.hex`, restart the panel in the background (`cd myproject/panel && nohup python3 -u mbseq_panel.py --no-browser > /tmp/panel.log 2>&1 &`).
 4. Check on the device: `myproject/tools/oled_walk.py out.png "label|b:MENU+GP10;b:GP10" ...` (b: button, e:ENC:d encoder) or `oled_walkmenu.py` for all 42 pages; look at every PNG. EXIT toggles to the Page Menu (MENU is only a hold button).
 5. Do not trigger actions that change the user's data (Save, Delete, Clear, Copy, mutes) – or undo them right away and say so.
-6. Commit per fix (English message, Co-Authored-By line), update `myproject/LOGBOOK.md` / `oled_gui/DESIGN.md` when rules or structure change.
+6. Commit per fix (English message, no Co-Authored-By line), update `myproject/LOGBOOK.md` / `oled_gui/DESIGN.md` when rules or structure change.
