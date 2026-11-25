@@ -6,13 +6,19 @@ SEQ  := $(R)/apps/sequencers/midibox_seq_v4
 M    := $(R)/modules
 CC   := clang
 DEFS := -DMIOS32_FAMILY_EMULATION -DMIOS32_BOARD_MBHP_CORE_STM32F4 -DMIOS32_PROCESSOR_STM32F407VG
-INC  := -I host -I $(SEQ)/core -I $(R)/include/mios32 -I $(R)/myproject/oled_gui -I $(M)/sequencer -I $(M)/notestack \
+INC  := -I host -I $(SEQ)/core -I $(R)/include/mios32 -I $(M)/sequencer -I $(M)/notestack \
         -I $(M)/midifile -I $(M)/fatfs/src -I $(M)/file -I $(M)/random -I $(M)/blm -I $(M)/blm_scalar_master -I $(M)/aout \
         -I $(M)/glcd_font -I $(M)/app_lcd/universal -I $(M)/uip_task_standard -I $(M)/uip/uip -I $(M)/ws2812
 CFLAGS := -O1 -g -w -include host/emu_prelude.h $(DEFS) $(INC)
 LDFLAGS := -framework CoreMIDI -framework CoreFoundation -framework CoreServices -lpthread
 
-SEQ_SRC := $(addprefix $(SEQ)/,$(shell grep -oE 'core/[a-z0-9_]+\.c' $(SEQ)/Makefile)) $(R)/myproject/oled_gui/oled_gui2.c
+SEQ_SRC := $(addprefix $(SEQ)/,$(shell grep -oE 'core/[a-z0-9_]+\.c' $(SEQ)/Makefile))
+# the 4-OLED fork (branch four-screens-usb) also needs the OLED renderer; the official firmware does not
+OLED := $(R)/myproject/oled_gui
+ifneq ($(wildcard $(OLED)/oled_gui2.c),)
+  SEQ_SRC += $(OLED)/oled_gui2.c
+  INC += -I $(OLED)
+endif
 MOD_SRC := $(M)/sequencer/seq_bpm.c $(M)/sequencer/seq_midi_out.c $(M)/notestack/notestack.c $(M)/midifile/mid_parser.c \
            $(M)/fatfs/src/ff.c $(M)/fatfs/src/option/ccsbcs.c $(M)/fatfs/src/diskio.c $(M)/file/file.c $(M)/random/jsw_rand.c \
            $(M)/blm/blm.c $(M)/blm_scalar_master/blm_scalar_master.c $(M)/aout/aout.c \
