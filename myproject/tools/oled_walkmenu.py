@@ -2,7 +2,9 @@
 import time, json, urllib.request, zlib, struct
 import os; PANEL=os.environ.get("MBSEQ_PANEL","http://127.0.0.1:8765")   # emulator panel: MBSEQ_PANEL=http://127.0.0.1:8766
 A=PANEL+"/api"
-def get(p): return urllib.request.urlopen(A+p).read()
+def get(p):   # /press, /enc ... change something: POST
+    post = p.startswith(('/press','/enc','/down','/up','/sync','/store'))
+    return urllib.request.urlopen(urllib.request.Request(A+p, method='POST') if post else A+p).read()
 def lcd():
     l=json.loads(get('/state'))['lcd']; return [''.join(chr(c) if 32<=c<127 else '#' for c in r) for r in l]
 def shot():

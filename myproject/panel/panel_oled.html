@@ -52,7 +52,7 @@ body.roundcaps .btn.small,body.roundcaps .cut.scut{border-radius:50%}
 const W=document.getElementById('wrap');
 // LED palette: warm, matches the amber OLEDs. Small keys use standard one-colour 3 mm LEDs (warm white, amber, red).
 const PAL={amber:'#FFB547', white:'#FFF0DA', rec:'#FF5A4E', play:'#9FD89A'};
-const api=p=>fetch(p).catch(()=>{});
+const api=p=>fetch(p,{method:'POST'}).catch(()=>{});
 const NA=new Set(['SCRUB']);
 const el=(c,css,t,p)=>{const e=document.createElement('div');if(c)e.className=c;if(css)e.style.cssText=css;if(t!=null)e.textContent=t;(p||W).appendChild(e);return e;};
 const latched=new Set(), btnEls={};

@@ -1,4 +1,4 @@
-// Emulator: the SEQ's own mios32_config.h, compiled for MIOS32_FAMILY_EMULATION (myproject/emu)
+// Emulator: the SEQ's own mios32_config.h, compiled for MIOS32_FAMILY_EMULATION (emu_macos)
 #ifndef _EMU_MIOS32_CONFIG_H
 #define _EMU_MIOS32_CONFIG_H
 #include "../../../apps/sequencers/midibox_seq_v4/mios32/mios32_config.h"
