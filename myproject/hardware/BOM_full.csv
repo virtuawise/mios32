@@ -26,3 +26,5 @@ Qty,Part,Description,Unit USD,Total USD,Stock check
 2,WM18823-ND,Molex KK396 header 0009652028 (1 + 1),0.24,0.48,live
 2,WM2100-ND,Molex KK396 housing 09-50-3021 (1 + 1),0.10,0.20,live
 6,WM2300-ND,Molex KK396 crimp 08-50-0106 (2 + spare),0.12,0.72,live
+22,61201023021,IDC socket 2x5 for ribbon cable (20 + 2),0.447,9.83,live 39157
+2,61201623021,IDC socket 2x8 for ribbon cable (1 + 1),0.75,1.50,live 31730
