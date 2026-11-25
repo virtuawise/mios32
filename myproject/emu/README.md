@@ -52,5 +52,5 @@ Debug switches: `EMU_STATS=1` (task rates, remote state every ~5 s), `EMU_MIDILO
   (bit 31 lost), on the Mac it becomes -1 and the line is ignored. Harmless, left as is.
 
 ## Branches
-The same emulator is in branch `emulator` (official firmware only, worktree `../mios32_emulator`). The Makefile adds the
+The same emulator is in branch `emulator` as `apps/sequencers/midibox_seq_v4/emu_macos` (official firmware only, worktree `../mios32_emulator`, meant for a pull request upstream). The Makefile adds the
 OLED renderer only when `myproject/oled_gui` exists. Keep emulator fixes in sync in both branches; run one emulator at a time.

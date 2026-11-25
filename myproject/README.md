@@ -17,7 +17,7 @@ Firmware changes live in `apps/sequencers/midibox_seq_v4/core/`: `seq_oled.c/.h`
 | Branch | What |
 |---|---|
 | `four-screens-usb` (this one) | 4-OLED development: firmware changes, OLED renderer, panel, hardware (PCBs, front panel, BOMs), emulator |
-| `emulator` | MIDIbox SEQ in software: the **official** firmware (upstream master) + `myproject/emu` + `myproject/panel` only. Worktree: `../mios32_emulator` |
+| `emulator` | MIDIbox SEQ in software for a pull request to midibox/mios32: the **official** firmware + the same emulator and panel in `apps/sequencers/midibox_seq_v4/emu_macos/` (English, LCD panel only). Worktree: `../mios32_emulator` |
 | `master` | upstream `midibox/mios32` |
 
 The real SEQ runs the official firmware (V4+.098, upstream master); its panel is http://127.0.0.1:8765/. OLED work is
