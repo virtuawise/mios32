@@ -22,6 +22,6 @@
 2, 61201621621, box header 2x8
 10, 61300311121, pin header 1x3
 5, 61302011121, pin header 1x20
-2, B2P-VH(LF)(SN), JST VH header 2-pin
-2, VHR-2N, JST VH housing
-6, SVH-21T-P1.1, JST VH crimp
+2, WM18823-ND, Molex KK396 header 2-pin (0009652028)
+2, WM2100-ND, Molex KK396 housing 2-pin (09-50-3021)
+6, WM2300-ND, Molex KK396 crimp 18-24 AWG (08-50-0106)

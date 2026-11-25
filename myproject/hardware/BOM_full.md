@@ -30,9 +30,9 @@ Paste `digikey_bulk_full.txt` into DigiKey's Bulk Add.
 | 2 | 61201621621 | box header 2x8, core J15A (1 + 1) | $0.6 | $1.20 | live 6344 |
 | 10 | 61300311121 | pin header 1x3 (9 + 1) | $0.107 | $1.07 | live 199350 |
 | 5 | 61302011121 | pin header 1x20, OLED (4 + 1) | $1.16 | $5.80 | live 5819 |
-| 2 | B2P-VH(LF)(SN) | JST VH header 2-pin (1 + 1) | $0.16 | $0.32 | snippet 66186 |
-| 2 | VHR-2N | JST VH housing (1 + 1) | $0.11 | $0.22 | snippet 104981 |
-| 6 | SVH-21T-P1.1 | JST VH crimp (2 + spare) | $0.081 | $0.49 | snippet |
+| 2 | WM18823-ND | Molex KK396 header 0009652028 (1 + 1) | $0.24 | $0.48 | live |
+| 2 | WM2100-ND | Molex KK396 housing 09-50-3021 (1 + 1) | $0.10 | $0.20 | live |
+| 6 | WM2300-ND | Molex KK396 crimp 08-50-0106 (2 + spare) | $0.12 | $0.72 | live |
 
 **Total about $361** (excl. shipping and tax).
 
