@@ -119,10 +119,12 @@ for d in range(4):
     for y in ROWS:
         for x in CX[4 * d:4 * d + 4]:
             rrect(P, x, y, 14.0, 14.0, 0.3)                                    # MX plate cut-out 14.0 x 14.0
-    # one opening per column for the Newhaven module (89.2 x 44.0 mm, sits 2.5 mm above the PCB and passes the plate)
-    # and the 4 EC11E bodies below it (a 0.2 mm web between them would be useless); 1.8 mm webs between the columns
-    y0, y1 = BOARD_Y - 0.5, ENC_Y + 7.0
-    rrect(P, OLED_C[d][0], (y0 + y1) / 2, 89.6, y1 - y0, 1.0)
+# one long opening for the four Newhaven modules (89.2 x 44.0 mm, 2.5 mm above the PCB, passing the plate) and the 4 EC11E bodies
+# below them: the 1.4 mm webs between separate windows are below the 3 mm minimum that JLCPCB accepts for slot spacing.
+# Bottom edge 6.8 mm below the encoder centre so the web to the key windows below is >= 3 mm.
+y0, y1 = BOARD_Y - 0.5, ENC_Y + 6.8
+xa, xb = OLED_C[0][0] - 44.8, OLED_C[3][0] + 44.8
+rrect(P, (xa + xb) / 2, (y0 + y1) / 2, xb - xa, y1 - y0, 1.0)
 for x in LXc:
     rrect(P, x, TR_Y, 14.0, 14.0, 0.3)
 for r, row in enumerate(SMALL):
