@@ -4,6 +4,8 @@
 import os, sys, math, pcbnew
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from boardlib import OX, OY, LIB
+EXT = 2.0                                         # extra border all round (JLCPCB wants >= 3 mm from every cut-out to the edge)
+OX, OY = OX + EXT, OY + EXT                       # design coordinates stay the same, the outline grows around them
 D = os.path.dirname(os.path.abspath(__file__))
 MM = 62 / 19.05                                   # px per mm (panel_oled.html)
 PW, PH = 1545 / MM, 470 / MM                      # #wrap 1545 x 470 px
@@ -71,7 +73,7 @@ def row_cut(b, xs, y):
 
 # ================================ front panel ================================
 F = new_board()
-rrect(F, PW / 2, PH / 2, PW, PH, CORNER)
+rrect(F, PW / 2, PH / 2, PW + 2 * EXT, PH + 2 * EXT, CORNER)
 for d in range(4):
     for y in ROWS:
         row_cut(F, CX[4 * d:4 * d + 4], y)
@@ -114,7 +116,7 @@ set_paper(os.path.join(D, "front.kicad_pcb"), "A2")
 
 # ================================ switch plate ================================
 P = new_board()
-rrect(P, PW / 2, PH / 2, PW, PH, CORNER)
+rrect(P, PW / 2, PH / 2, PW + 2 * EXT, PH + 2 * EXT, CORNER)
 for d in range(4):
     for y in ROWS:
         for x in CX[4 * d:4 * d + 4]:

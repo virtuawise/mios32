@@ -5,7 +5,7 @@
       "Application": "Pcbnew",
       "Version": "10.0.8"
     },
-    "CreationDate": "2026-11-25T21:12:37+01:00"
+    "CreationDate": "2026-11-26T17:37:56+01:00"
   },
   "GeneralSpecs": {
     "ProjectId": {
@@ -14,8 +14,8 @@
       "Revision": "rev?"
     },
     "Size": {
-      "X": 474.8137,
-      "Y": 144.5113
+      "X": 478.8137,
+      "Y": 148.5113
     },
     "LayerNumber": 2,
     "BoardThickness": 1.6,
@@ -38,16 +38,6 @@
     {
       "Path": "front-B_Cu.gbl",
       "FileFunction": "Copper,L2,Bot",
-      "FilePolarity": "Positive"
-    },
-    {
-      "Path": "front-F_Paste.gtp",
-      "FileFunction": "SolderPaste,Top",
-      "FilePolarity": "Positive"
-    },
-    {
-      "Path": "front-B_Paste.gbp",
-      "FileFunction": "SolderPaste,Bot",
       "FilePolarity": "Positive"
     },
     {

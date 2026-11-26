@@ -10,6 +10,9 @@ OFF = {"left": [((22 + 29) / MM - 13.0, BOARD_Y)],
        "column": [((360 + g * 91.0 * MM + 124) / MM - 45.3, BOARD_Y) for g in range(4)]}
 mm = lambda v: v / 1e6 - 100.0
 
+EXT = 2.0                                         # build_panel.py: panel outline is EXT larger all round
+pmm = lambda v: mm(v) - EXT
+
 def cutouts(path):
     """closed Edge.Cuts shapes as bounding boxes (x0, y0, x1, y1) + circles (cx, cy, d); the largest box is the outline"""
     b = pcbnew.LoadBoard(path)
@@ -17,10 +20,10 @@ def cutouts(path):
     for s in b.GetDrawings():
         if s.GetLayer() != pcbnew.Edge_Cuts: continue
         if s.GetShape() == pcbnew.SHAPE_T_CIRCLE:
-            circles.append((mm(s.GetCenter().x), mm(s.GetCenter().y), 2 * s.GetRadius() / 1e6))
+            circles.append((pmm(s.GetCenter().x), pmm(s.GetCenter().y), 2 * s.GetRadius() / 1e6))
         else:                                         # bounding box without the line width
             bb = s.GetBoundingBox(); w = s.GetWidth() / 2e6
-            segs.append((mm(bb.GetLeft()) + w, mm(bb.GetTop()) + w, mm(bb.GetRight()) - w, mm(bb.GetBottom()) - w))
+            segs.append((pmm(bb.GetLeft()) + w, pmm(bb.GetTop()) + w, pmm(bb.GetRight()) - w, pmm(bb.GetBottom()) - w))
     # group touching segments/arcs into closed shapes
     groups = []
     for s in segs:
@@ -80,7 +83,7 @@ for name, offs in OFF.items():
             elif fp == "MountingHole_2.2mm_M2":
                 cx, cy = mm(f.GetPosition().x) + ox, mm(f.GetPosition().y) + oy
                 if not circ_at(p_circ, cx, cy): fail(name, ref, "stack hole without plate hole", cx, cy)
-                if not [s for s in front.GetFootprints() if math.hypot(mm(s.GetPosition().x) - cx, mm(s.GetPosition().y) - cy) < 0.05]:
+                if not [s for s in front.GetFootprints() if math.hypot(pmm(s.GetPosition().x) - cx, pmm(s.GetPosition().y) - cy) < 0.05]:
                     fail(name, ref, "stack hole without front panel standoff", cx, cy)
                 n["hole"] += 1
             elif fp == "PinHeader_1x20_P2.54mm_Vertical":      # Newhaven: active area centre 21.79 mm below the board top, x = 45.3
@@ -104,7 +107,7 @@ for name, offs in OFF.items():
                 n["tall"] += 1
 # standoffs: pad (4.0 mm) at least 1.0 mm from every front cut-out and from the outline
 for s in front.GetFootprints():
-    x, y = mm(s.GetPosition().x), mm(s.GetPosition().y)
+    x, y = pmm(s.GetPosition().x), pmm(s.GetPosition().y)
     for r in f_box:
         dx = max(r[0] - x, 0, x - r[2]); dy = max(r[1] - y, 0, y - r[3])
         if math.hypot(dx, dy) < 2.0 + 1.0: fail("standoff", s.GetReference(), "too close to a cut-out", round(math.hypot(dx, dy), 2))
