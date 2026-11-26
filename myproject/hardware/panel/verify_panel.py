@@ -41,6 +41,8 @@ def cutouts(path):
 front, f_out, f_box, f_circ = cutouts(os.path.join(D, "front.kicad_pcb"))
 plate, p_out, p_box, p_circ = cutouts(os.path.join(D, "plate.kicad_pcb"))
 err = 0
+PW_, PH_ = 1545 / MM, 470 / MM
+p_box += [(103.0 + 0.0, -EXT, PW_ + EXT, 54.0), (110.0, 54.0, PW_ + EXT, 177 / MM + 6.8)]   # notch of the plate (no plate there)
 def box_at(boxes, x, y):
     return [r for r in boxes if r[0] <= x <= r[2] and r[1] <= y <= r[3]]
 def circ_at(circs, x, y, tol=0.05):

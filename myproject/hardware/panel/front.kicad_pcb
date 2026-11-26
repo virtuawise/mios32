@@ -89,1648 +89,14 @@
 	)
 	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
 		(layer "B.Cu")
-		(uuid "04b29d53-8ee6-479a-b424-28a340ea1f87")
-		(at 564 238.787096)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST28"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "b2b9c1a5-a12d-4061-b276-e4c80ea07e42")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "5d3b448b-b8a7-4be0-8ad3-712ab6836861")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "57c5c307-758e-4d53-ad89-2be4b908c2c8")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "b78fe3ca-90c5-4b96-aa53-004dd10465c9")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "456b9472-cd58-4b43-8f08-231bf8dc155c")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "f3ea90d0-3d89-44ba-9ba4-f04325167abc")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "a7080057-7e95-485c-b84b-8968d3b5b571")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "06eced9b-8d37-44ec-b17e-0825743bc33b")
-		(at 383.512903 209.162903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST14"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "32b2f9e6-9c0c-4389-a8b7-d622e45624b3")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "13175613-ee92-44e3-8536-c1d6c9bd509c")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "a459429d-1306-4781-aefd-76356a7c2ff9")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "9c023b54-e43a-4571-a20e-2d47e07c4181")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "3dfdefc0-a08d-4a15-9770-d364bc95148e")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "d8c8a307-583a-4006-aa7c-457bb76071f3")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "92211ad5-531a-4d41-bbd0-0f55a384d07b")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "07fbc9bf-1079-40bf-8a2c-302f452c8b84")
-		(at 299.912903 185.162903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST11"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "73e3f49d-ed5d-4fe2-8a4d-3e942fdc75b3")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "b488e33c-69e2-4ddf-866e-dad7d0712ca6")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "f71ef6e6-0eda-4600-b209-54ff6171ae3f")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "c35a36db-3f00-437c-b18c-52213571d4da")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "c938ced7-eff4-4619-9054-448f61a73ff4")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "80c510f7-b837-498a-b8cf-bd15c57325ff")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "316021e8-3e08-4aaa-8d48-e1c98f85619d")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "152b06a6-289c-4ff2-b07f-52c44b7275d5")
-		(at 390.912903 209.162903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST17"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "c706d5de-105b-4648-8253-09195df7a72d")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "f7b3c783-cecd-46f3-8319-630c6be56bd4")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "bb69bdc3-18c9-4014-9a8d-c5c1e808a5b7")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "6b15cc39-b356-4efd-ade1-3497f3e09bb7")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "9e8af3ba-5d5f-4139-9ac0-a5b9579815e8")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "4c105954-092a-48da-bf9d-2a7ba1a45477")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "0332eaf0-fd00-4155-bbda-f956fbb1bfaa")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "1b538f88-1ea9-482d-9d76-4468604f169a")
-		(at 296.2 238.787096)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST25"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "f3050511-d495-451e-91b4-f76b00243393")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "e9eb30ce-46cb-4f5f-8dd1-5b2c9c530fc8")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "ecff1517-3d31-42ab-89f9-30bfa62a5c13")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "ce2b5cd1-78e5-4b67-8e6d-f8091bc058c9")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "cd645d74-f90d-42fe-8577-42cf1d5abdf0")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "0aa909fa-7a71-428b-9b42-fb8e4ec8f908")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "41582b50-9b4b-43d8-bf10-bf4ce6472411")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "1c57d30a-3b96-482d-96c7-af3ef2617b62")
-		(at 200.470161 206.662903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST6"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "446e1e9b-8a86-4a10-b992-3be041cc5a79")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "3af4d896-4828-4149-91a6-9a8642b8c47e")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "bb4cf68e-6662-473a-97af-7588ee9d6174")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "c0c50050-4ded-404c-9cc1-1dee93bf4796")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "cba9c5a5-0572-42cb-9a00-ffa649cf72d3")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "61b391fd-cc05-413f-8101-6836f8f47bbb")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "c4ea0572-6f28-486b-992e-34c97fbc529e")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "2280374a-f519-4616-b8fb-781261ad509b")
-		(at 481.912903 209.162903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST21"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "441e8418-a487-4aba-98c4-ba67cfb0a048")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "f50c0b46-428c-4a3b-9191-74eccbec5a33")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "bc07e8db-5187-4a4f-8c8d-aa7c526d833d")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "51defc9b-921c-4678-8292-f8fba75b9520")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "e868f9c3-68d0-4c32-9404-149544f9ab02")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "bc611002-9ecb-41d6-beea-c1a9190c5675")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "c00c63be-2939-430c-9a13-72e4326487fc")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "25ccaca6-120d-42b9-b9d3-229d507d8b1b")
-		(at 565.512903 185.162903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST20"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "48042f89-00b5-4ba3-bfa8-d823a2ec1da6")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "668fd432-a722-4834-92ab-596224c46131")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "b02ff6fc-9b9c-4be7-a9f7-f981e4d7d36b")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "a17dbde3-d31f-4f1c-a162-e4f40029cb45")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "28fe3cbf-400a-4c58-bf26-ba28f8b5a1c4")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "d6860bb5-4d27-4402-8251-e03f714562e8")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "921d3015-6a79-45c3-bbb9-729fe202fca3")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "27fa531b-b28c-43c8-bb38-43b523aefdd7")
-		(at 109.170161 206.662903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST5"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "d80a562f-3e2d-4fba-9958-ed863fb0e652")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "d2017336-34f2-49d3-953c-a2f7a98cdfa1")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "dde43cdd-e8f1-4197-8033-072bd4d2be47")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "37957ede-75ff-4ef7-bb44-02b1c786af02")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "69c35d29-6ef3-415c-9ece-6b07a5213eea")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "d50b6f81-f62a-4ac9-a149-3f17fdd62190")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "9bc831d8-e4da-4850-a4c7-2bcd9450565b")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "34f5c4fc-e891-4466-896b-88fd9169f5db")
-		(at 478.2 238.787096)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST27"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "9878e41f-58a9-4c2d-bc6f-9847a784a23f")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "134024b1-d151-4b52-a0b5-44568cf480de")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "85106f1b-da19-40f7-993d-29217f775daf")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "335c600f-1462-42c1-9031-f92e73360e34")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "c803e397-750f-47c3-afdb-71f12dca4285")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "fdcb2e04-13a3-409f-b536-b6accc80fb58")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "5ebaa897-2b10-4e96-80d0-642f63ccce4a")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "3c042a38-03b4-45b1-9f9f-6a48b5ca613c")
-		(at 565.512903 209.162903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST22"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "354b1fa4-2bae-4e1f-affb-fa29e0b8d458")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "bbbd26ce-6319-4963-b5d6-c3525e84f551")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "92420858-8b9a-400b-b374-13c0b9e40af3")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "da7fa9ef-18ed-4294-88a1-61c3f2d9019a")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "0d6d58f7-c12a-40e7-b2bf-c60cdfffbe39")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "f0408e25-a6e7-4d9d-a1da-0a70d02d5f99")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "7210275f-836c-4989-a1f6-e8c80f834100")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "63ca5d2e-0c7a-41ed-82d6-26e491e23ded")
-		(at 299.912903 209.162903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST13"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "0e40e234-fa57-4203-9fd3-fb6fd4ffe6a4")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "5a779441-637b-43fd-9964-2b9072b2f9b1")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "4c83d1d4-29b8-4704-a8bc-5d0688bfc7ed")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "0fb245be-f496-41dd-9590-9c3ecbd65a6f")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "7ae69625-73b7-4164-b7c3-f87aed42fa76")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "9400a91b-7a68-4176-af8c-003e500da42e")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "ab9b89b1-c226-4407-874e-d24b2201c732")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "64888a53-f5c9-4f88-962b-03f5c27f83ef")
-		(at 292.512903 185.162903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST8"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "3bd8ecfa-1d9b-4a83-adbb-a1e3492b013f")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "48a50d94-c2da-4b0b-a196-01d403d703f7")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "99b1e60f-b25f-4527-b662-1a6a653c20f8")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "d66a818a-ceaa-48b3-bdce-b4f8b7535bef")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "a8178f99-dff7-4ae2-9a9f-fa9358757ba4")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "7f39f37e-f59a-437a-bffe-5ea9fad0238f")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "1934e465-2f91-4087-b592-fddfcd006a8c")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "6959410b-2666-4260-bd57-e792b665fcb8")
-		(at 184.345161 189.412903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST4"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "01ac1fd3-f262-4c6a-8871-daa28a24ccc7")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "1ba3f7a6-60be-46a4-933f-8ad8a1e6523b")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "a189dd74-499b-4141-8f87-41a99e9b5a1f")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "4fb280a4-33e6-49f7-b4f2-752a8d7816d7")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "74b22ff0-87f1-429a-855c-c3ab755d8492")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "1ffe2438-f256-4419-8c09-505f951bd8ad")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "a0e333e8-2278-4a7e-8bca-e6422f664673")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "6cb7921a-6998-4f55-bb1c-4d4467c8d1a2")
-		(at 474.512903 209.162903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST18"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "e448fffc-d270-4615-8dd9-251a132b0d58")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "a628565e-06b7-4388-b09f-f5446c42380d")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "8e75cb74-a6b0-464a-8e14-c88781d8156d")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "2f871b79-2e3e-4b82-8586-b684a205b6a0")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "77dca046-d776-4488-99aa-1e45906ccc5f")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "0bb66107-127d-44e4-a892-ec182a8980bc")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "25daac0a-ca96-42e8-96a3-520f5c3ecb66")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "7b1cb95e-7886-4e1b-a38f-d1f56e13d7d8")
-		(at 292.512903 209.162903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST10"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "b978e696-1ccf-4bde-8575-1392d00cec4e")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "e492c8d6-d95e-41dd-89f1-a478e9315f18")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "da4a5c25-94a8-4a54-9944-76fe1750072a")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "80125106-d585-471b-bf93-6f0c3a395cb1")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "94d2bad1-e3ab-41d0-99d5-7ea05dff2311")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "d2c24370-4e0f-40df-b966-ba68e6580dad")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "7e59e452-7b90-4a3b-905d-5347c8496468")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "7b59d1b3-b179-48e1-ae89-44be009a9538")
-		(at 127.195161 189.412903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST3"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "e1191361-b5f2-4e2a-ad02-319bcc534147")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "420502e3-51ba-40a6-83f4-ea019569797a")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "22efa90e-3505-473e-8b98-6bdeb56eb1b0")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "b31cb6dd-5dae-4c91-be69-ff680f51b9a2")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "3e12e01e-8a34-4950-b724-55b0e60c3de2")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "4407faad-4e21-4ad5-8f17-c7d4d01f6ad5")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "f9e6f226-423e-466c-b2e7-3314cb274312")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "8bb47f4a-d794-448b-bbf7-302aac795b57")
-		(at 190.670161 108.662903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST2"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "1c090d14-26cf-4cde-aa0d-fd7c22f01f07")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "67926d2a-e50a-41ec-b13b-3fe521ff3bcd")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "fff3bc67-f23f-4224-b2fc-1f6c6b5eb92b")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "5f74f55e-9de3-4214-927e-3f8e40c467a4")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "fc0d7009-265a-4bf2-a693-10bc1e8ddaf1")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "0122d8bd-d6f1-403c-9c20-923c28f4e76a")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "c89291b2-b386-4545-ad66-2ce932913c69")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "9105d916-e587-44e0-a3b3-1fa137beb8c9")
-		(at 208.912903 209.162903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST9"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "9dfbe793-829e-4390-89a0-769ed023e31a")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "7d13490f-9d42-409e-8caa-0bf07d7273be")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "faf98f23-1ccb-44ec-93bb-3281211a83e3")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "50b6bf68-5c1d-4fd7-b934-6cd9f900112c")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "585a1cc0-c9a6-4a0d-b1a8-c4e90dbc62b7")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "f9584083-0f8d-4e5c-8d67-fa2982ca2da1")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "a3142ce0-5df1-4f23-bd4c-78526f5b9275")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "9b4704fa-684d-44ca-b4aa-3f4a1e8ef2b0")
+		(uuid "098ff345-f46f-4379-b41f-403062043e67")
 		(at 128.670161 108.662903)
 		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
 		(property "Reference" "ST1"
 			(at 0 3 180)
 			(layer "B.SilkS")
 			(hide yes)
-			(uuid "71f66b1d-596c-41ca-b70c-467638662698")
+			(uuid "25dc2551-bdd9-4227-9d71-d7e93d07bb82")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -1742,7 +108,7 @@
 		(property "Value" "97730506330R"
 			(at 0 -3 180)
 			(layer "B.Fab")
-			(uuid "e45ce347-d866-4c5f-9045-f85968298f60")
+			(uuid "141c1c7e-140e-4623-ad78-d3c567209888")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -1755,7 +121,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "af381753-21ed-4b4d-a1f4-d97a301ecb86")
+			(uuid "ac15dac0-3695-4368-b133-7071c0125b89")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1767,7 +133,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "591a98c3-cba5-4789-a07f-0cdced38b24d")
+			(uuid "ab45669c-4feb-4d4c-a5cc-c77fc2d805b1")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1786,7 +152,7 @@
 			)
 			(fill no)
 			(layer "B.CrtYd")
-			(uuid "b37ed0c3-61f5-42d4-9432-20153624d0ca")
+			(uuid "8edb49e1-cc0e-483b-a368-1ffd04959e52")
 		)
 		(fp_circle
 			(center 0 0)
@@ -1797,26 +163,112 @@
 			)
 			(fill no)
 			(layer "B.Fab")
-			(uuid "d8c16984-9aef-4b3a-b938-ba72101c425b")
+			(uuid "61d11096-bdfa-4c33-9bce-5eb4293d0b9e")
 		)
 		(pad "1" smd circle
 			(at 0 0)
 			(size 4 4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "cdeb96d6-fec0-4c6e-947a-671d4c7089e0")
+			(uuid "1ab94a3c-03fd-412f-8536-bbbcad7e24b7")
 		)
 		(embedded_fonts no)
 	)
 	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
 		(layer "B.Cu")
-		(uuid "9b67a550-fb1c-478a-bf62-a53beed59a26")
+		(uuid "0f45a461-1705-45fc-9399-48e39428c070")
+		(at 474.512903 209.162903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST18"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "cda7da4f-3101-446a-9bfc-e6d11e24c1e8")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "e68f9160-28fa-4586-a4d7-d058cdac72f6")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "fde80958-d4bc-43c3-aede-17356da7cf1a")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "346a5ef5-55d6-447f-9082-ed2eaa11450c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "b94a541e-3e91-4cde-a5ce-3b8890038698")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "ad663ae2-b67b-4b28-ac7b-b2616e088f1b")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "fadf2638-7e88-4ee0-b884-fd8e2129e3e0")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "12b4fb8f-3f9b-4190-8a0a-cd248f1851c0")
 		(at 572.913709 202)
 		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
 		(property "Reference" "ST30"
 			(at 0 3 180)
 			(layer "B.SilkS")
 			(hide yes)
-			(uuid "5520b281-d421-4446-8da8-51fe87b4846a")
+			(uuid "b7c2681e-e1f8-473d-9169-b8bf240a6199")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -1828,7 +280,7 @@
 		(property "Value" "97730506330R"
 			(at 0 -3 180)
 			(layer "B.Fab")
-			(uuid "0c6ff3cc-8efe-4211-a861-ee6190f353e8")
+			(uuid "cd161c7a-d2b9-4df9-af59-4aeb6fdcabe2")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -1841,7 +293,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "8d3d1522-a8df-49ba-9413-42faea63373f")
+			(uuid "6ac0c891-839a-46dd-bb6e-388d010e9ca4")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1853,7 +305,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "be4700a0-b2ca-477f-bac9-c81ed4f497b2")
+			(uuid "4e2ad872-b4a4-43d9-a566-c3b8fb681991")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1872,7 +324,7 @@
 			)
 			(fill no)
 			(layer "B.CrtYd")
-			(uuid "3b4bfc6d-bacb-4ebf-afe1-ec74a1d1ec66")
+			(uuid "1adadfc4-583c-443a-897b-e27528cf6993")
 		)
 		(fp_circle
 			(center 0 0)
@@ -1883,26 +335,26 @@
 			)
 			(fill no)
 			(layer "B.Fab")
-			(uuid "b8877f7c-ed0c-478c-b86f-5e3feec4243e")
+			(uuid "e15ec893-846c-4a85-bf44-6763c258c824")
 		)
 		(pad "1" smd circle
 			(at 0 0)
 			(size 4 4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "7563e4b5-125d-4142-90c7-b4a9335d5515")
+			(uuid "5e49a07c-f1b9-4c7c-8bf3-5e6aa3b6530a")
 		)
 		(embedded_fonts no)
 	)
 	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
 		(layer "B.Cu")
-		(uuid "9fae3137-67a4-46a3-a0f5-c59b3878fb83")
-		(at 387.2 238.787096)
+		(uuid "14d9f176-1f4f-418e-a1f0-829de3ed40a9")
+		(at 184.345161 189.412903)
 		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST26"
+		(property "Reference" "ST4"
 			(at 0 3 180)
 			(layer "B.SilkS")
 			(hide yes)
-			(uuid "1748f254-91e4-42de-8c6c-5051fcbe5038")
+			(uuid "c14907a0-c6b6-433e-9e97-4e903410cbea")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -1914,7 +366,7 @@
 		(property "Value" "97730506330R"
 			(at 0 -3 180)
 			(layer "B.Fab")
-			(uuid "23e1ab62-69de-431a-b9c2-28de5fe465d4")
+			(uuid "32713318-7905-486d-b357-640fa361d3dd")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -1927,7 +379,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "b13d789d-2a7a-49a9-b822-330c06b35d57")
+			(uuid "0dfc771e-f163-4984-8fc4-ae3c373bdc2d")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1939,7 +391,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "6c5c4de0-96de-4697-8896-2d6f5cf45313")
+			(uuid "5b78a15c-b14c-4e7f-affc-5181b28bc092")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1958,7 +410,7 @@
 			)
 			(fill no)
 			(layer "B.CrtYd")
-			(uuid "66ccf862-2a87-434f-ae00-536cac4725e8")
+			(uuid "ea8fe2c3-5e4e-4e0b-9814-844bdaa5f159")
 		)
 		(fp_circle
 			(center 0 0)
@@ -1969,26 +421,26 @@
 			)
 			(fill no)
 			(layer "B.Fab")
-			(uuid "1b8fdc3f-4785-4277-9965-e1a01d2881f8")
+			(uuid "f2aa16d1-7e7e-46ee-be65-1278eb9b6a99")
 		)
 		(pad "1" smd circle
 			(at 0 0)
 			(size 4 4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "0f1c91fa-3810-41c4-a7dd-97fa1dd678aa")
+			(uuid "4c6e16bd-94ad-4cb2-ada7-528b49da98d1")
 		)
 		(embedded_fonts no)
 	)
 	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
 		(layer "B.Cu")
-		(uuid "afc15d7a-2b48-468b-a821-069002d395f4")
-		(at 202 238.787096)
+		(uuid "1b0bd24d-3635-4576-8afb-09e68eecb65c")
+		(at 200.470161 206.662903)
 		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST24"
+		(property "Reference" "ST6"
 			(at 0 3 180)
 			(layer "B.SilkS")
 			(hide yes)
-			(uuid "b13cb4d4-9383-4031-ac22-1ed541a74858")
+			(uuid "f9264152-e351-404d-adb9-25b241e4ce15")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -2000,7 +452,7 @@
 		(property "Value" "97730506330R"
 			(at 0 -3 180)
 			(layer "B.Fab")
-			(uuid "99fc2bd1-142c-4c8c-8ee3-468bd64492c9")
+			(uuid "80f7efe0-cfa7-43d2-8af4-6d95cbb9e14f")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -2013,7 +465,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "c7912432-2c9f-4cc9-9ea9-0b3d55f86151")
+			(uuid "a9f5c857-e7e5-4ec4-8f6f-9ecad0926d5d")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2025,7 +477,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "845121b8-48d5-4099-8ba3-bee239773147")
+			(uuid "323f534c-3136-4620-9877-d7be8864dae3")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2044,7 +496,7 @@
 			)
 			(fill no)
 			(layer "B.CrtYd")
-			(uuid "19066e84-7620-41fc-a245-e11154dc004e")
+			(uuid "294250f2-aea9-47ec-acd3-9a3747f7d4f6")
 		)
 		(fp_circle
 			(center 0 0)
@@ -2055,26 +507,26 @@
 			)
 			(fill no)
 			(layer "B.Fab")
-			(uuid "c94824e6-2d3b-4114-8e44-a843520f59a2")
+			(uuid "0c17ccd9-d1c7-4415-a355-91975c233d69")
 		)
 		(pad "1" smd circle
 			(at 0 0)
 			(size 4 4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "53e41fbf-d072-4c46-8521-14296e2cc49b")
+			(uuid "ffe5300b-b1e1-4653-9a9a-1dcb2a046ac3")
 		)
 		(embedded_fonts no)
 	)
 	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
 		(layer "B.Cu")
-		(uuid "b825b85c-bb0c-4126-a791-8ea0597eb525")
-		(at 390.912903 185.162903)
+		(uuid "1bbd82c9-d0d3-4661-a8e5-30d868d4186b")
+		(at 390.912903 209.162903)
 		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST15"
+		(property "Reference" "ST17"
 			(at 0 3 180)
 			(layer "B.SilkS")
 			(hide yes)
-			(uuid "7f88bf54-4432-4c94-a1d7-c8de3e1c1d5c")
+			(uuid "976bfbf2-bf43-4723-a653-a3b3326330c1")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -2086,7 +538,7 @@
 		(property "Value" "97730506330R"
 			(at 0 -3 180)
 			(layer "B.Fab")
-			(uuid "6a91f47c-7411-4467-9d4d-744537ca6e85")
+			(uuid "a305958b-d98b-411b-9f74-eb898b4fe27f")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -2099,7 +551,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "6eced286-1cab-415c-8816-c70404f9f677")
+			(uuid "be2fdb7a-0e5d-48b6-b0fa-6d39e9b86075")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2111,7 +563,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "a717256d-415e-4948-999f-a68721add1a5")
+			(uuid "8282c11b-bbb9-41a1-8053-61fa682d5fcf")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2130,7 +582,7 @@
 			)
 			(fill no)
 			(layer "B.CrtYd")
-			(uuid "d3d8aff2-ba75-40af-9291-2df4464b7289")
+			(uuid "4373edab-6ae9-40bd-85e2-5834eab31986")
 		)
 		(fp_circle
 			(center 0 0)
@@ -2141,198 +593,26 @@
 			)
 			(fill no)
 			(layer "B.Fab")
-			(uuid "3c1992d4-14f3-4175-9c18-7f628eb91827")
+			(uuid "0f4a6d76-8c56-4196-aaa9-b08ac3145c66")
 		)
 		(pad "1" smd circle
 			(at 0 0)
 			(size 4 4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "6e5bddc6-0b04-4c8b-80a1-6161af55a95e")
+			(uuid "a5ecd8fa-e3a5-4a12-9f2f-8775ed3dd53b")
 		)
 		(embedded_fonts no)
 	)
 	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
 		(layer "B.Cu")
-		(uuid "ba4a37ff-a360-465d-9d02-5d4c9aa760e8")
-		(at 481.912903 185.162903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST19"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "e6f3d471-935c-422f-a058-510ac92e0550")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "d8b43ee9-e8b8-484e-8663-f31ee31ebfb1")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "2a6a3a25-2e96-4b2c-81f6-ab415416ee51")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "4bfeff14-3c09-4089-a128-86dd3aac413f")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "ac2b5c26-34cb-4e8e-a4c2-aef24e1300e0")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "eabbc414-af3a-4494-8a94-918dee82b009")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "a4ac29e9-742e-4ebb-b32b-09c0e8ab4156")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "c4d5d706-4234-4226-884a-d733e469ded0")
-		(at 474.512903 185.162903)
-		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
-		(property "Reference" "ST16"
-			(at 0 3 180)
-			(layer "B.SilkS")
-			(hide yes)
-			(uuid "10573e89-c02d-4e34-a3f1-c8ddb7f27dae")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Value" "97730506330R"
-			(at 0 -3 180)
-			(layer "B.Fab")
-			(uuid "2a1b0550-71da-4a33-a1ee-fc7db7e7f4ad")
-			(effects
-				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "d0394a71-5449-4d27-8451-a0efd9f0b065")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(property "Description" ""
-			(at 0 0 180)
-			(layer "B.Fab")
-			(hide yes)
-			(uuid "dd207fc1-cf38-471d-ab47-bad62104b156")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify mirror)
-			)
-		)
-		(attr smd)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 2.3 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.CrtYd")
-			(uuid "36d6b005-bb0c-49f0-b7d9-8fef2edac73a")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.65 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "B.Fab")
-			(uuid "81818dcd-4dae-4907-b1da-8aea1f19b1fa")
-		)
-		(pad "1" smd circle
-			(at 0 0)
-			(size 4 4)
-			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "e49f3284-7c4b-412a-8eee-deab1262a456")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
-		(layer "B.Cu")
-		(uuid "d4f02bf1-fcbf-4b6f-bc7b-57fb615a4a36")
-		(at 572.913709 162)
+		(uuid "28540dc8-10ff-4db5-b987-a81e928ba4b1")
+		(at 572.913709 182)
 		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
 		(property "Reference" "ST29"
 			(at 0 3 180)
 			(layer "B.SilkS")
 			(hide yes)
-			(uuid "adb0b6a6-b401-4955-b870-35fbff11eebb")
+			(uuid "b6e92255-dbf3-45d5-bf62-e38635782de3")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -2344,7 +624,7 @@
 		(property "Value" "97730506330R"
 			(at 0 -3 180)
 			(layer "B.Fab")
-			(uuid "56ad2d2c-f867-4353-9f43-8f4194486fd9")
+			(uuid "6a92d4e6-447e-4c75-bcd9-d0143b2ada75")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -2357,7 +637,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "4a96ab8c-d7b0-4b15-baaa-bd494363f013")
+			(uuid "ebf11763-677c-4f1b-a12f-73d25f22da23")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2369,7 +649,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "3d248d64-472a-4a79-ab5a-095a49d7c047")
+			(uuid "b9b3e7fb-55aa-40fd-8ee2-61fd9a4ea62a")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2388,7 +668,7 @@
 			)
 			(fill no)
 			(layer "B.CrtYd")
-			(uuid "685f981b-e4bd-4682-b458-743e70c00b60")
+			(uuid "b1c750d2-3d91-4c2c-92e2-72447d413bb7")
 		)
 		(fp_circle
 			(center 0 0)
@@ -2399,26 +679,112 @@
 			)
 			(fill no)
 			(layer "B.Fab")
-			(uuid "0b9ba891-1963-42ba-8483-a625275140a8")
+			(uuid "11d6b1fc-b7be-4c30-bd29-e00b0fb4b862")
 		)
 		(pad "1" smd circle
 			(at 0 0)
 			(size 4 4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "3574aa14-8cf7-47e1-a91d-b6b0529ac9e6")
+			(uuid "bb31593a-cb46-4507-9510-e0545205601b")
 		)
 		(embedded_fonts no)
 	)
 	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
 		(layer "B.Cu")
-		(uuid "db90b874-ea18-4d3c-bf43-e2f31a8ae20c")
+		(uuid "344cb9c2-de83-40da-b60a-1121dc43f0b2")
+		(at 481.912903 209.162903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST21"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "93f15fde-ad3e-4b34-93d2-1092fd3883fd")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "6fcc83be-13b5-4365-9e07-f9499a845e36")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9a18230d-f2af-467c-89cb-5ab66fd1bcca")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "61c88c88-71d0-40e0-a281-5c229f0a07da")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "44fa0132-5de3-43b2-9a92-9a2fb5e73a21")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "91f80498-23d0-4614-815b-fb529ef842f8")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "c5b586ee-8cb7-4a04-8302-7c531f9ea1c4")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "376d8f4a-17e1-4a3d-8161-7a8a08610881")
 		(at 114 238.787096)
 		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
 		(property "Reference" "ST23"
 			(at 0 3 180)
 			(layer "B.SilkS")
 			(hide yes)
-			(uuid "758f4f9b-aee2-4205-833f-393aa0e88979")
+			(uuid "ca66225f-05af-4c01-924a-6c43ae79158d")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -2430,7 +796,7 @@
 		(property "Value" "97730506330R"
 			(at 0 -3 180)
 			(layer "B.Fab")
-			(uuid "c4492398-fa7d-4852-a395-e8859f7e0ae8")
+			(uuid "75abb01b-3535-4ce3-916f-cbc22f56e378")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -2443,7 +809,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "f2842261-6330-4592-8870-1e3b52a88407")
+			(uuid "fac195a3-de30-4083-b749-1f7d04ab0015")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2455,7 +821,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "9e74b11c-e574-4d5f-9f52-41131661ea30")
+			(uuid "147cb3ff-14e3-4b42-8c71-da5af6e758fe")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2474,7 +840,7 @@
 			)
 			(fill no)
 			(layer "B.CrtYd")
-			(uuid "ee0b641d-8e2e-4a88-9ce5-9bc9371f716f")
+			(uuid "c76f403a-4e31-4d43-b237-39c528bebf74")
 		)
 		(fp_circle
 			(center 0 0)
@@ -2485,26 +851,972 @@
 			)
 			(fill no)
 			(layer "B.Fab")
-			(uuid "e705dc7c-ab32-4112-b943-93ea37aa4f66")
+			(uuid "9dfa6561-e5f9-4474-a9a4-ebbb63728378")
 		)
 		(pad "1" smd circle
 			(at 0 0)
 			(size 4 4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "5b691702-354f-4c5a-95ca-cfef3b48783f")
+			(uuid "bf03c6ff-daaf-433e-aa53-8c98857a66aa")
 		)
 		(embedded_fonts no)
 	)
 	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
 		(layer "B.Cu")
-		(uuid "f8154c49-ad60-4189-94e9-4c84be4f9ab0")
+		(uuid "385e89ea-6db9-4144-89ae-cfdd585f4d62")
+		(at 565.512903 185.162903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST20"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "7d285672-ae98-4285-bcf7-bf5b60812642")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "f532082f-579c-4646-be7f-f206f0e604b5")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "5ebaf985-6724-49c1-a529-4fc690297fea")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c63d6605-ee5c-4185-90e0-f8f018befdd4")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "9c31f185-6ee2-4e60-ba46-5d6939b9674c")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "82770cdb-e340-4e5b-a6b9-61fdccb7fd2d")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "ea590965-7e93-4cfa-a483-8d6c110687c9")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "3fbac951-1cc4-4939-a19e-d8e90fd32c43")
+		(at 299.912903 209.162903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST13"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "fcb0e354-d934-484c-83ed-b659527befd0")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "3d6c5fc5-9b9d-4418-9d4d-bcf34464e1e1")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "272479b1-7a5e-4592-af1a-b5b4d0a83015")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d939f691-f6e3-48a6-b7b5-58a3b9f721f6")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "d2ac3925-5155-428e-8457-c061c2688dba")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "25109d35-9adf-40fd-ad1a-3136336bf4d8")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "7411365e-90a2-4428-9a91-f820168f10e8")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "47f78906-a376-44c9-b08b-4d1052dacaf2")
+		(at 478.2 238.787096)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST27"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "25b8f64b-188f-4e37-8335-22c55051a412")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "9a76a439-71d0-484b-ac10-7e55996b02fc")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "300c091a-d027-484f-851c-ed422db9a6d6")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9c543609-a76d-4480-80b9-eac2e1dc6f9d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "1788da1a-925c-45f6-9423-5588ca320f3c")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "ffc4a902-8bc4-4904-9d86-8f4e8714b97e")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "483cb441-5878-4774-92a3-1fc9d24e6b1c")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "4ca855fb-5f68-4f9a-9fc5-1b9493554033")
+		(at 474.512903 185.162903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST16"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "e215931d-6ee1-459b-804a-67b793d00216")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "9024de4b-7149-49f6-98f9-bf83f4fb7e34")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3f8720af-3f6a-4ac1-9ceb-e7fa5a629da4")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "97bb49be-2cb0-41ea-b631-e19019c36810")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "d1ef9746-9b0b-490b-9500-8bcffc0f8e5e")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "af550b69-3027-444c-b44a-10ab15cfcb8f")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "15786759-8308-4a71-b8cf-a2ca82116078")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "5e098b6e-7e45-42cd-98c3-e6dcfcd1a1cf")
+		(at 292.512903 209.162903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST10"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "6b22737d-2186-4efc-922b-43d7e65ecef1")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "7a189793-0d40-4d6d-a95c-eb60a0cb98cb")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "8dac377c-e60e-40e3-a4cd-0ec0d95b25d4")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "4e947cac-2045-49a9-9e06-2e51009f0dd2")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "e5713211-4061-4af8-af74-a42e3bffbb34")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "db70aff9-d918-4220-a502-7c46d9bb1421")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "835d054a-5343-4895-b02f-1513cdfac2ea")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "66ee6a68-afab-4580-8ca7-d901ad5c83df")
+		(at 190.670161 108.662903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST2"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "4dfc4960-c73b-439d-97ab-af326166ceff")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "922e93ac-1aef-48d3-a7cc-e018e662d1b0")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3389d4d5-83c8-4a7a-aca8-c324200ac7dd")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "467fd86c-d5be-4a69-a8c1-8c4a3efb5579")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "477f7ddc-0cf3-404a-b2ee-769457863dca")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "22dd5b30-30bc-4f91-a617-def70dcc48fa")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "0a2a615a-55e3-4ff6-99bc-72d35176967b")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "76ac8adc-6026-47ee-a993-fac0c978fc34")
+		(at 208.912903 209.162903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST9"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "71f37f24-1854-4559-97ec-c498300e3a50")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "481ef518-1daf-473d-91f8-53dcf38260a4")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "f2219a85-665e-42a8-922c-811de1117a43")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "b7120846-b8ab-4673-8445-435e3a84d616")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "18f95eac-c3ea-4f33-b40e-de87dd12f0c7")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "f69d4ebe-45a0-4774-a2fb-1161ad4fef22")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "9eec45ff-9e19-44aa-aa17-99fe22522f06")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "81901983-31e1-4a21-95c0-958559461099")
+		(at 296.2 238.787096)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST25"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "f464c47c-5558-4152-828f-1eaa104caa0f")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "52e60274-d521-4710-8c90-191aca9bba4e")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "81763ebf-20c4-48a2-ab7f-279ec23e8b94")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "703fa0d8-3069-429d-8c18-9c7cd65d8206")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "1f9600ab-fb33-4d17-9d96-ef34ba2e3964")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "4c9bb54c-96de-4886-9135-f24117e87f4a")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "1024f352-3afe-43a0-9f05-01182e7b4dc7")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "831720ae-361e-490c-9f6a-7c9c97142f6c")
+		(at 565.512903 209.162903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST22"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "8648afc8-a849-4345-a750-a5cbf0bb40b0")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "2e4832b3-9a0c-4603-9bc7-13e4e857f524")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "41f0d620-d3b8-4644-bc4c-41f21c340eaf")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3361c0c8-52ae-46ec-a511-99c34ce2ee7c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "49f8b108-6f1a-4a4b-a6ae-395d701aa9fe")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "da845d10-3482-4838-86dc-6813bb1884a4")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "dc29c030-8449-4873-a904-e7154fea5335")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "a0cb6759-3303-4a8e-b892-aca0e6f5859c")
+		(at 387.2 238.787096)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST26"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "7638c85c-56e6-48f6-a479-91f424c98ebd")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "30ed025c-2bbc-4712-a676-f001a42e4b4d")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d1544380-e1b5-4a38-bb86-1efd464c1aaf")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "6cb82854-17bd-4d64-a238-3209c582d0f6")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "a12e954c-edfe-4ad8-9c95-642e080ed2e2")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "6454205f-a5ed-4447-b874-14501b3df732")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "4f216552-bdfe-45c7-9fa0-cda9fd918ecf")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "a34984a8-3298-481d-8da3-1bf71416db0d")
+		(at 299.912903 185.162903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST11"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "78365fa7-5b53-4605-a17b-b627fed4db38")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "423cdcff-d6f7-4232-91be-7c943c04f6ca")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "1d853950-3930-4220-87da-aa4af1119727")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "b0e08a6f-f1e7-47c4-9336-6e64202e5c09")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "989be787-8b9f-496d-8982-c1f66afe980d")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "82e003e7-a9b6-43fb-8f52-32a817733921")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "5996e9ac-4574-4add-91de-97c547b99093")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "b9f823fe-339d-4ba5-8686-7250002722e7")
 		(at 208.912903 185.162903)
 		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
 		(property "Reference" "ST7"
 			(at 0 3 180)
 			(layer "B.SilkS")
 			(hide yes)
-			(uuid "b930d1b8-5db4-4dde-9902-a500131aed32")
+			(uuid "a899fd34-033e-4b79-b476-5b9fb7c01a8d")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -2516,7 +1828,7 @@
 		(property "Value" "97730506330R"
 			(at 0 -3 180)
 			(layer "B.Fab")
-			(uuid "21a86be7-5fe6-4f46-a7b4-f727b3f87ce2")
+			(uuid "7183cbb8-32e8-472a-ad02-74ef8b665243")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -2529,7 +1841,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "dee28c00-f52d-49e3-b2ef-6803dd36c274")
+			(uuid "9c20e0c8-fd01-4da4-8460-5f73ce65336e")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2541,7 +1853,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "8b7dae92-8c69-4c22-a32c-f7dd11357e07")
+			(uuid "7da3338f-51e5-4640-b79d-337fc806e0da")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2560,7 +1872,7 @@
 			)
 			(fill no)
 			(layer "B.CrtYd")
-			(uuid "3b2eea92-2b4f-4d65-b3ac-7b7a1cd0cc96")
+			(uuid "bfdfb6d9-254a-4b7d-95f8-14fb5daeb7ab")
 		)
 		(fp_circle
 			(center 0 0)
@@ -2571,26 +1883,284 @@
 			)
 			(fill no)
 			(layer "B.Fab")
-			(uuid "1adfe3ce-37a0-4a74-997a-55f2b3783117")
+			(uuid "ebbc679b-d1b1-4cac-838a-12f4409ad4f8")
 		)
 		(pad "1" smd circle
 			(at 0 0)
 			(size 4 4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "b8224995-70b3-410c-b5dc-65fce61e9f7c")
+			(uuid "4abf4b68-fdeb-4108-b035-02df55eecfc1")
 		)
 		(embedded_fonts no)
 	)
 	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
 		(layer "B.Cu")
-		(uuid "fbc485a4-45c5-490f-9e15-c33ab00ef199")
+		(uuid "c69dfe0e-3182-49ab-b3d5-dbc8cdb4b843")
+		(at 127.195161 189.412903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST3"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "fc1febd0-8169-42ce-aa84-f5c8c193e2a3")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "9ab7d466-c7d8-4c84-8078-5d93c410887f")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "141b9bd7-bed8-4c75-bf27-249c2e55af72")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "2a2b6b40-b220-4394-bac6-af402b79ad88")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "8cb13f22-65ae-4d82-b97b-9f38826e010a")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "848515bb-9b3e-413c-b136-ea90e4d6c729")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "0a195339-f44e-4027-8c38-b09818701323")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "c8a90394-cb1f-44ef-ac3d-3ad3bdd79e99")
+		(at 390.912903 185.162903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST15"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "5bec44c9-e7f2-4eda-96d1-b03a944deaae")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "4dc70279-20e9-46d8-91b1-d57ac9fa4e7b")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "be87aa5c-b9f7-4c69-8b66-5a45a0983679")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "f5dd7622-d1ff-4416-bf1f-237c7bfb9150")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "65ad4a3a-e239-454d-8132-0d81cc668117")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "6028d76d-976e-4644-ad7c-abb5b4a28f6d")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "b79646d6-2680-4a11-a5b8-6dc02bfcd3f2")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "cab4cb81-1b86-4ef9-8be3-935fd3fd184b")
+		(at 202 238.787096)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST24"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "6f9c7fa1-0f1a-42fc-b4d7-88b1f5f4c281")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "c5df27bd-c627-4893-9393-3d3ed3d8147f")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "4147ab25-994e-4756-85ae-99f8d5e1f731")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d21a881e-de98-4112-a238-05f6bbd7a0ea")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "94072ab4-1ba0-408f-9c9b-4b3c7df47d7e")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "5d2a80fc-382a-4c92-8c3e-a4d272c133a2")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "ba5c656e-3a10-4e6f-8c8f-0b436039b7bb")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "d07f8df4-2d93-4058-b168-0afbbb3fbafe")
 		(at 383.512903 185.162903)
 		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
 		(property "Reference" "ST12"
 			(at 0 3 180)
 			(layer "B.SilkS")
 			(hide yes)
-			(uuid "1b5ad70f-4bc3-4210-91e4-30de9c5889bd")
+			(uuid "55adb765-668c-4132-8bf6-9db61225b5c1")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -2602,7 +2172,7 @@
 		(property "Value" "97730506330R"
 			(at 0 -3 180)
 			(layer "B.Fab")
-			(uuid "73c2bfe0-4700-42b5-971e-0c752afc718e")
+			(uuid "d2a625a0-765b-46a9-aa86-6217a1864329")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -2615,7 +2185,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "673fdb97-0184-4d52-bf12-e19fd3171ec7")
+			(uuid "091696de-9750-441f-9e80-46501a1ddf87")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2627,7 +2197,7 @@
 			(at 0 0 180)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "bfe0852e-6d89-4149-8476-9805a4c14220")
+			(uuid "63f7d0ea-2c6f-4e4a-953e-6f1171bf4c65")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2646,7 +2216,7 @@
 			)
 			(fill no)
 			(layer "B.CrtYd")
-			(uuid "f3c64a7b-af11-4fb7-b46d-0666c69ef0b2")
+			(uuid "558db1b7-11ce-41b0-a164-1e08e67102f8")
 		)
 		(fp_circle
 			(center 0 0)
@@ -2657,13 +2227,443 @@
 			)
 			(fill no)
 			(layer "B.Fab")
-			(uuid "6f05c25a-2e8c-4fc6-bed2-70213b84ef37")
+			(uuid "edceac49-f600-4674-ad0a-acef4435ea10")
 		)
 		(pad "1" smd circle
 			(at 0 0)
 			(size 4 4)
 			(layers "B.Cu" "B.Mask" "B.Paste")
-			(uuid "50792513-2c7e-4ff4-8a62-0b0b5f9ddbab")
+			(uuid "14cb0ef8-bfe0-4bdd-a6c7-e0625f8ce484")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "e17e810b-a8f4-46d7-94a6-e2404719ab80")
+		(at 383.512903 209.162903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST14"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "79880ef6-c0f3-457e-85f2-d3fbfde380c7")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "3499ec71-981a-414c-9a9b-95ac5d5f5327")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d0e621e9-cc57-44e5-95a0-ef593d20c194")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d0b78267-77c4-495d-82ee-476e8815357d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "493f7681-0d8b-4c07-8065-8d3531411d4d")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "1f46e8d8-af4b-458c-8b9f-8d412940ad78")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "3f48aefb-19cf-4313-af80-2ad1aa110b75")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "e5aaced5-0a2c-4d8c-aae7-9037017fceb8")
+		(at 292.512903 185.162903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST8"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "4fda6b4a-d43f-4ea3-951d-0118d0302f21")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "97517317-5dba-4036-9f40-7a845e8b599a")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "6a74668e-2b11-4850-a9d2-a361e7c7edd0")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "8a1aeee6-13d6-4440-be47-d35256fe5228")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "5056f90e-bca0-4813-97a6-bb4c4f5a96fc")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "8fcd8e01-fd03-4bd4-8905-e6216d03032b")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "22274463-8d2f-49f5-835d-27942eba3936")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "ec0cf8b8-62cd-47e5-8331-035948e0bfce")
+		(at 109.170161 206.662903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST5"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "0574f651-7d2e-4281-acce-c711e41d8666")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "a6c69bfd-4c0f-4593-9539-159a907c8da1")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "84e385fb-8674-4f0e-b2ed-9f05276fa5a7")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "247e7f44-cad9-4e62-a20c-26263b10e27c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "b8698091-70d4-4019-a369-c77af107e410")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "17ba4776-2c27-40dd-8c08-4e8e375669d8")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "5e74dff3-ac22-442f-a0c5-d0337474fd6d")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "f85d65c2-317a-4ca8-a063-81d224cfd2f9")
+		(at 564 238.787096)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST28"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "a32cd2e0-0dcf-42b5-bf9f-7e70941e8ef7")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "8e667574-8fc8-46b5-a69d-e7ff16b3002e")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "6c554d06-097b-4ab9-9fa3-cbcdb9c5421d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "a40d19a3-3e06-4b0e-bcf4-e04ca3713b28")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "2364df63-645f-40b2-88b0-89a00695c7bd")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "2c23b714-237f-4b7b-b1f6-b4a6315e86ad")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "045a09d4-9571-43c7-b689-8c4f6550467a")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Wuerth_WA-SMSI_M1.6_BottomClosed"
+		(layer "B.Cu")
+		(uuid "faf606a8-f96c-4086-81c4-948d30f9c692")
+		(at 481.912903 185.162903)
+		(descr "Wuerth WA-SMSI M1.6 bottom closed SMT spacer, 3.3 mm OD, pad 4.0 mm, no hole")
+		(property "Reference" "ST19"
+			(at 0 3 180)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "5c4a1f44-d0e5-4c04-803e-ab08042bf385")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Value" "97730506330R"
+			(at 0 -3 180)
+			(layer "B.Fab")
+			(uuid "8c1b2efb-af04-4d5a-966f-617f097605b1")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "4a7abae2-102b-4e45-b934-74f4f83b91b2")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 180)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "1e6c39dc-29cb-4ffa-ac17-633b73654f25")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(attr smd)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 2.3 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.CrtYd")
+			(uuid "82ce3b72-8fb8-472c-9f59-444dff819b71")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.65 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "B.Fab")
+			(uuid "1f50707b-e958-4ab0-b6d6-77fcd5bbbbae")
+		)
+		(pad "1" smd circle
+			(at 0 0)
+			(size 4 4)
+			(layers "B.Cu" "B.Mask" "B.Paste")
+			(uuid "3f746cda-e940-4c42-90e4-75ce50d3ab2f")
 		)
 		(embedded_fonts no)
 	)
@@ -2677,7 +2677,7 @@
 		)
 		(fill yes)
 		(layer "F.SilkS")
-		(uuid "d8e27752-0f6d-4cc2-b141-f6c19f379724")
+		(uuid "530886c0-61ea-4df7-9890-9fb8bfda2989")
 	)
 	(gr_poly
 		(pts
@@ -2689,7 +2689,7 @@
 		)
 		(fill yes)
 		(layer "F.SilkS")
-		(uuid "ec3df41b-4c32-4933-b3ca-89c1bf4ce9c6")
+		(uuid "c21be287-79f1-48ca-80cc-fe1cab19ac86")
 	)
 	(gr_poly
 		(pts
@@ -2701,7 +2701,7 @@
 		)
 		(fill yes)
 		(layer "F.SilkS")
-		(uuid "b4a0caed-6e78-4383-bde6-7a35576e4a35")
+		(uuid "aef38ddb-5b51-4e41-bd08-8df1a8e82f1d")
 	)
 	(gr_poly
 		(pts
@@ -2713,7 +2713,7 @@
 		)
 		(fill yes)
 		(layer "F.SilkS")
-		(uuid "b20e04e5-0da4-4755-a243-580df6e4514a")
+		(uuid "cadc3893-a551-4f0a-ac30-2882efeb0f9a")
 	)
 	(gr_poly
 		(pts
@@ -2725,7 +2725,7 @@
 		)
 		(fill yes)
 		(layer "F.SilkS")
-		(uuid "2470a68d-ae08-4c4b-a8d7-d7e84caabe6e")
+		(uuid "8429b0d8-2c6b-4300-9e15-a5a1c99ba1de")
 	)
 	(gr_poly
 		(pts
@@ -2737,7 +2737,7 @@
 		)
 		(fill yes)
 		(layer "F.SilkS")
-		(uuid "81cfcbb1-e3e2-45b7-8365-8067d34765ff")
+		(uuid "4324ee6b-9358-43a2-a954-6e966c3dedca")
 	)
 	(gr_poly
 		(pts
@@ -2749,7 +2749,7 @@
 		)
 		(fill yes)
 		(layer "F.SilkS")
-		(uuid "9311211a-2614-4014-af40-0f0d78f3885a")
+		(uuid "e2ff7ca7-b9b6-430a-851d-aa10c506fc37")
 	)
 	(gr_poly
 		(pts
@@ -2761,7 +2761,7 @@
 		)
 		(fill yes)
 		(layer "F.SilkS")
-		(uuid "492d7e3c-1989-4f18-9473-4cc1a6ff5ae4")
+		(uuid "09c7b27c-f2e6-4631-b83b-0121201a1869")
 	)
 	(gr_arc
 		(start 100 103.687096)
@@ -2772,7 +2772,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "ad7d4634-5483-40e4-a0f5-41426036a01e")
+		(uuid "9e9b8647-9bdd-41ae-a63a-686c52c55138")
 	)
 	(gr_line
 		(start 100 244.724193)
@@ -2782,7 +2782,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "8e446eff-f185-4aaf-b8ca-2e879cd23e8d")
+		(uuid "b8f985ed-b117-44d5-9d50-fb85e32f5d22")
 	)
 	(gr_line
 		(start 103.687096 100)
@@ -2792,7 +2792,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "6ad7cd30-d61c-4012-9f64-ecb1784676a8")
+		(uuid "ca325327-ae2e-4c6b-a309-469da4a5e0e9")
 	)
 	(gr_arc
 		(start 103.687096 248.41129)
@@ -2803,7 +2803,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f301be0c-c592-44ce-8bb6-cec12586a84d")
+		(uuid "89205416-167d-4fce-ba57-fcce437ae07b")
 	)
 	(gr_arc
 		(start 107.670161 212.216129)
@@ -2814,7 +2814,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "ae124bbc-fbb7-423f-b9de-aa71eb84f69d")
+		(uuid "adaad1fb-b5f7-4c8f-90ee-788e7b479e7e")
 	)
 	(gr_line
 		(start 107.670161 230.216129)
@@ -2824,7 +2824,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f9e90e53-7870-4bc3-80b2-fb623543cc3a")
+		(uuid "77c675eb-0691-4a3b-936b-552ac9f90ff4")
 	)
 	(gr_line
 		(start 108.670161 211.216129)
@@ -2834,7 +2834,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "a6eefaa1-04f2-4554-8a78-d2fcdd75f709")
+		(uuid "e3ba8587-b2bc-4f9b-b5a0-fb9f3c7a8385")
 	)
 	(gr_arc
 		(start 108.670161 231.216129)
@@ -2845,7 +2845,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "3e75beca-e80e-4358-9602-1e24d1e0f698")
+		(uuid "2621b315-1385-43c7-857e-ef058c34cc13")
 	)
 	(gr_arc
 		(start 112.170161 159.527016)
@@ -2856,7 +2856,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "535fb840-6def-4ac8-befb-787770d03b84")
+		(uuid "131a2069-6f09-4574-91f6-181f991c1bd7")
 	)
 	(gr_line
 		(start 112.170161 169.527016)
@@ -2866,7 +2866,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "620e3089-2d96-41c9-90fc-44d3674fe37e")
+		(uuid "45238a89-d29c-4387-a787-b07a7367e3a6")
 	)
 	(gr_arc
 		(start 112.170161 176.118951)
@@ -2877,7 +2877,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "2274f6d8-6cc9-4381-a448-4ab566c4ddf5")
+		(uuid "7e3bed8a-fa3b-4846-bf6f-3618a5885364")
 	)
 	(gr_line
 		(start 112.170161 186.118951)
@@ -2887,7 +2887,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "b537b0a6-6c91-425b-8122-e6c424ba3672")
+		(uuid "eca4e2be-db64-4c1d-9e20-c0b323bb879b")
 	)
 	(gr_arc
 		(start 112.170161 192.710887)
@@ -2898,7 +2898,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "05d0381f-c27b-4ce7-81ee-c29ef93f0c53")
+		(uuid "cf4548e0-29cb-42f3-b433-05588ba32ce1")
 	)
 	(gr_line
 		(start 112.170161 202.710887)
@@ -2908,7 +2908,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "742eeb6d-6361-4aa5-b783-78973a7d2abc")
+		(uuid "26742810-1672-4623-b021-6b3f44e009f0")
 	)
 	(gr_line
 		(start 112.670161 159.027016)
@@ -2918,7 +2918,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "4e9f2e60-8814-4fa2-ab94-7dcbe96cf481")
+		(uuid "ba0af076-97f2-442f-9fb4-48f8e959040c")
 	)
 	(gr_arc
 		(start 112.670161 170.027016)
@@ -2929,7 +2929,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "d2263b4b-f06c-4d7f-a4ab-fc79739ea0cd")
+		(uuid "8ea29deb-4af8-44db-a63c-7069c5cbeb08")
 	)
 	(gr_line
 		(start 112.670161 175.618951)
@@ -2939,7 +2939,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "e39546f0-045f-4732-a81b-93dada69dc5c")
+		(uuid "d70e4ba4-1d40-43d7-8c9c-a32c24c63049")
 	)
 	(gr_arc
 		(start 112.670161 186.618951)
@@ -2950,7 +2950,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "a1371ac2-e0c9-4914-b898-cd1f1520bc06")
+		(uuid "9a9b8d8c-749a-40c8-941b-bf204a295db6")
 	)
 	(gr_line
 		(start 112.670161 192.210887)
@@ -2960,7 +2960,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "9a1aa872-fdb2-47c7-aef6-6b92cfe8d142")
+		(uuid "f7b56891-23f7-4a84-aaba-ca596907957a")
 	)
 	(gr_arc
 		(start 112.670161 203.210887)
@@ -2971,7 +2971,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "6008680c-b522-4bc5-9b74-4d8cdda98a64")
+		(uuid "4f77466e-87e8-414d-8b28-b261687781f9")
 	)
 	(gr_arc
 		(start 122.670161 159.027016)
@@ -2982,7 +2982,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "61bee097-3d45-41c9-a979-fa8dbde70fd9")
+		(uuid "f79c94e0-2756-4e7e-83d0-a1d512ee23be")
 	)
 	(gr_line
 		(start 122.670161 170.027016)
@@ -2992,7 +2992,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "0e0d84a4-bbd5-4dba-b3c0-f071b4528de5")
+		(uuid "b540d739-38b3-4523-9a5c-a9da1498a60a")
 	)
 	(gr_arc
 		(start 122.670161 175.618951)
@@ -3003,7 +3003,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "ad217fd7-916a-43e1-b82f-9470b9cfb088")
+		(uuid "06f567ee-061a-4584-b177-a0bfa5d7bbaa")
 	)
 	(gr_line
 		(start 122.670161 186.618951)
@@ -3013,7 +3013,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "4339f0ed-9f0c-4282-a455-7638967208c8")
+		(uuid "5286eae0-687d-426c-b7a0-531dae125351")
 	)
 	(gr_arc
 		(start 122.670161 192.210887)
@@ -3024,7 +3024,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "8c546fbc-1d14-446a-9f20-2be3b7c1ca9a")
+		(uuid "30b229fb-f9bc-4e89-a1d8-f31c293affb7")
 	)
 	(gr_line
 		(start 122.670161 203.210887)
@@ -3034,7 +3034,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "24fb3c1f-2024-4837-aec8-5cebf16b3d71")
+		(uuid "87b31875-1998-4165-a1bb-c63751556f97")
 	)
 	(gr_line
 		(start 123.170161 159.527016)
@@ -3044,7 +3044,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "a8319c7f-9dac-42c6-accc-ad2bd9df1a1d")
+		(uuid "116fa2c7-5ada-44cc-8e7e-8417527cb1e9")
 	)
 	(gr_arc
 		(start 123.170161 169.527016)
@@ -3055,7 +3055,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "d024f6b5-e916-4f6a-9319-b8ccb4667a55")
+		(uuid "31f8b823-b8cb-4fac-bf6a-778dc201a0d9")
 	)
 	(gr_line
 		(start 123.170161 176.118951)
@@ -3065,7 +3065,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "1159836f-2c88-43b4-9eda-1f5bb3d3eb23")
+		(uuid "10d435e6-6697-4f2c-aa9e-270097f6e1e9")
 	)
 	(gr_arc
 		(start 123.170161 186.118951)
@@ -3076,7 +3076,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "8c45fc26-cd34-4703-8939-9a4b62984e17")
+		(uuid "d7a21df1-2c14-4cc5-92a8-ad66fdb9cb20")
 	)
 	(gr_line
 		(start 123.170161 192.710887)
@@ -3086,7 +3086,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "06203973-2fdb-4e73-bd4a-885bae1788fc")
+		(uuid "4ecba547-f935-42b3-9cfa-0dc35b325c41")
 	)
 	(gr_arc
 		(start 123.170161 202.710887)
@@ -3097,7 +3097,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "256f5141-d2a5-4eb6-9145-dbdfef4738d2")
+		(uuid "eb672692-624c-4345-adac-d59bc537537e")
 	)
 	(gr_arc
 		(start 131.220161 159.527016)
@@ -3108,7 +3108,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f94be4e5-fed1-409b-9576-812177d6a100")
+		(uuid "f7e09061-b22a-46d2-8754-a5d7933eda41")
 	)
 	(gr_line
 		(start 131.220161 169.527016)
@@ -3118,7 +3118,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "3721aef3-972c-4492-ab50-7b90e010ddeb")
+		(uuid "cdb97583-58b4-4cf0-9d8b-2f83c3c25cd1")
 	)
 	(gr_arc
 		(start 131.220161 176.118951)
@@ -3129,7 +3129,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "a20dfdaf-f5ef-41a4-b48d-d4c5c1f6cd75")
+		(uuid "88ba518a-c13a-40df-b8b8-279321ff2b1b")
 	)
 	(gr_line
 		(start 131.220161 186.118951)
@@ -3139,7 +3139,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "198d4246-4f5f-4280-8b9d-cc91687b867d")
+		(uuid "3dab3dbe-cac7-496d-9040-8026d38c0a23")
 	)
 	(gr_arc
 		(start 131.220161 192.710887)
@@ -3150,7 +3150,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "648d1fec-04d4-455a-af93-886abf944432")
+		(uuid "3ff19112-0e17-474b-b27e-77996a160bac")
 	)
 	(gr_line
 		(start 131.220161 202.710887)
@@ -3160,7 +3160,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "1ca0214b-5278-4054-829e-db14c8b8ccf4")
+		(uuid "d4a76650-784a-494e-a1ad-363d9b90266a")
 	)
 	(gr_line
 		(start 131.720161 159.027016)
@@ -3170,7 +3170,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "afc32dff-1792-40f5-8faa-71ade41f2887")
+		(uuid "48253301-d392-4537-bc5f-e33620fd4a4d")
 	)
 	(gr_arc
 		(start 131.720161 170.027016)
@@ -3181,7 +3181,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "b45414ed-511e-4ed2-ae6d-29730a75cd4f")
+		(uuid "3d071e28-6775-4ba7-bf57-e200d00ce340")
 	)
 	(gr_line
 		(start 131.720161 175.618951)
@@ -3191,7 +3191,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "c30920e7-e48e-4886-956d-531468d429d9")
+		(uuid "bd2f049c-8694-4a9a-a108-e19c94e995fb")
 	)
 	(gr_arc
 		(start 131.720161 186.618951)
@@ -3202,7 +3202,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "95f51dd9-07b7-4543-a58b-e16a2f7628bb")
+		(uuid "35326388-2021-41da-b2b6-b9644f885349")
 	)
 	(gr_line
 		(start 131.720161 192.210887)
@@ -3212,7 +3212,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "58a2d8e3-a9fb-451b-beaf-4865ac1b3099")
+		(uuid "0a9b02f1-7bda-44e8-b6f5-d615010fadba")
 	)
 	(gr_arc
 		(start 131.720161 203.210887)
@@ -3223,7 +3223,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "2e6a42ce-f79b-4a7e-8d6b-fe9388ebbe82")
+		(uuid "ebc0e4d3-585c-44a4-a4e2-ebf5b6eac0c8")
 	)
 	(gr_arc
 		(start 141.720161 159.027016)
@@ -3234,7 +3234,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "323bfea7-b1c4-4f0c-a9c1-5fe8986255c9")
+		(uuid "8a867740-b2f4-4135-a56b-868935c0fc6e")
 	)
 	(gr_line
 		(start 141.720161 170.027016)
@@ -3244,7 +3244,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "92bfb1d3-861f-4289-bca2-408cd4c47f91")
+		(uuid "f5313bfc-7388-4a26-a3d7-59ef51e22e4a")
 	)
 	(gr_arc
 		(start 141.720161 175.618951)
@@ -3255,7 +3255,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "fe2e51e9-6ace-4ff5-99a3-c9801793e4de")
+		(uuid "a60e611a-2bed-4157-ba72-df25453f4d93")
 	)
 	(gr_line
 		(start 141.720161 186.618951)
@@ -3265,7 +3265,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "93d742c1-5300-468c-9192-2944d6145966")
+		(uuid "85cca58c-69d0-47ee-9e38-06d1747e50e0")
 	)
 	(gr_arc
 		(start 141.720161 192.210887)
@@ -3276,7 +3276,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "3d994885-2019-4a72-8df6-a5eb2c3fdaf3")
+		(uuid "0b3e2887-b66f-4394-acf2-e425917ce8d2")
 	)
 	(gr_line
 		(start 141.720161 203.210887)
@@ -3286,7 +3286,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "c923d5ec-3da4-4cac-8c96-66d9685aa64f")
+		(uuid "7396d964-9f9d-4e9a-9535-bee66eca2dba")
 	)
 	(gr_line
 		(start 142.220161 159.527016)
@@ -3296,7 +3296,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "e067a44d-720d-47be-ae37-2b0dc640be61")
+		(uuid "6203b78a-7ee7-4d63-aa87-5bc8fe6606bf")
 	)
 	(gr_arc
 		(start 142.220161 169.527016)
@@ -3307,7 +3307,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "90356e84-2fa9-4e85-a2ba-5f92a2b8cf6c")
+		(uuid "4169324a-db68-4a7e-a10f-309aa55d5de6")
 	)
 	(gr_line
 		(start 142.220161 176.118951)
@@ -3317,7 +3317,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "e7f3ce32-838f-4b39-ac68-09e1d52b34e1")
+		(uuid "59974fa8-f52f-491c-92c5-9f0251d77ef5")
 	)
 	(gr_arc
 		(start 142.220161 186.118951)
@@ -3328,7 +3328,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "d06c65ff-c462-44b9-b2c4-8decba30b41b")
+		(uuid "527d86f9-24cc-41ab-9cbc-99147c95a663")
 	)
 	(gr_line
 		(start 142.220161 192.710887)
@@ -3338,7 +3338,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "9577dfc9-3ef6-40c9-8f61-408b55c29dfb")
+		(uuid "230bd70a-111b-4eec-b21b-9e301096a5a3")
 	)
 	(gr_arc
 		(start 142.220161 202.710887)
@@ -3349,7 +3349,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "baa0d823-4ead-4e52-b745-eb1eb405191c")
+		(uuid "c87e7561-0def-424b-9bed-807be987364a")
 	)
 	(gr_arc
 		(start 150.270161 159.527016)
@@ -3360,7 +3360,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "fdef03e1-0322-4e24-bbf8-8d8fb37e546c")
+		(uuid "072eab51-269a-40d0-9305-89ee1a1f357c")
 	)
 	(gr_line
 		(start 150.270161 169.527016)
@@ -3370,7 +3370,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "86d7805f-acf3-40bd-962d-dd1665aefdcd")
+		(uuid "6237de43-e196-4b77-ad95-36f7639ebada")
 	)
 	(gr_arc
 		(start 150.270161 176.118951)
@@ -3381,7 +3381,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "8f1de09c-39de-4a3b-b8b3-a859b1620de2")
+		(uuid "a2bb8259-1a17-43b2-9cea-f76cfa4177e6")
 	)
 	(gr_line
 		(start 150.270161 186.118951)
@@ -3391,7 +3391,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "b2001f6f-d2b4-4c86-9824-b5ca976d9cc7")
+		(uuid "3f5713b7-c06e-44b6-9e31-8ea7d2c74f02")
 	)
 	(gr_arc
 		(start 150.270161 192.710887)
@@ -3402,7 +3402,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "5d221816-45e1-4630-9cbe-7df63ee9fc56")
+		(uuid "b052c872-10a7-4149-a9a0-499143d41d4f")
 	)
 	(gr_line
 		(start 150.270161 202.710887)
@@ -3412,7 +3412,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "25c1774e-0dc3-4ece-9e81-6c94f9371898")
+		(uuid "22321b1e-2217-4378-a678-bec43e35e4b7")
 	)
 	(gr_line
 		(start 150.770161 159.027016)
@@ -3422,7 +3422,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f27c8e01-558d-4ab5-8bd4-958f9403d2c3")
+		(uuid "16c4c4a5-28a7-4451-bcc3-6c2a0a956a65")
 	)
 	(gr_arc
 		(start 150.770161 170.027016)
@@ -3433,7 +3433,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "522ec9d2-be48-477f-a8bc-ff4d37930cce")
+		(uuid "e1c17a12-97ad-4761-8dd2-77a533ca8b3f")
 	)
 	(gr_line
 		(start 150.770161 175.618951)
@@ -3443,7 +3443,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "46be253b-edc2-4142-869f-60c7b2e60224")
+		(uuid "086d019c-9e12-411a-b641-2bc717055659")
 	)
 	(gr_arc
 		(start 150.770161 186.618951)
@@ -3454,7 +3454,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "a8d87ee3-d9e7-4184-a1b4-f2fac7e20670")
+		(uuid "c9651025-ac81-4f95-9642-0c7f1958791e")
 	)
 	(gr_line
 		(start 150.770161 192.210887)
@@ -3464,7 +3464,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "0ae84c1e-0ae7-4f3a-89d2-4a791a2a3095")
+		(uuid "17cb9f3f-12f3-4b38-b085-8e2ceab1f550")
 	)
 	(gr_arc
 		(start 150.770161 203.210887)
@@ -3475,7 +3475,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "990407b6-e2eb-4c45-8c13-0c62c44b3312")
+		(uuid "5f3c7f89-ea05-49d9-a785-b2abd2de2b7a")
 	)
 	(gr_circle
 		(center 156.691935 125.351612)
@@ -3486,7 +3486,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "6d21ecdf-10ff-47a3-8d9c-6cc6cafadcef")
+		(uuid "40d78c92-b919-4eb1-85f9-b69076142e22")
 	)
 	(gr_arc
 		(start 160.770161 159.027016)
@@ -3497,7 +3497,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "31c86f6c-eef9-4d57-8228-36d6df66671d")
+		(uuid "92b308ae-38bc-4fdf-ae67-d48453ab5309")
 	)
 	(gr_line
 		(start 160.770161 170.027016)
@@ -3507,7 +3507,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f43a8a30-8043-44b5-88c5-5781288bfeb2")
+		(uuid "957803d0-f45e-4a0f-8fbd-b35daa6ec8a4")
 	)
 	(gr_arc
 		(start 160.770161 175.618951)
@@ -3518,7 +3518,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "d6c4107f-f690-478c-9145-b073ef037d8e")
+		(uuid "dc48a246-e171-488c-8d62-ee98204985c0")
 	)
 	(gr_line
 		(start 160.770161 186.618951)
@@ -3528,7 +3528,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "ef4a7992-a0d5-4a4e-a5bf-4c817ab7ca7f")
+		(uuid "dc118c8c-bafa-4ccb-9271-a31378ceab9a")
 	)
 	(gr_arc
 		(start 160.770161 192.210887)
@@ -3539,7 +3539,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "ebf30b36-e79f-4111-b469-646ed3533d62")
+		(uuid "2aaf6cb8-f8a7-413e-88ab-55d0aac968ec")
 	)
 	(gr_line
 		(start 160.770161 203.210887)
@@ -3549,7 +3549,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "ab66680e-f20b-4f30-a9e1-83bd36a48c7b")
+		(uuid "60c7ef58-10db-4216-860b-7489f41a8b4d")
 	)
 	(gr_line
 		(start 161.270161 159.527016)
@@ -3559,7 +3559,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "90d73398-9759-4ad9-8b73-c95c22f78eef")
+		(uuid "75331ef6-32b9-4799-b040-e60e9e264e69")
 	)
 	(gr_arc
 		(start 161.270161 169.527016)
@@ -3570,7 +3570,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "a650cb30-fe03-4b2f-a1fc-85b0bfdf2427")
+		(uuid "3785b932-24a1-4d11-87f6-655406e729ca")
 	)
 	(gr_line
 		(start 161.270161 176.118951)
@@ -3580,7 +3580,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "58964710-e211-4d63-b629-345b743c497d")
+		(uuid "7b91a6f0-155b-4169-bc35-0aacfd8a6c88")
 	)
 	(gr_arc
 		(start 161.270161 186.118951)
@@ -3591,7 +3591,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "dcb6ce6e-b74f-44c5-ab54-665918d10ff6")
+		(uuid "9c253ffb-8b8e-4a4f-8bf7-7f9b9331fe57")
 	)
 	(gr_line
 		(start 161.270161 192.710887)
@@ -3601,7 +3601,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "7f3808e1-94b2-489b-8328-cf04e7fa4b23")
+		(uuid "3a792271-e18b-4c97-ae1c-eff951c29910")
 	)
 	(gr_arc
 		(start 161.270161 202.710887)
@@ -3612,7 +3612,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "39f21b52-3a32-4834-a450-cc5ebe98b85e")
+		(uuid "9369673b-23f4-4ef8-a9eb-b5ac980c9514")
 	)
 	(gr_arc
 		(start 169.320161 159.527016)
@@ -3623,7 +3623,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "c6d45f83-c44c-467c-b0d4-f4f418026299")
+		(uuid "34acab33-5caf-49a4-9558-cc6798289986")
 	)
 	(gr_line
 		(start 169.320161 169.527016)
@@ -3633,7 +3633,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "413fbfda-fbda-4e63-a157-2aa028d36cec")
+		(uuid "6aeb2ab7-d975-437c-af31-789b37696547")
 	)
 	(gr_arc
 		(start 169.320161 176.118951)
@@ -3644,7 +3644,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "4561cea3-39b6-43e2-9855-fca949bfed9d")
+		(uuid "ef42d063-5f0d-4beb-a416-62c013c74af4")
 	)
 	(gr_line
 		(start 169.320161 186.118951)
@@ -3654,7 +3654,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "32fcac7f-7244-42cc-90ee-7b22e383a266")
+		(uuid "d35ca02a-c3b9-4533-b99f-864a56e5a7a9")
 	)
 	(gr_line
 		(start 169.820161 159.027016)
@@ -3664,7 +3664,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "634e05b0-1ae0-4e0d-98c2-c27fe33d9e42")
+		(uuid "33acfc4d-b856-4f83-a079-87d7e4dc8f55")
 	)
 	(gr_arc
 		(start 169.820161 170.027016)
@@ -3675,7 +3675,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "c1d4f293-83e6-4769-9ace-8db6bc4f1f6e")
+		(uuid "b0c3f542-e675-4d5a-9c0b-197afd42bc90")
 	)
 	(gr_line
 		(start 169.820161 175.618951)
@@ -3685,7 +3685,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "b4a0f055-7fb0-4b29-936f-1564f80779cc")
+		(uuid "6f6e26ea-0f5d-4158-bbb7-7263ce5730d8")
 	)
 	(gr_arc
 		(start 169.820161 186.618951)
@@ -3696,7 +3696,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "207a32cb-deff-4316-b9b8-c9c7eaabf247")
+		(uuid "c954bae2-7f0e-4a89-8e33-d07f6bab1bb8")
 	)
 	(gr_arc
 		(start 179.820161 159.027016)
@@ -3707,7 +3707,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "192a0e4e-872f-46e4-bb31-7262e5d3fae3")
+		(uuid "c256fcbe-b27f-4e8d-848e-20b7dabb23de")
 	)
 	(gr_line
 		(start 179.820161 170.027016)
@@ -3717,7 +3717,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "996045ae-256b-4f3d-92b1-162b20787cfc")
+		(uuid "3cf173ce-96ca-40f2-868e-3123494e3548")
 	)
 	(gr_arc
 		(start 179.820161 175.618951)
@@ -3728,7 +3728,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "01c01333-aa06-4c00-a596-0c10e1695dab")
+		(uuid "a9714048-ab09-4ae3-9f05-f0d9582af1ea")
 	)
 	(gr_line
 		(start 179.820161 186.618951)
@@ -3738,7 +3738,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "10928b35-1b8f-4279-919e-72661172dbff")
+		(uuid "8b10f7f0-3839-4b41-b83c-3fac5d2a8c15")
 	)
 	(gr_line
 		(start 180.320161 159.527016)
@@ -3748,7 +3748,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "02439e17-925d-405c-8ce9-1139a6e471d0")
+		(uuid "1f43aef9-1358-4483-81b7-f216e7d3d417")
 	)
 	(gr_arc
 		(start 180.320161 169.527016)
@@ -3759,7 +3759,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "af6ad8dd-5f29-4ab5-bc37-47db1fa82286")
+		(uuid "1096c73b-58b9-478d-8e9d-41a8b1b940ce")
 	)
 	(gr_line
 		(start 180.320161 176.118951)
@@ -3769,7 +3769,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "047f18f3-4fb3-4b13-a796-fd5024b79b79")
+		(uuid "72000834-b5d7-4217-8f7d-91a2a6ad5c55")
 	)
 	(gr_arc
 		(start 180.320161 186.118951)
@@ -3780,7 +3780,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "b35c8a64-adb2-4202-b14d-d035918a8e15")
+		(uuid "f5d68d2a-60e4-4e3d-9904-ba3ef3414a74")
 	)
 	(gr_circle
 		(center 186.495967 125.044354)
@@ -3791,7 +3791,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "e1d3ec46-9644-48fa-97e0-7aad4681c8ad")
+		(uuid "2d42949a-fdf3-47a7-8b65-b65c14ebb7ab")
 	)
 	(gr_arc
 		(start 188.370161 159.527016)
@@ -3802,7 +3802,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "4c09c8bf-8935-4064-9d49-2874b44f90a1")
+		(uuid "0a00e8f2-28ed-4ad5-ab52-9cefc0b6a75f")
 	)
 	(gr_line
 		(start 188.370161 169.527016)
@@ -3812,7 +3812,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "986f1b21-1c5d-4159-a0be-91dd63f23dab")
+		(uuid "69bc1074-8b7c-4cbc-b7fa-8dcdcdb0c81c")
 	)
 	(gr_arc
 		(start 188.370161 176.118951)
@@ -3823,7 +3823,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "ec9e94f3-a7c1-4501-8f86-86f581f06f20")
+		(uuid "639971b8-0606-4447-a612-27ddcb373c95")
 	)
 	(gr_line
 		(start 188.370161 186.118951)
@@ -3833,7 +3833,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "e2ad1cdc-5f8e-41da-8908-1f759cf69a91")
+		(uuid "65837178-beed-4886-a2dc-dce5bef65641")
 	)
 	(gr_line
 		(start 188.870161 159.027016)
@@ -3843,7 +3843,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "8b0de057-766f-4616-a7e3-5633f675974a")
+		(uuid "f2b9302c-1f62-4fcb-8a8c-e61a60d62822")
 	)
 	(gr_arc
 		(start 188.870161 170.027016)
@@ -3854,7 +3854,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f7cec36f-37ef-42db-bcd8-82d33b14128f")
+		(uuid "dca3d844-6d3c-42e1-80bb-356ff852a673")
 	)
 	(gr_line
 		(start 188.870161 175.618951)
@@ -3864,7 +3864,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "dc7b0910-dcd2-4577-87e4-4fa59f162d63")
+		(uuid "38cedec4-84ce-47d5-a63d-29a9b3d97e45")
 	)
 	(gr_arc
 		(start 188.870161 186.618951)
@@ -3875,7 +3875,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "ba9137bf-e9fe-4ada-b6f6-95ba0703c9be")
+		(uuid "889d7e33-6f83-4ece-8aaa-37bc8550f531")
 	)
 	(gr_arc
 		(start 198.870161 159.027016)
@@ -3886,7 +3886,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "68a1d2f0-18e5-4a1e-849d-22278eae1924")
+		(uuid "7fdd44f0-3b54-44a7-923b-2f7463bfbe1d")
 	)
 	(gr_line
 		(start 198.870161 170.027016)
@@ -3896,7 +3896,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "82053552-23f6-410a-86a7-31b2c9ae3c7f")
+		(uuid "1eeb7d1b-785b-49ac-8497-c905879575d9")
 	)
 	(gr_arc
 		(start 198.870161 175.618951)
@@ -3907,7 +3907,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "9dbd4406-fd4b-4d8a-bd60-7c9ffcd3f657")
+		(uuid "33db1c45-b71d-45a9-97df-104b4ed272bf")
 	)
 	(gr_line
 		(start 198.870161 186.618951)
@@ -3917,7 +3917,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "e08657dd-9f49-4d38-bfbe-c60efaf963b8")
+		(uuid "7e0cf715-dfe8-4015-b725-c45ecfcb916d")
 	)
 	(gr_line
 		(start 199.370161 159.527016)
@@ -3927,7 +3927,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "a6510e00-0260-4542-bc9a-6cea9f3ff69e")
+		(uuid "33103f5d-d733-48dd-9b67-6493fd0cfa99")
 	)
 	(gr_arc
 		(start 199.370161 169.527016)
@@ -3938,7 +3938,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "6b099af7-1cab-46e8-9565-0a30de422010")
+		(uuid "a4da30f7-f729-49fc-8740-b03dae96beae")
 	)
 	(gr_line
 		(start 199.370161 176.118951)
@@ -3948,7 +3948,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f49decda-9bdf-47ed-b04f-e2b4add07fca")
+		(uuid "027a86f4-4da5-4a04-b587-8be606757b29")
 	)
 	(gr_arc
 		(start 199.370161 186.118951)
@@ -3959,7 +3959,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "857a44d3-4129-4c41-8636-b65f028c4824")
+		(uuid "c1814165-ac98-4de5-a594-efaf34637801")
 	)
 	(gr_arc
 		(start 202.870161 211.216129)
@@ -3970,7 +3970,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f3f01aa0-2d6f-4847-9c53-2dd355dc7666")
+		(uuid "1f67bfaa-005e-4fd4-96fb-f4977853857b")
 	)
 	(gr_line
 		(start 202.870161 231.216129)
@@ -3980,7 +3980,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "b6b693ef-775d-4359-b7ef-6bce10c6da2c")
+		(uuid "c613f128-c287-487e-b068-c7bc667d8f74")
 	)
 	(gr_line
 		(start 203.870161 212.216129)
@@ -3990,7 +3990,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "aff85a68-7772-49f6-9506-d55b111b1810")
+		(uuid "8242db6a-2bcc-478d-a0af-863618df3f10")
 	)
 	(gr_arc
 		(start 203.870161 230.216129)
@@ -4001,7 +4001,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "d7f4875e-240b-4ade-9c4e-36341c95fe15")
+		(uuid "9cfef7c7-828a-4485-bad7-c5e2c0c341c1")
 	)
 	(gr_arc
 		(start 210.712903 117.452903)
@@ -4012,7 +4012,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "9c7168cd-7dac-4610-a520-e1060d081599")
+		(uuid "4bfe857c-6341-4dc9-8eb5-fce0bab21ebb")
 	)
 	(gr_line
 		(start 210.712903 136.452903)
@@ -4022,7 +4022,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "5b98c954-97e2-4fcc-9754-804e736d6c7a")
+		(uuid "d573dee8-689c-4086-b4b3-e58e8b64fe30")
 	)
 	(gr_line
 		(start 211.712903 116.452903)
@@ -4032,7 +4032,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "3fc42f7c-9a5a-4d10-b52c-f19ecdbd05a2")
+		(uuid "7d1a87ad-5206-4146-b000-a149b7ee0d30")
 	)
 	(gr_arc
 		(start 211.712903 137.452903)
@@ -4043,7 +4043,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "ba0f8ce5-76f4-48c7-b864-c0b0ab1b6c2d")
+		(uuid "b4c92be3-0960-4d29-9aa6-3f0c753ced82")
 	)
 	(gr_arc
 		(start 212.137903 164.28387)
@@ -4054,7 +4054,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "47141031-8a4e-492f-b6f6-5cad8e3ecf10")
+		(uuid "41e040f0-92f0-4ebb-8969-0dbb2c260b8d")
 	)
 	(gr_line
 		(start 212.137903 182.28387)
@@ -4064,7 +4064,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "e9c214c7-5f01-4b67-af9d-d19c891bd4db")
+		(uuid "1bcc29f3-dd7f-445b-a0bb-3fc4b8f77615")
 	)
 	(gr_arc
 		(start 212.137903 188.25)
@@ -4075,7 +4075,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "3b2427d8-e746-416e-b83a-6295ee3427d6")
+		(uuid "dc043daa-d188-4553-a22b-db9566c5dd10")
 	)
 	(gr_line
 		(start 212.137903 206.25)
@@ -4085,7 +4085,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "c9c015ba-ab8a-4577-8bf5-68642cfb907f")
+		(uuid "8f71dfa9-01e6-4ea5-a552-6bd8e8e43b7b")
 	)
 	(gr_arc
 		(start 212.137903 212.216129)
@@ -4096,7 +4096,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "84012c5b-97f2-4fa5-8d27-f2f2be5eaca8")
+		(uuid "8c2f072a-8013-45a9-80e2-fac1a2a7dbda")
 	)
 	(gr_line
 		(start 212.137903 230.216129)
@@ -4106,7 +4106,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "6ebec48f-00e2-477e-b8aa-8ad5ebc3caa1")
+		(uuid "14a0c63c-efdf-451f-aba6-fffea908d725")
 	)
 	(gr_line
 		(start 213.137903 163.28387)
@@ -4116,7 +4116,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "3307131a-79e4-4469-b313-f136cab4f891")
+		(uuid "48d0d4fd-44f9-4040-85c8-da07fdf5701a")
 	)
 	(gr_arc
 		(start 213.137903 183.28387)
@@ -4127,7 +4127,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "34375e99-8de0-4895-8f26-5520020d8aa9")
+		(uuid "243822d5-a357-41ee-a34d-bea266a6d352")
 	)
 	(gr_line
 		(start 213.137903 187.25)
@@ -4137,7 +4137,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "dcf2c605-7dd3-464a-8864-a95d0f0ff792")
+		(uuid "71dcf50a-7d23-48cc-ab4d-1a62774aadb9")
 	)
 	(gr_arc
 		(start 213.137903 207.25)
@@ -4148,7 +4148,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "8b1f8b14-8670-4443-a294-95225e77c487")
+		(uuid "8a8546ce-affb-4816-8361-94ae08f6037d")
 	)
 	(gr_line
 		(start 213.137903 211.216129)
@@ -4158,7 +4158,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "6836b6f9-5e3d-4d28-8084-a9a5ca52a2a8")
+		(uuid "36d5e0c1-e1e7-4eb9-ad19-ae6f36cd2cc9")
 	)
 	(gr_arc
 		(start 213.137903 231.216129)
@@ -4169,7 +4169,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "75cbaa1c-500f-47b3-92b2-4a2c44890ce8")
+		(uuid "7887fd99-269f-46d5-a098-a0e24a86a891")
 	)
 	(gr_circle
 		(center 222.137903 156.384677)
@@ -4180,7 +4180,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "88af726c-4ea4-48e1-b556-665ca9d689ec")
+		(uuid "e4cf8275-ddf6-4afb-8e1e-b0a62f25b46f")
 	)
 	(gr_circle
 		(center 241.187903 156.384677)
@@ -4191,7 +4191,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "ab94f0b2-3423-4d53-addc-55fa0dcfd385")
+		(uuid "3a518d5f-6042-47e4-9f99-22dac3040ed2")
 	)
 	(gr_circle
 		(center 260.237903 156.384677)
@@ -4202,7 +4202,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "9ab617c5-83dd-4740-a822-552f4f398baf")
+		(uuid "6c62ec18-dbbd-47f1-824c-1d72e9ccad79")
 	)
 	(gr_circle
 		(center 279.287903 156.384677)
@@ -4213,7 +4213,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "123373a9-295f-44c0-b201-d3e55774f40b")
+		(uuid "7fe08598-99a6-487a-b5aa-0bebb34d9dd2")
 	)
 	(gr_arc
 		(start 288.287903 163.28387)
@@ -4224,7 +4224,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "4e728130-2cab-4f4c-b181-eb74612a1c70")
+		(uuid "8ae53e38-6428-4ab0-9d54-52792f9f2d0b")
 	)
 	(gr_line
 		(start 288.287903 183.28387)
@@ -4234,7 +4234,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "d0ba7bef-9f9f-4330-b878-f30dd10cad61")
+		(uuid "ef6c6d7f-9656-426d-9c17-e15de6a73d4b")
 	)
 	(gr_arc
 		(start 288.287903 187.25)
@@ -4245,7 +4245,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "11a72dc9-a54c-46a9-820c-09c72ae865f0")
+		(uuid "43660660-56de-4317-9fd8-76729ec6851a")
 	)
 	(gr_line
 		(start 288.287903 207.25)
@@ -4255,7 +4255,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "5f674ded-52aa-455a-81ab-4564a20d37c1")
+		(uuid "e49d4ff7-53d2-43d6-a814-0128571ddd71")
 	)
 	(gr_arc
 		(start 288.287903 211.216129)
@@ -4266,7 +4266,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "be20e8f7-3689-4d55-a3c0-400a46bb84bb")
+		(uuid "887a2300-264d-4c1c-a1fc-6e7676fe5d3a")
 	)
 	(gr_line
 		(start 288.287903 231.216129)
@@ -4276,7 +4276,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "465acd43-18bb-419e-9530-6a13f92c5e53")
+		(uuid "dce9b443-6e7f-4def-b26f-1930fdf62679")
 	)
 	(gr_line
 		(start 289.287903 164.28387)
@@ -4286,7 +4286,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "15b95df2-90f7-4c0d-bc78-1f6c6ff26005")
+		(uuid "8135209e-c22e-481f-be92-30e5bb95b080")
 	)
 	(gr_arc
 		(start 289.287903 182.28387)
@@ -4297,7 +4297,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "d46fa8bc-22c8-4d9b-90af-e47dce73941d")
+		(uuid "9700fbee-b207-47a9-b13a-c006816c749c")
 	)
 	(gr_line
 		(start 289.287903 188.25)
@@ -4307,7 +4307,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "13387530-4785-4216-94af-788396035c89")
+		(uuid "eedd4abf-356b-43ef-baa6-e53a8bac0c81")
 	)
 	(gr_arc
 		(start 289.287903 206.25)
@@ -4318,7 +4318,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "49ab5a52-b0fd-49e1-8e3a-f8c175a9fd4d")
+		(uuid "bd4ba703-bf56-4559-bd85-8e36cad89845")
 	)
 	(gr_line
 		(start 289.287903 212.216129)
@@ -4328,7 +4328,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "a5d666ab-fac8-4b43-895a-b6bb1bfff470")
+		(uuid "433ffe91-0b15-477f-97d5-7eff796b7598")
 	)
 	(gr_arc
 		(start 289.287903 230.216129)
@@ -4339,7 +4339,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "6af0e9c2-8787-4425-b908-1346a7d4a9d2")
+		(uuid "39c5878e-7c41-46e9-bee3-5159cb69bd35")
 	)
 	(gr_arc
 		(start 289.712903 116.452903)
@@ -4350,7 +4350,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "173c8999-9439-496d-ad68-d3745d8c6397")
+		(uuid "e421a226-c1f3-4c55-b6fc-d4ed34e34c36")
 	)
 	(gr_line
 		(start 289.712903 137.452903)
@@ -4360,7 +4360,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "2e37b61d-74f5-4ea3-adf0-9e244929dc93")
+		(uuid "121c0996-4a1c-4897-ac3e-ef75f8d7dc65")
 	)
 	(gr_line
 		(start 290.712903 117.452903)
@@ -4370,7 +4370,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "d3db8c0e-9c49-469b-8e58-90c32e1dfa4f")
+		(uuid "f5a55c10-3f3c-4bba-bb91-e6ed92414f1c")
 	)
 	(gr_arc
 		(start 290.712903 136.452903)
@@ -4381,7 +4381,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "382b686b-391a-4bdc-ae7b-0f232dc65edb")
+		(uuid "04f110f2-2b6d-4ab9-bb69-69846baa86b5")
 	)
 	(gr_arc
 		(start 301.712903 117.452903)
@@ -4392,7 +4392,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "06729895-cc52-4aed-93f1-32a05aa38306")
+		(uuid "0f73297d-eedd-40fd-8830-c69c4db55a82")
 	)
 	(gr_line
 		(start 301.712903 136.452903)
@@ -4402,7 +4402,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "d7bcf1d6-7d50-4dc0-b74b-49fd6ad0a236")
+		(uuid "ba9c49f3-f852-43a5-93b1-576acd41e996")
 	)
 	(gr_line
 		(start 302.712903 116.452903)
@@ -4412,7 +4412,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "db92d05b-d92a-48de-8a40-aa54553e2508")
+		(uuid "8aac0816-937e-42f8-ac64-d42455bd2620")
 	)
 	(gr_arc
 		(start 302.712903 137.452903)
@@ -4423,7 +4423,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f3d5813e-9efc-473f-8c83-a2ba519836f4")
+		(uuid "85cb1bbc-6169-4d28-bdfd-e52ae9afeec5")
 	)
 	(gr_arc
 		(start 303.137903 164.28387)
@@ -4434,7 +4434,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "833501d4-5399-4acd-9340-5026dc084789")
+		(uuid "1aaa95c6-6670-42c1-85c3-9e04a86a9cb8")
 	)
 	(gr_line
 		(start 303.137903 182.28387)
@@ -4444,7 +4444,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "2b197e0b-693a-4898-ba70-cb10fb84f9ad")
+		(uuid "343e4401-a23d-44dc-ba96-2fae08af3ab2")
 	)
 	(gr_arc
 		(start 303.137903 188.25)
@@ -4455,7 +4455,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "6f673bb2-0efd-48b0-b80e-f4a5aea11cc8")
+		(uuid "85322c58-290f-4b4c-b8c6-9d896ad0af81")
 	)
 	(gr_line
 		(start 303.137903 206.25)
@@ -4465,7 +4465,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "529e119d-d266-464b-b57a-0b10ca030017")
+		(uuid "9db81127-3718-41ab-8752-55549b8b73ea")
 	)
 	(gr_arc
 		(start 303.137903 212.216129)
@@ -4476,7 +4476,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "e0497fe8-9b5b-4e78-b540-b3a30f474919")
+		(uuid "307d0d80-bdfc-43f0-95d9-1a275b5563f1")
 	)
 	(gr_line
 		(start 303.137903 230.216129)
@@ -4486,7 +4486,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "0ff7b9c1-d970-4349-9d7f-02a52fe5265c")
+		(uuid "dfc36336-87d6-4251-b565-cefcacab0cc5")
 	)
 	(gr_line
 		(start 304.137903 163.28387)
@@ -4496,7 +4496,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "5c2e715d-c630-4630-890e-12ad952e9bb7")
+		(uuid "1710e34d-16b6-470f-bfc1-c37832ee0b35")
 	)
 	(gr_arc
 		(start 304.137903 183.28387)
@@ -4507,7 +4507,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "eab5d103-da47-4ef3-bacb-1547d0cfe626")
+		(uuid "975a1d1d-1123-4bc0-b5cf-3c6d2c222aab")
 	)
 	(gr_line
 		(start 304.137903 187.25)
@@ -4517,7 +4517,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "93f284fd-1fdf-42af-93d7-742e6aabf021")
+		(uuid "0cefe89f-0a9c-4cf8-a8ee-59a6c4dae0a7")
 	)
 	(gr_arc
 		(start 304.137903 207.25)
@@ -4528,7 +4528,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "6c56d65c-d47a-45a0-aed3-2c23d62c849b")
+		(uuid "9e1e80d2-dbfa-4e0f-9c67-5e14a9959440")
 	)
 	(gr_line
 		(start 304.137903 211.216129)
@@ -4538,7 +4538,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "1e3b4012-020c-45d2-9b7f-ff4bbba868db")
+		(uuid "e0145606-f7ec-42c3-8ece-da513a229ca8")
 	)
 	(gr_arc
 		(start 304.137903 231.216129)
@@ -4549,7 +4549,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "49a110f8-de50-4188-affb-b84b3b158536")
+		(uuid "f80d3379-128e-4173-ae52-7eef53d551ed")
 	)
 	(gr_circle
 		(center 313.137903 156.384677)
@@ -4560,7 +4560,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "f61f1140-53ed-4347-a9bb-8a6d94e490cc")
+		(uuid "03c5f413-7a09-480e-bf80-4cb3a3dc2c94")
 	)
 	(gr_circle
 		(center 332.187903 156.384677)
@@ -4571,7 +4571,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "42480608-4e1e-4294-b097-9dfde9fc4400")
+		(uuid "9dc8495a-4be0-487e-930e-e90640964448")
 	)
 	(gr_circle
 		(center 351.237903 156.384677)
@@ -4582,7 +4582,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "46c2de31-0069-4e04-9463-db037828884a")
+		(uuid "b186d858-feb0-4f26-8b04-4b606421fd3b")
 	)
 	(gr_circle
 		(center 370.287903 156.384677)
@@ -4593,7 +4593,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "06e0a162-4cb6-4700-844f-ee3da975b61f")
+		(uuid "b348b4b2-4eda-4d63-8c2d-7c65b9767942")
 	)
 	(gr_arc
 		(start 379.287903 163.28387)
@@ -4604,7 +4604,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "04137d31-f824-4f00-be14-35beb10ce59c")
+		(uuid "c416a8e5-7999-40f1-96ff-c3acae40a6ae")
 	)
 	(gr_line
 		(start 379.287903 183.28387)
@@ -4614,7 +4614,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "2b6a8be9-f815-4c55-b669-2c069b2f79f3")
+		(uuid "16b6200e-1299-43f3-8b61-f403cb632ec5")
 	)
 	(gr_arc
 		(start 379.287903 187.25)
@@ -4625,7 +4625,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "bc328be0-fcb8-4032-9647-13416cf39bbf")
+		(uuid "2bb26036-582c-4c14-8465-a1df883c6145")
 	)
 	(gr_line
 		(start 379.287903 207.25)
@@ -4635,7 +4635,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "b62c6e42-646e-41a2-99ed-279b78bbf3f1")
+		(uuid "db7c81f6-3373-4207-a4f2-831b048936b9")
 	)
 	(gr_arc
 		(start 379.287903 211.216129)
@@ -4646,7 +4646,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "7982a7ee-980b-47bc-bcc1-129250733ee4")
+		(uuid "a642eac1-0eac-4f72-a3e0-cec7f9a09d35")
 	)
 	(gr_line
 		(start 379.287903 231.216129)
@@ -4656,7 +4656,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "156b0be2-1375-4758-b216-ad0ed0fef6b5")
+		(uuid "9ce4ba14-f3b0-4e43-9d1c-af21c2e61fe8")
 	)
 	(gr_line
 		(start 380.287903 164.28387)
@@ -4666,7 +4666,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f2b2ee46-93e1-45b9-98b4-a57ab0a1c93f")
+		(uuid "ef63fae7-db42-44fb-89ba-f07302d6f571")
 	)
 	(gr_arc
 		(start 380.287903 182.28387)
@@ -4677,7 +4677,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "45a43fc5-91b3-4e8d-92e8-9a2e7554fed0")
+		(uuid "5cc7421e-893c-465c-98aa-2aba5a6de3c3")
 	)
 	(gr_line
 		(start 380.287903 188.25)
@@ -4687,7 +4687,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "1bea8d53-13f5-4371-adc2-01278335bbdf")
+		(uuid "3145c14a-b767-443d-b7b5-861208723501")
 	)
 	(gr_arc
 		(start 380.287903 206.25)
@@ -4698,7 +4698,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "216209a2-a42a-4a88-be47-b87d6932d46b")
+		(uuid "b9749438-d7df-4c06-b943-0a69c1dc04ff")
 	)
 	(gr_line
 		(start 380.287903 212.216129)
@@ -4708,7 +4708,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "c95c567b-5620-4504-929a-22f2b220d626")
+		(uuid "e72f7fb4-ea30-4fef-adee-f3ca064a1170")
 	)
 	(gr_arc
 		(start 380.287903 230.216129)
@@ -4719,7 +4719,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "87db2cd5-6b8b-4928-8e3a-72a9ea57d97d")
+		(uuid "56e0d10f-4e80-4919-8bf2-71fe2353f8ba")
 	)
 	(gr_arc
 		(start 380.712903 116.452903)
@@ -4730,7 +4730,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "9e064bb7-a9b1-4d2f-9b5e-3c151747255d")
+		(uuid "8268ca5e-1272-456e-9779-78e7edf5d4aa")
 	)
 	(gr_line
 		(start 380.712903 137.452903)
@@ -4740,7 +4740,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "057bff5e-1f2f-4dfd-8d03-847f1d32fc28")
+		(uuid "81f0ef57-8bb4-4b0b-875c-51f12a4813cb")
 	)
 	(gr_line
 		(start 381.712903 117.452903)
@@ -4750,7 +4750,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "67319ae8-ff0e-4ca0-9e19-7e5bfbf47ba1")
+		(uuid "900087a9-5079-43cf-a501-dd86afff89bb")
 	)
 	(gr_arc
 		(start 381.712903 136.452903)
@@ -4761,7 +4761,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "6c7dfc1c-502c-47dc-a4cf-267412e705fb")
+		(uuid "09a0be12-3ddf-4ecf-a322-00c819f98995")
 	)
 	(gr_arc
 		(start 392.712903 117.452903)
@@ -4772,7 +4772,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "307fd6a9-6867-4511-95dc-c8cb53c86d30")
+		(uuid "38e1d74d-f243-4c51-b2ba-05fbfa338196")
 	)
 	(gr_line
 		(start 392.712903 136.452903)
@@ -4782,7 +4782,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "06baa058-0c19-4461-befb-0eec59815cbc")
+		(uuid "850140a5-9d87-47e3-b874-9e48265c5f61")
 	)
 	(gr_line
 		(start 393.712903 116.452903)
@@ -4792,7 +4792,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "affb8168-fc83-4859-945a-c93a10764935")
+		(uuid "854cb65f-9f5a-4a0c-b34b-b3f2cd190e93")
 	)
 	(gr_arc
 		(start 393.712903 137.452903)
@@ -4803,7 +4803,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "e83c680b-3118-4730-b6c6-d001156962d2")
+		(uuid "bcb78b9a-2b04-4d85-bb9e-2e4b234b5e1c")
 	)
 	(gr_arc
 		(start 394.137903 164.28387)
@@ -4814,7 +4814,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "7f19e122-c321-4d75-83ad-00c08fcf8d1a")
+		(uuid "e2401f81-3f8c-4b5e-820e-79fb29afa927")
 	)
 	(gr_line
 		(start 394.137903 182.28387)
@@ -4824,7 +4824,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "85c4e59d-2e22-44e5-9ccc-550fcb466596")
+		(uuid "e280df07-2d6e-454c-830c-4e07fec3faca")
 	)
 	(gr_arc
 		(start 394.137903 188.25)
@@ -4835,7 +4835,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "2f0754a4-fa7b-44b3-b9d0-82ed6a9e373f")
+		(uuid "eeef6256-b0b7-4fea-bd6b-27eceb3970d3")
 	)
 	(gr_line
 		(start 394.137903 206.25)
@@ -4845,7 +4845,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f5ef8527-e380-44db-b1cf-57c4c5b71f46")
+		(uuid "076ca72c-5615-4561-98d5-650f9ca162c0")
 	)
 	(gr_arc
 		(start 394.137903 212.216129)
@@ -4856,7 +4856,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "ef441e59-1c2d-4b05-8a87-09f7153e6231")
+		(uuid "4aeba6de-edeb-497c-b2f7-aedb8b5357bf")
 	)
 	(gr_line
 		(start 394.137903 230.216129)
@@ -4866,7 +4866,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "0ac33292-3fb7-4b96-8896-b9dacb6d44ac")
+		(uuid "06812b9a-b6d0-44b2-8fef-513ed3cdd7ee")
 	)
 	(gr_line
 		(start 395.137903 163.28387)
@@ -4876,7 +4876,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "81934e6c-6f6c-48de-9d78-8789de262c73")
+		(uuid "7acd9b48-64c1-43f4-89aa-8f6e3f72276c")
 	)
 	(gr_arc
 		(start 395.137903 183.28387)
@@ -4887,7 +4887,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "fcbde48e-3a34-4dcd-b6b2-d4486ccb84bd")
+		(uuid "b1d50d07-7a15-4b42-b763-eeb66c23e3f1")
 	)
 	(gr_line
 		(start 395.137903 187.25)
@@ -4897,7 +4897,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "891968cf-e40c-4400-b490-742d7a5bb511")
+		(uuid "9ffe5952-8918-427c-a09e-b8ae24d55a88")
 	)
 	(gr_arc
 		(start 395.137903 207.25)
@@ -4908,7 +4908,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "d518ea50-ae12-4902-9db8-bc9d8460d88b")
+		(uuid "5446105c-b545-4435-975c-3cc970f7ae35")
 	)
 	(gr_line
 		(start 395.137903 211.216129)
@@ -4918,7 +4918,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "1778ae52-101d-4cb1-8eba-9a02a785ad94")
+		(uuid "aa41370a-506b-4741-9e5a-81612f2d5be5")
 	)
 	(gr_arc
 		(start 395.137903 231.216129)
@@ -4929,7 +4929,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "2a78075c-8835-48f5-b238-2f8f18e2ef46")
+		(uuid "2df23190-772e-4d4c-835e-13b0b658fdc9")
 	)
 	(gr_circle
 		(center 404.137903 156.384677)
@@ -4940,7 +4940,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "c67d260b-7c4b-483a-9994-e53f0bd7077c")
+		(uuid "a7d4e9bf-13bd-4ccf-8dcc-b096d0d5710b")
 	)
 	(gr_circle
 		(center 423.187903 156.384677)
@@ -4951,7 +4951,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "f1f0226e-ba73-4869-a6b6-ec0efbe807cb")
+		(uuid "c43e2ae3-506f-4ade-8e0e-6e0898603a10")
 	)
 	(gr_circle
 		(center 442.237903 156.384677)
@@ -4962,7 +4962,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "c415da0f-e990-4197-bd39-295f6300c1e9")
+		(uuid "de2c86f1-344d-42d0-bd54-a81feb3719ae")
 	)
 	(gr_circle
 		(center 461.287903 156.384677)
@@ -4973,7 +4973,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "b29d7a52-a22d-45df-ac99-8e44f6b0ad20")
+		(uuid "633ca5d9-5418-40c5-b9dc-69f3311f472e")
 	)
 	(gr_arc
 		(start 470.287903 163.28387)
@@ -4984,7 +4984,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "9ea40495-0034-44b4-bca8-f44f4b0ccff8")
+		(uuid "f247e635-1206-46a0-baf6-1396c641f5ac")
 	)
 	(gr_line
 		(start 470.287903 183.28387)
@@ -4994,7 +4994,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "3d9cbf3c-ca78-485a-a938-c27efae60765")
+		(uuid "c638c35c-94e4-480b-9047-670896878b6c")
 	)
 	(gr_arc
 		(start 470.287903 187.25)
@@ -5005,7 +5005,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "e2643b54-eb88-4c0b-a3bd-3cc74efe528a")
+		(uuid "314d6c13-7b53-45b0-a3db-fd7ca5f81a32")
 	)
 	(gr_line
 		(start 470.287903 207.25)
@@ -5015,7 +5015,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "b3402fd4-b241-43d0-be65-672d8f9dcf37")
+		(uuid "adbc63c1-c6b0-4aa2-80e0-a129279c69b0")
 	)
 	(gr_arc
 		(start 470.287903 211.216129)
@@ -5026,7 +5026,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "7e6fd434-2edb-4302-b731-161f34771aae")
+		(uuid "ef00a3bf-314d-4eb7-8c28-0bd1872a1306")
 	)
 	(gr_line
 		(start 470.287903 231.216129)
@@ -5036,7 +5036,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "ff34631e-2655-4a94-a32e-78545ef7b797")
+		(uuid "e7889dba-51be-432a-806e-b82aacb0dffe")
 	)
 	(gr_line
 		(start 471.287903 164.28387)
@@ -5046,7 +5046,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "5f8d83fb-ee34-4442-9c1e-a84d4e77b489")
+		(uuid "1f5cc84c-8ed2-4f75-9e04-a551fa5daf23")
 	)
 	(gr_arc
 		(start 471.287903 182.28387)
@@ -5057,7 +5057,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "65a689bd-a3e3-4684-9b67-57824aa08369")
+		(uuid "6d9ad032-498e-47ca-b46b-7dd80a34a64b")
 	)
 	(gr_line
 		(start 471.287903 188.25)
@@ -5067,7 +5067,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "35eef56c-e5f5-4eec-b2d5-93c08595c1b5")
+		(uuid "92eaef7b-82dc-4559-a67b-7d08d33200c3")
 	)
 	(gr_arc
 		(start 471.287903 206.25)
@@ -5078,7 +5078,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "281af107-3dde-47d9-9003-c2d5e0924eda")
+		(uuid "0c574e1b-8999-4a68-888f-6c38626e083e")
 	)
 	(gr_line
 		(start 471.287903 212.216129)
@@ -5088,7 +5088,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f19522bc-1c94-40b9-8fb2-1b29b60dcd92")
+		(uuid "9ca00cf2-183d-4d2a-b086-6a42da3a7886")
 	)
 	(gr_arc
 		(start 471.287903 230.216129)
@@ -5099,7 +5099,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "b5008849-51ab-4715-9c14-7de928627fae")
+		(uuid "9e32fcf9-0cd7-4cc5-b1b5-fa94088ac45a")
 	)
 	(gr_arc
 		(start 471.712903 116.452903)
@@ -5110,7 +5110,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "e8a0b0d4-e03e-4feb-8f86-1a6dd42db7f6")
+		(uuid "344dbf3e-8bc2-4221-8206-cfb9a43e4792")
 	)
 	(gr_line
 		(start 471.712903 137.452903)
@@ -5120,7 +5120,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "113318bf-9896-4ae4-a0ce-6dda1718ce2e")
+		(uuid "4e39ba70-0af3-4560-9e01-21dc139daaf3")
 	)
 	(gr_line
 		(start 472.712903 117.452903)
@@ -5130,7 +5130,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "c74f5471-f139-40a6-8043-0eac4524521a")
+		(uuid "4a09f003-e9df-49e3-ade1-b1bc1b274985")
 	)
 	(gr_arc
 		(start 472.712903 136.452903)
@@ -5141,7 +5141,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "8032b24c-1abf-4818-beec-459e7a681f31")
+		(uuid "9c369252-09f1-4cc7-a3cb-3cfad508381c")
 	)
 	(gr_arc
 		(start 483.712903 117.452903)
@@ -5152,7 +5152,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "98e2db49-8c78-4778-bb58-ff44cf8ed422")
+		(uuid "92d91e3c-9fdf-480c-9a8d-b960106eb570")
 	)
 	(gr_line
 		(start 483.712903 136.452903)
@@ -5162,7 +5162,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "6a17a715-63cb-4112-907a-a6acba048f65")
+		(uuid "df75e125-f422-4c12-92e3-6b69071880b3")
 	)
 	(gr_line
 		(start 484.712903 116.452903)
@@ -5172,7 +5172,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "b8556199-bc55-427b-8768-4021a052e0fc")
+		(uuid "b2a0ee6a-7b80-44ff-b850-4687c625d890")
 	)
 	(gr_arc
 		(start 484.712903 137.452903)
@@ -5183,7 +5183,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "3ea22a4b-a89d-4f7d-8b53-2f45553760b7")
+		(uuid "2b73f3db-a2a5-48d4-be91-217977431ca1")
 	)
 	(gr_arc
 		(start 485.137903 164.28387)
@@ -5194,7 +5194,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "e290a8d5-38f8-4478-9644-27e30ab1b872")
+		(uuid "cb353206-8c2c-4ca8-b7b0-94c11e4bf21e")
 	)
 	(gr_line
 		(start 485.137903 182.28387)
@@ -5204,7 +5204,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "40056a12-a998-4920-a3e8-9760a893be4d")
+		(uuid "5fc314c0-95b2-463f-83b5-26d53997abf0")
 	)
 	(gr_arc
 		(start 485.137903 188.25)
@@ -5215,7 +5215,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "746e086d-547d-479f-b21c-7b0d32df1960")
+		(uuid "23676546-65c6-4a3e-87d3-3c6df6bdf94b")
 	)
 	(gr_line
 		(start 485.137903 206.25)
@@ -5225,7 +5225,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "07e87382-f3bf-4ee2-80ba-5c449af20be6")
+		(uuid "f0cf6135-d887-416c-883d-80d9fd113952")
 	)
 	(gr_arc
 		(start 485.137903 212.216129)
@@ -5236,7 +5236,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "7e8cc22d-93b1-403b-9098-9edfb7a4a1cf")
+		(uuid "611e7bd3-6eef-4929-9a94-d040c3138e00")
 	)
 	(gr_line
 		(start 485.137903 230.216129)
@@ -5246,7 +5246,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "523689af-8f3c-4559-a225-17127ad2e5e6")
+		(uuid "0bb4965a-30a2-4456-994f-697f5a8a5f0b")
 	)
 	(gr_line
 		(start 486.137903 163.28387)
@@ -5256,7 +5256,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "13f00b9e-5482-42db-908d-93f932157d62")
+		(uuid "9703e1e5-a651-4ea7-a351-7029df1ee685")
 	)
 	(gr_arc
 		(start 486.137903 183.28387)
@@ -5267,7 +5267,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "a551d402-e1e8-4dc5-98d8-256526816068")
+		(uuid "9b78d3f6-f00a-4b9e-aa9b-9e9c936ad8f1")
 	)
 	(gr_line
 		(start 486.137903 187.25)
@@ -5277,7 +5277,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "6840aaa1-eb1b-4bbd-a787-9be4c2fa3f4d")
+		(uuid "70d6f3cc-8b36-404a-b421-2dde769003ed")
 	)
 	(gr_arc
 		(start 486.137903 207.25)
@@ -5288,7 +5288,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "ecfdc29a-b967-4675-8577-4c4fc1972da6")
+		(uuid "7769b354-ff53-4442-b107-19c4e0a9d9af")
 	)
 	(gr_line
 		(start 486.137903 211.216129)
@@ -5298,7 +5298,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "caa1c889-4964-4618-853c-5af03a1c1989")
+		(uuid "249c9bcf-b556-4775-8dea-9a36f927d6fc")
 	)
 	(gr_arc
 		(start 486.137903 231.216129)
@@ -5309,7 +5309,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "6f9c9999-d01f-4d4f-b5be-05af72a5ea75")
+		(uuid "8f793ac7-0176-44ff-97d4-04790e11d3b5")
 	)
 	(gr_circle
 		(center 495.137903 156.384677)
@@ -5320,7 +5320,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "a94f5ba9-159f-45e5-87da-ac75df6ece56")
+		(uuid "b67f5841-c5a6-42d0-96ea-029a3a949f4e")
 	)
 	(gr_circle
 		(center 514.187903 156.384677)
@@ -5331,7 +5331,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "1556fcc2-1eae-46ee-b087-78d1bff65a7b")
+		(uuid "724f76e1-6c3a-4732-a193-4ae80389a1c9")
 	)
 	(gr_circle
 		(center 533.237903 156.384677)
@@ -5342,7 +5342,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "b0f7914e-0ab9-4374-85dd-e2f912c95c1c")
+		(uuid "7f2889e0-3966-4b95-acba-5a0ab7deb7be")
 	)
 	(gr_circle
 		(center 552.287903 156.384677)
@@ -5353,7 +5353,7 @@
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "1fb9e2f8-673c-456c-93fa-bedca3977256")
+		(uuid "f0640124-4b98-4bb8-a83e-e066d05abd15")
 	)
 	(gr_arc
 		(start 561.287903 163.28387)
@@ -5364,7 +5364,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f42e88ac-b45a-40b0-8f39-0b61fa0200fa")
+		(uuid "009f5792-6d81-4e98-abbf-357421952b8b")
 	)
 	(gr_line
 		(start 561.287903 183.28387)
@@ -5374,7 +5374,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "e9175cc7-9f58-43d1-841c-21221bcf3e5a")
+		(uuid "7ad7568f-8d14-4d43-ae2e-f9a605d9bdbb")
 	)
 	(gr_arc
 		(start 561.287903 187.25)
@@ -5385,7 +5385,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "5185956c-65d6-4752-b762-f146bd030fb6")
+		(uuid "9168537f-c943-46f5-9b2a-c02345cfadfc")
 	)
 	(gr_line
 		(start 561.287903 207.25)
@@ -5395,7 +5395,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "3c971ef9-a0b6-4999-a5ee-f2ad34430a3a")
+		(uuid "cb662341-3e04-47e1-aa71-d6460499cb38")
 	)
 	(gr_arc
 		(start 561.287903 211.216129)
@@ -5406,7 +5406,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "4b129b58-1847-428f-829e-b8e0836df883")
+		(uuid "a298581b-c8a4-4679-b259-1de1218145f5")
 	)
 	(gr_line
 		(start 561.287903 231.216129)
@@ -5416,7 +5416,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "74bdb572-701c-4e7c-a15c-ec00d51dc536")
+		(uuid "218ed993-7d26-4f48-9649-8e6d09221ef2")
 	)
 	(gr_line
 		(start 562.287903 164.28387)
@@ -5426,7 +5426,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "6bcc3308-1a44-4cc0-b734-f639a906a77e")
+		(uuid "cc8edb62-5c85-437d-b552-ac5f6c1e7ff0")
 	)
 	(gr_arc
 		(start 562.287903 182.28387)
@@ -5437,7 +5437,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "99e436b7-cf66-42c3-b4d2-189c594c0b88")
+		(uuid "bf948676-8f2c-45da-9a3f-3e777d3ced75")
 	)
 	(gr_line
 		(start 562.287903 188.25)
@@ -5447,7 +5447,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "1d322b9f-577f-4436-a844-44cb6c0d6e60")
+		(uuid "469ab842-2f8f-45c2-a2c9-6ebd1ab805aa")
 	)
 	(gr_arc
 		(start 562.287903 206.25)
@@ -5458,7 +5458,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "cbcac98b-5501-4c5d-9ee6-2fb2644ec58f")
+		(uuid "868b67a8-766f-4f3b-a12c-9652a8000128")
 	)
 	(gr_line
 		(start 562.287903 212.216129)
@@ -5468,7 +5468,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "7d076f0c-56e1-4966-8b5a-b00d2f39f09d")
+		(uuid "c5136b2b-0624-4f0f-877a-7f5753356017")
 	)
 	(gr_arc
 		(start 562.287903 230.216129)
@@ -5479,7 +5479,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "718a27e9-e43b-4163-bfd9-3d5ac88f5544")
+		(uuid "d82b0e46-2764-42ab-a443-f7a859d2d575")
 	)
 	(gr_arc
 		(start 562.712903 116.452903)
@@ -5490,7 +5490,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "37286335-4cd0-42cd-9bb7-1a377ce8478e")
+		(uuid "d454f7b1-a3b9-4369-982f-b23dc7c3ab8b")
 	)
 	(gr_line
 		(start 562.712903 137.452903)
@@ -5500,7 +5500,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "c1b542b4-097d-4368-a4ae-5098cf604b2f")
+		(uuid "b444abb0-41cc-44c1-b968-1546fd13cb8a")
 	)
 	(gr_line
 		(start 563.712903 117.452903)
@@ -5510,7 +5510,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "9f259ac2-760b-440f-b4da-ad3cac2f6af8")
+		(uuid "0e0b311d-dc06-4a02-9551-d255aff3c92b")
 	)
 	(gr_arc
 		(start 563.712903 136.452903)
@@ -5521,7 +5521,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "9599406b-5f7e-474e-8a67-09edcb60114b")
+		(uuid "e01302fd-79a4-4ad0-87ad-72c182e09a61")
 	)
 	(gr_arc
 		(start 575.026612 100)
@@ -5532,7 +5532,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "909bed9f-786f-45f9-8e1e-1b1d1c98d2db")
+		(uuid "42b36ab2-683f-48c2-84bc-172548b2cb3e")
 	)
 	(gr_line
 		(start 575.026612 248.41129)
@@ -5542,7 +5542,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "5c3e7ef4-fc46-4bba-b8c2-939485c31a70")
+		(uuid "b4280829-69cf-4f68-9445-7d058a36d1ad")
 	)
 	(gr_line
 		(start 578.713709 103.687096)
@@ -5552,7 +5552,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "935c9a4c-9b9c-43c1-a332-df18076923f2")
+		(uuid "6b8b9a2d-40de-427a-97d3-832f586fa56c")
 	)
 	(gr_arc
 		(start 578.713709 244.724193)
@@ -5563,12 +5563,12 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "a1bdbd5e-912d-4f40-87bc-b75711705aa5")
+		(uuid "a07d9bf0-7915-46de-83d1-c01de18a6039")
 	)
 	(gr_text "BEAT"
 		(at 186.495967 129.244354 0)
 		(layer "F.SilkS")
-		(uuid "726279df-73de-4e3a-a535-818c4fe25fba")
+		(uuid "758325f2-90cd-495b-8a3f-ce1c45bdef52")
 		(effects
 			(font
 				(size 1.4 1.4)
@@ -5579,7 +5579,7 @@
 	(gr_text "STEP"
 		(at 117.670161 172.127016 0)
 		(layer "F.SilkS")
-		(uuid "164fa053-6c99-4c2e-b60c-d7ddb07a0605")
+		(uuid "eab7091d-396d-4883-9545-a0e17e601191")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5590,7 +5590,7 @@
 	(gr_text "MUTE"
 		(at 117.670161 188.718951 0)
 		(layer "F.SilkS")
-		(uuid "982b3f5d-bf84-412a-9509-f02e0cac5d09")
+		(uuid "d68e4408-3f71-4ed0-8e4d-8734ae052583")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5601,7 +5601,7 @@
 	(gr_text "LOOP"
 		(at 117.670161 205.310887 0)
 		(layer "F.SilkS")
-		(uuid "0b129a28-6c69-4a8e-a5a7-0f25b1e7afa4")
+		(uuid "e63cfde9-877a-40d8-adff-876f54f816a8")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5612,7 +5612,7 @@
 	(gr_text "TRACK"
 		(at 136.720161 172.127016 0)
 		(layer "F.SilkS")
-		(uuid "4c9ca02f-e737-4aa1-a4bd-8ce3511446ec")
+		(uuid "19b0efe5-7b26-44a9-809d-cde6e70f6b6d")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5623,7 +5623,7 @@
 	(gr_text "PHRASE"
 		(at 136.720161 188.718951 0)
 		(layer "F.SilkS")
-		(uuid "52b21aa1-1c5e-4241-8e2d-bd27cc6c4b52")
+		(uuid "f32d78c2-2384-4fda-82c7-141b23d8bee7")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5634,7 +5634,7 @@
 	(gr_text "REC."
 		(at 136.720161 205.310887 0)
 		(layer "F.SilkS")
-		(uuid "3396d196-aa20-434e-8eb2-661ce0b1031f")
+		(uuid "cec94038-ee8d-4e23-8f15-bf3e50105320")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5645,7 +5645,7 @@
 	(gr_text "SELECT MODE"
 		(at 155.770161 156.927016 0)
 		(layer "F.SilkS")
-		(uuid "5a5ee08f-3d1b-4478-bc1f-4b0fa786f710")
+		(uuid "8d237dca-e20b-4815-9dfd-bae15dd5c9f8")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5656,7 +5656,7 @@
 	(gr_text "PARAM."
 		(at 155.770161 172.127016 0)
 		(layer "F.SilkS")
-		(uuid "2a9ea33e-fce5-4000-8f4a-235009bccce6")
+		(uuid "01e8ec40-37a3-409a-9e5f-b0830eeab24e")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5667,7 +5667,7 @@
 	(gr_text "BOOKM."
 		(at 155.770161 188.718951 0)
 		(layer "F.SilkS")
-		(uuid "ac27336b-a36d-44e3-8bd4-251faffdd9ea")
+		(uuid "41fa39b3-6f3e-44ac-8fcc-0fa587064e1f")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5678,7 +5678,7 @@
 	(gr_text "LIVE"
 		(at 155.770161 205.310887 0)
 		(layer "F.SilkS")
-		(uuid "e5f3df75-7198-4e58-abca-a9cf981de702")
+		(uuid "95d0f4e8-90f6-46fe-8132-397346247dda")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5689,7 +5689,7 @@
 	(gr_text "TRIGGER"
 		(at 174.820161 172.127016 0)
 		(layer "F.SilkS")
-		(uuid "13f0fdb0-9dda-48d1-ba3f-900c021cc193")
+		(uuid "3024c518-0430-4b14-b1af-5c97a26d88e5")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5700,7 +5700,7 @@
 	(gr_text "SOLO"
 		(at 174.820161 188.718951 0)
 		(layer "F.SilkS")
-		(uuid "de196804-c552-4bbe-a14f-e3915bde6e60")
+		(uuid "9c8d3e36-ced9-41a8-bdd3-75f6ff556bf8")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5711,7 +5711,7 @@
 	(gr_text "INSTR."
 		(at 193.870161 172.127016 0)
 		(layer "F.SilkS")
-		(uuid "a25b95cd-6097-444f-94b1-acde3d858c14")
+		(uuid "43d3d419-89b8-40e6-b30b-1cdafa6689d8")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5722,7 +5722,7 @@
 	(gr_text "METR."
 		(at 193.870161 188.718951 0)
 		(layer "F.SilkS")
-		(uuid "10aa36ca-29eb-4de2-aeb8-96c41d662cf4")
+		(uuid "5a730e3c-4a5c-4537-8c9f-7378b7330f58")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5733,7 +5733,7 @@
 	(gr_text "COPY"
 		(at 222.137903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "e169a510-345f-4855-8c62-72c1df5c7b83")
+		(uuid "0c87fe84-bc8c-4bb9-8559-514d49dbd413")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5744,7 +5744,7 @@
 	(gr_text "PASTE"
 		(at 241.187903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "20184a3b-0566-4ab9-87a7-4dba3448c7e1")
+		(uuid "b4254eed-2ee4-4ac5-a5d0-132ce590adc7")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5755,7 +5755,7 @@
 	(gr_text "CLEAR"
 		(at 260.237903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "88fb5c47-4f51-4c72-8f61-a2c6e6115ae2")
+		(uuid "9a3097fc-c9a0-48df-a1ae-c90bdcdf3405")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5766,7 +5766,7 @@
 	(gr_text "MOVE"
 		(at 279.287903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "11602330-c664-4bef-b594-528d5ed0ebd1")
+		(uuid "4c3252e2-e8dd-45c9-8c89-02ccd04fae51")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5777,7 +5777,7 @@
 	(gr_text "SCROLL"
 		(at 313.137903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "f5601b3c-263e-42c6-94c6-4b16ea1ad8a0")
+		(uuid "b7877b68-820c-4d43-8606-ce4bb224c22e")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5788,7 +5788,7 @@
 	(gr_text "FAST"
 		(at 332.187903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "e5867a33-83b0-4601-98af-b69795505716")
+		(uuid "c28d1a3b-601e-4877-ad53-d1ccce0937b2")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5799,7 +5799,7 @@
 	(gr_text "ALL"
 		(at 351.237903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "a1e8ab45-d4b8-4723-9f80-71426abd05be")
+		(uuid "63f95563-a5b1-43e6-a00d-1e777dbf4ad9")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5810,7 +5810,7 @@
 	(gr_text "SHIFT"
 		(at 370.287903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "312a9886-60e8-4fe1-988c-31e4c608a181")
+		(uuid "eb89fbda-14c6-4f73-a86f-7ae25e6b95d5")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5821,7 +5821,7 @@
 	(gr_text "<"
 		(at 404.137903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "0f1bc244-2f25-4135-bf6c-bfeda4c78c01")
+		(uuid "33c0d6b2-04f8-4b9b-a5aa-008c9becf24c")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5832,7 +5832,7 @@
 	(gr_text ">"
 		(at 423.187903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "57146cb1-3701-479a-9d4e-48f13664483e")
+		(uuid "c747dfba-2ef4-44eb-8c41-5d66c9859a1c")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5843,7 +5843,7 @@
 	(gr_text "EXIT"
 		(at 442.237903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "6675d8b5-41fa-4336-aada-db8538461a4a")
+		(uuid "cfd5dbf6-1a76-407f-8e2f-9581a12fea81")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5854,7 +5854,7 @@
 	(gr_text "MENU"
 		(at 461.287903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "7a018c1d-a89c-41ed-ac0b-665aba61534f")
+		(uuid "f33b3c46-f1e9-4579-a4c3-97ed3671b990")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5865,7 +5865,7 @@
 	(gr_text "EDIT"
 		(at 495.137903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "e997e57a-68b6-4908-8e7e-b40f63a981d6")
+		(uuid "93d10eac-0a30-47e2-bb90-586335844e2d")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5876,7 +5876,7 @@
 	(gr_text "PATTERN"
 		(at 514.187903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "9981711f-440d-4ee2-9b46-50cf95e35ce2")
+		(uuid "b3594286-30df-4fd2-931f-a73dcd81df21")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5887,7 +5887,7 @@
 	(gr_text "SONG"
 		(at 533.237903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "9bbad541-e04f-47b9-a567-8319f683de92")
+		(uuid "7f56253d-5011-4267-9a39-389a07308059")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5898,7 +5898,7 @@
 	(gr_text "UTILITY"
 		(at 552.287903 233.216129 0)
 		(layer "F.SilkS")
-		(uuid "b4dbbf9f-58f1-45db-affc-85f1b597db9f")
+		(uuid "d7d1aca8-8250-45cb-89ed-25e5acd451af")
 		(effects
 			(font
 				(size 1.5 1.5)
@@ -5909,7 +5909,7 @@
 	(gr_text "DATA"
 		(at 156.691935 142.351612 0)
 		(layer "F.SilkS")
-		(uuid "057562ae-d05d-4335-812e-dac4a81885fc")
+		(uuid "a62cc558-d296-4488-a65f-377ef53553f7")
 		(effects
 			(font
 				(size 1.6 1.6)
@@ -5920,7 +5920,7 @@
 	(gr_text "MIDIBOX SEQ V4+"
 		(at 536.713709 240.41129 0)
 		(layer "F.SilkS")
-		(uuid "30bc3ec5-02bb-43ff-aceb-184a0cd044f2")
+		(uuid "a829e0dd-8a3e-40ee-a34c-6ab6cf30c293")
 		(effects
 			(font
 				(size 2.2 2.2)

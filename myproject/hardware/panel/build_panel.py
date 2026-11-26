@@ -35,7 +35,7 @@ LEFT_KX = [13.0 + 19.05 * k for k in range(5)]
 LEFT_HOLES = [(24.0, 3.5), (86.0, 3.5), ((LEFT_KX[0] + LEFT_KX[1]) / 2, 84.25), ((LEFT_KX[3] + LEFT_KX[4]) / 2, 84.25), (4.5, 101.5), (100.3 - 4.5, 101.5)]
 COL_HOLES = [(3.5, 80.0), (90.6 - 3.5, 80.0), (3.5, 104.0), (90.6 - 3.5, 104.0)]
 STACK = [(LEFT_X + x, BOARD_Y + y) for x, y in LEFT_HOLES] + [(COL_X[d] + x, BOARD_Y + y) for d in range(4) for x, y in COL_HOLES]
-MARGIN = [(x, (BOARD_Y + 126.0 + PH) / 2) for x in (12.0, 100.0, 194.2, 285.2, 376.2, 462.0)] + [(PW - 3.8, 60.0), (PW - 3.8, 100.0)]
+MARGIN = [(x, (BOARD_Y + 126.0 + PH) / 2) for x in (12.0, 100.0, 194.2, 285.2, 376.2, 462.0)] + [(PW - 3.8, 80.0), (PW - 3.8, 100.0)]
 
 def new_board():
     b = pcbnew.BOARD()
@@ -116,17 +116,19 @@ set_paper(os.path.join(D, "front.kicad_pcb"), "A2")
 
 # ================================ switch plate ================================
 P = new_board()
-rrect(P, PW / 2, PH / 2, PW + 2 * EXT, PH + 2 * EXT, CORNER)
+# The plate stops above the key rows: the OLED modules and the encoders sit in the open notch (no 3 mm web problems, no slot).
+# Left of it the plate stays full height (datawheel, beat LED, small keys, 2 stack holes of the left PCB).
+L, R, T, B = -EXT, PW + EXT, -EXT, PH + EXT
+XN, YS, XS = 103.0, 54.0, 110.0                   # notch: left edge, step height above the small keys (top 57.1), step x
+YN = ENC_Y + 6.8                                  # notch bottom edge: 3.1 mm above the key windows
+r = CORNER
+seg(P, L + r, T, XN, T); seg(P, XN, T, XN, YS); seg(P, XN, YS, XS, YS); seg(P, XS, YS, XS, YN); seg(P, XS, YN, R, YN)
+seg(P, R, YN, R, B - r); arc(P, R - r, B - r, r, 0, 90); seg(P, R - r, B, L + r, B); arc(P, L + r, B - r, r, 90, 180)
+seg(P, L, B - r, L, T + r); arc(P, L + r, T + r, r, 180, 270)
 for d in range(4):
     for y in ROWS:
         for x in CX[4 * d:4 * d + 4]:
             rrect(P, x, y, 14.0, 14.0, 0.3)                                    # MX plate cut-out 14.0 x 14.0
-# one long opening for the four Newhaven modules (89.2 x 44.0 mm, 2.5 mm above the PCB, passing the plate) and the 4 EC11E bodies
-# below them: the 1.4 mm webs between separate windows are below the 3 mm minimum that JLCPCB accepts for slot spacing.
-# Bottom edge 6.8 mm below the encoder centre so the web to the key windows below is >= 3 mm.
-y0, y1 = BOARD_Y - 0.5, ENC_Y + 6.8
-xa, xb = OLED_C[0][0] - 44.8, OLED_C[3][0] + 44.8
-rrect(P, (xa + xb) / 2, (y0 + y1) / 2, xb - xa, y1 - y0, 1.0)
 for x in LXc:
     rrect(P, x, TR_Y, 14.0, 14.0, 0.3)
 for r, row in enumerate(SMALL):
